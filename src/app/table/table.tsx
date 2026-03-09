@@ -110,7 +110,7 @@ export default function Table({ groups, dataUrl, title }: DataTableProps) {
     const [error, setError] = useState<string | null>(null);
     const [hoveredColumnId, setHoveredColumnId] = useState<string | null>(null);
     const [hoveredRow, setHoveredRow] = useState<number | null>(null);
-    const [sortRules, setSortRules] = useState<SortRule[]>(
+    const [sortRules, setSortRules] = useState<any[]>(
         guidingColumnId ? [{ columnId: guidingColumnId, direction: "asc" }] : []
     );
     const [columnOrder, setColumnOrder] = useState<string[]>(normalizedColumns.map((column) => column.id));
