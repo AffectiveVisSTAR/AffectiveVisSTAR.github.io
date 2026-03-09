@@ -1,0 +1,9 @@
+*.DS_Store
+*.tex
+*.html
+*.xlsx
+*.pdf
+.pycache/
+node_modules/
+.next/
+out/
