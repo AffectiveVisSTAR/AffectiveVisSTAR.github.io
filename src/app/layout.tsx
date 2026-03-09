@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Example App",
-  description: "Example nextjs Web-App",
+  title: "AffectiveVisSTAR",
+  description: "AffectiveVisSTAR",
 };
 
 export default function RootLayout({
