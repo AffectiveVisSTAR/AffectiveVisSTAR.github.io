@@ -119,7 +119,8 @@ def main(argv: list[str] | None = None) -> int:
                        "Dashboard",
                        "Multiple",
                        "Interactivity",
-                       "Animation"
+                       "Animation",
+                       "SpecificEmotionsCleaned"
                        ]
 
     try:
