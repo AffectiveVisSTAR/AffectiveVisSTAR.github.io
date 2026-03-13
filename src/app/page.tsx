@@ -326,9 +326,9 @@ const TABLE_GROUPS: DataTableGroup[] = [
     },
 ];
 
-const TABLE_DATA_URL = "/classtable.json";
+const TABLE_DATA_URL = "classtable.json";
 const TABLE_TITLE = "AV STAR Classification";
 
 export default function TableTestPage() {
-    return <Table groups={TABLE_GROUPS} dataUrl={TABLE_DATA_URL} title={TABLE_TITLE} />;
+    return <Table groups={TABLE_GROUPS} dataUrl={TABLE_DATA_URL} title={TABLE_TITLE} debug />;
 }
