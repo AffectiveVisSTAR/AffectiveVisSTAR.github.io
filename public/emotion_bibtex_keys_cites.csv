@@ -1,0 +1,74 @@
+Emotion,Count,BibTexKeys,EmotionModelCitation
+Active,1,moin2025vagina,"Watson et al. 1988, Russell 1980, Moge et al. 2022"
+Admiration,1,fuest2023nudging,Scherer 2005
+Aesthetic Appeal,5,alebri2023embellishments; arunkumar2024imageinfo; knoll2025gulf; schuster2024climate; sorapure2023user,He et al. 2023; Kostelnick 2016; none
+Affective Trust,14,allen2018visbrokerage; banks2024benefits; davidson2025maps; elhamdadi2024vistrust; fox2025vibes; he2024receptivity; kennedy2025generic; knoll2025gulf; koesten2025crisismaps; markant2026sectarianism; mckinley2025trustworthy; song2025credibility; vandenbosch2022weather; wei2025atthepeak,"Bartsh Kalch and Oliver 2014; Lerner and Keltner 2000; McAllister 1995, Zhang 2013; Plutchik 1980; none; own"
+Alert,1,moin2025vagina,"Watson et al. 1988, Russell 1980, Moge et al. 2022"
+Amusement,3,fuest2023nudging; lan2022kineticharts; xie2024emordle,Hung & Parsons 2017; Scherer 2005; Scherer 2013
+Anger,10,campbell2022Feeling; fuest2023nudging; kennedy2018feeling; li2023artistic; markant2026sectarianism; pfeiffer2022makehappy; pirani2020femcart; wei2025atthepeak; xie2024emordle; yang2024swaying,Plutchik 1980; Scherer 2005; Scherer 2013; Watson et al. 1988; none
+Annoyance,2,lan2021smile; pirani2020femcart,Watson et al. 1988
+Anticipation,1,wei2025atthepeak,Plutchik 1980
+Anxiety,8,abraha2025diabetes; edgeley2024wildfire; hakone2016proact; kennedy2018feeling; mencarini2025peaks; sallam2002datavideos; sorapure2023user; wu2023datadata,Gibbons 2018; Kostelnick 2016; Marteau & Bekker 1992; Michie et al. 2011; none
+Arousal,1,moin2025vagina,"Watson et al. 1988, Russell 1980, Moge et al. 2022"
+Attentive,2,moin2025vagina; yang2024swaying,"Watson et al. 1988; Watson et al. 1988, Russell 1980, Moge et al. 2022"
+Awe,3,block2012deeptree; lan2021smile; li2023artistic,Scherer 2005; none
+Bored,2,davidson2025maps; lan2021smile,none
+Calm,3,anderson2021affective; hakone2016proact; sallam2002datavideos,Marteau & Bekker 1992; Russell 2003; none
+Compassion,2,fuest2023nudging; morais2022exploring,Batson 1987; Scherer 2005
+Concern,3,kaufmann2023environart; lan2021smile; mencarini2025peaks,Wilce 2009; none
+Confidence,2,strain2025scatter; yang2024swaying,Watson et al. 1988; none
+Confusion,1,kennedy2018feeling,none
+Contempt,2,fuest2023nudging; pfeiffer2022makehappy,Plutchik 1980; Scherer 2005
+Content,2,fuest2023nudging; lan2021smile,Scherer 2005
+Credibility,1,strain2025scatter,none
+Curiosity,11,block2012deeptree; ehmel2021topography; ferreira2024arcadia; jain2025strolly; koesten2025crisismaps; lan2021linearity; morini2024ShockShiftData; pirani2020femcart; vandenbosch2022weather; zamil2025ccgame; zou2025campus,Bartsh Kalch and Oliver 2014; Hung & Parsons 2017; Oinas-Kukkonen & Harjumaa 2009; Relph 2008; Ryan 1982; Watson et al. 1988; none; own
+Defensiveness,1,oh2018harnessing,Gibson et al. 2011
+Depression,1,edgeley2024wildfire,none
+Determined,1,moin2025vagina,"Watson et al. 1988, Russell 1980, Moge et al. 2022"
+Disappointment,3,fuest2023nudging; li2023artistic; markant2026sectarianism,Scherer 2005; none
+Disgust,4,campbell2022Feeling; fuest2023nudging; pfeiffer2022makehappy; wei2025atthepeak,Plutchik 1980; Scherer 2005
+Distress,3,boy2017showing; moin2025vagina; pirani2020femcart,"Batson 1987, Hoffman 2001; Watson et al. 1988; Watson et al. 1988, Russell 1980, Moge et al. 2022"
+Dominance,1,moin2025vagina,"Watson et al. 1988, Russell 1980, Moge et al. 2022"
+Eco-Anxiety,1,mencarini2025peaks,none
+Empathy,9,boy2017showing; concannon2020brooke; ehmel2021topography; ferreira2024arcadia; kennedy2018feeling; liem2020structure; oh2018harnessing; sakamoto2022datavideo; zhu2024reader,"Batson 1987, Hoffman 2001; Gibson et al. 2011; Hung & Parsons 2017; Jowell & Fitzgerald 2007; Petty & Cacioppo 1986; Ryan 1982; none"
+Enjoyment,7,arunkumar2024imageinfo; lan2021linearity; romat2020dearpict; vandenbosch2022weather; zamil2025ccgame; zhang2023digital; zhu2024reader,"Bartsh Kalch and Oliver 2014; Brehmer & Munzner 2013; He et al. 2023; Hung & Parsons 2017; O'Brien and Toms 2010, Ajen 2001, Cyr et al. 2009, Davis 1982; Oinas-Kukkonen & Harjumaa 2009; none"
+Enthusiastic,1,li2023artistic,Scherer 2005
+Excitement,5,anderson2021affective; block2012deeptree; kennedy2018feeling; lan2021smile; lan2022kineticharts,Hung & Parsons 2017; Russell 2003; none
+Fatalism,1,holder2024tuesday,none
+Fear,7,fuest2023nudging; holder2024tuesday; li2023artistic; markant2026sectarianism; sorapure2023user; wei2025atthepeak; xie2024emordle,Kostelnick 2016; Plutchik 1980; Scherer 2005; Scherer 2013; none
+Frustration,1,kennedy2018feeling,none
+Grief,1,edgeley2024wildfire,none
+Guilt,3,fuest2023nudging; kennedy2018feeling; moin2025vagina,"Scherer 2005; Watson et al. 1988, Russell 1980, Moge et al. 2022; none"
+Happiness,5,lan2021smile; li2023artistic; yang2024swaying; zhang2021affcolmap; zou2025campus,Relph 2008; Russell 1980; Scherer 2005; Watson et al. 1988
+Hate,1,fuest2023nudging,Scherer 2005
+High Arousal,1,hakone2016proact,none
+Hope,4,ferreira2024arcadia; lan2021smile; li2023artistic; morini2024ShockShiftData,Hung & Parsons 2017; Ryan 1982; Scherer 2005
+Inspired,2,li2023artistic; moin2025vagina,"Scherer 2005; Watson et al. 1988, Russell 1980, Moge et al. 2022"
+Interest,14,alebri2023embellishments; campbell2022Feeling; davidson2025maps; ehmel2021topography; fuest2023nudging; jain2025strolly; knoll2025gulf; koesten2025crisismaps; lan2021linearity; moin2025vagina; morini2024ShockShiftData; zamil2025ccgame; zhu2024reader; zou2025campus,"Hung & Parsons 2017; Oinas-Kukkonen & Harjumaa 2009; Relph 2008; Scherer 2005; Watson et al. 1988, Russell 1980, Moge et al. 2022; none; own"
+Irritable,1,moin2025vagina,"Watson et al. 1988, Russell 1980, Moge et al. 2022"
+Joy,11,ferreira2024arcadia; fuest2023nudging; he2024receptivity; jain2025strolly; lan2022kineticharts; pfeiffer2022makehappy; wei2025atthepeak; wu2023datadata; xie2024emordle; zhang2021affcolmap; zou2025campus,Gibbons 2018; Hung & Parsons 2017; Plutchik 1980; Relph 2008; Russell 1980; Ryan 1982; Scherer 2005; Scherer 2013; none
+Longing,1,xie2024emordle,Scherer 2013
+Love,2,fuest2023nudging; kennedy2018feeling,Scherer 2005; none
+Manipulation,1,schuster2024climate,none
+Negative emotions (unspecified),16,ancker2009healthrisks; anderson2021affective; arunkumar2025recall; blair2025immutable; garreton2023attitudinal; giacomin2012energyvis; harrison2013affpriming; holder2024tuesday; kauer2021publiclife; kennedy2025generic; klettner2025significance; markant2026sectarianism; mittenentzwei2023disease; van2021justagraph; zamil2025ccgame; zhao2022visasinfra,Alam & So 2020; Bradley & Lang 1994; Oinas-Kukkonen & Harjumaa 2009; Petty & Cacioppo 1986; Russell 1980; Russell 2003; Watson et al. 1988; none
+Nervous,1,yang2024swaying,Watson et al. 1988
+Offended,1,kennedy2018feeling,none
+Overwhelmed,1,lan2021smile,
+Pleasure,3,fuest2023nudging; kennedy2018feeling; xie2024emordle,Scherer 2005; Scherer 2013; none
+Positive emotions (unspecified),13,ancker2009healthrisks; arunkumar2025recall; blair2025immutable; garreton2023attitudinal; giacomin2012energyvis; harrison2013affpriming; holder2024tuesday; kauer2021publiclife; kennedy2025generic; mittenentzwei2023disease; van2021justagraph; zamil2025ccgame; zhao2022visasinfra,Alam & So 2020; Bradley & Lang 1994; Oinas-Kukkonen & Harjumaa 2009; Petty & Cacioppo 1986; Russell 1980; Watson et al. 1988; none
+Pride,1,fuest2023nudging,Scherer 2005
+Regret,1,fuest2023nudging,Scherer 2005
+Relaxed,1,yang2024swaying,Watson et al. 1988
+Relief,4,fuest2023nudging; kaufmann2023environart; kennedy2018feeling; xie2024emordle,Scherer 2005; Scherer 2013; Wilce 2009; none
+Repulsion,1,xie2024emordle,Scherer 2013
+Sadness,12,campbell2022Feeling; fuest2023nudging; he2024receptivity; kennedy2018feeling; lan2021smile; li2023artistic; pfeiffer2022makehappy; pirani2020femcart; sakamoto2022datavideo; wei2025atthepeak; xie2024emordle; yang2024swaying,Petty & Cacioppo 1986; Plutchik 1980; Scherer 2005; Scherer 2013; Watson et al. 1988; none
+Shame,1,yang2024swaying,Watson et al. 1988
+Shock,4,abraha2025diabetes; lan2021smile; lieske2014climate; pirani2020femcart,Michie et al. 2011; Watson et al. 1988; none
+Stress,3,edgeley2024wildfire; hakone2016proact; sorapure2023user,Kostelnick 2016; none
+Strong,1,moin2025vagina,"Watson et al. 1988, Russell 1980, Moge et al. 2022"
+Surprise,16,abraha2025diabetes; alebri2023embellishments; allen2018visbrokerage; block2012deeptree; holder2024tuesday; kaufmann2023environart; koesten2025crisismaps; lan2021linearity; lan2021smile; lan2022kineticharts; markant2026sectarianism; pfeiffer2022makehappy; pirani2020femcart; rogha2024impactelic; xie2024emordle; yang2024swaying,Hung & Parsons 2017; Lerner and Keltner 2000; Michie et al. 2011; O'Brien Cairns Hall 2018; Plutchik 1980; Scherer 2013; Watson et al. 1988; Wilce 2009; none; own
+Tenderness,2,lan2022kineticharts; xie2024emordle,Hung & Parsons 2017; Scherer 2013
+Tired,1,yang2024swaying,Watson et al. 1988
+Uneasiness,1,li2023artistic,Scherer 2005
+Valence,1,moin2025vagina,"Watson et al. 1988, Russell 1980, Moge et al. 2022"
+Wonderment,1,xie2024emordle,Scherer 2013

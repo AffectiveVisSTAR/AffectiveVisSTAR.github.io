@@ -38,6 +38,7 @@ type DataTableProps = {
     groups: DataTableGroup[];
     dataUrl: string;
     title: string;
+    debug?: boolean;
 };
 
 function normalizeValue(value: string | null): string {
@@ -70,7 +71,7 @@ function toColumnId(dataKey: string): string {
 const DEFAULT_MIN_WIDTH = 22;
 const DEFAULT_INITIAL_WIDTH = 22;
 
-export default function Table({ groups, dataUrl, title }: DataTableProps) {
+export default function Table({ groups, dataUrl, title, debug = false }: DataTableProps) {
     const normalizedColumns = useMemo(() => {
         const seen = new Set<string>();
         return groups.reduce<ResolvedDataTableColumn[]>((acc, group) => {
@@ -473,7 +474,28 @@ export default function Table({ groups, dataUrl, title }: DataTableProps) {
 
                 {!loading && error && <div className="error">{error}</div>}
 
-                {!loading && !error && (
+                {!loading && !error && rowCount === 0 && (
+                    <div className="status">
+                        No rows loaded. Check that {dataUrl} is reachable and returns a JSON array.
+                    </div>
+                )}
+
+                {debug && !loading && (
+                    <pre className="debug">
+                        {JSON.stringify(
+                            {
+                                dataUrl,
+                                rowCount,
+                                columns: normalizedColumns.map((col) => col.dataKey),
+                                firstRowKeys: rows[0] ? Object.keys(rows[0]) : [],
+                            },
+                            null,
+                            2
+                        )}
+                    </pre>
+                )}
+
+                {!loading && !error && rowCount > 0 && (
                     <div className="table-wrap">
                         <table className="dense-table">
                             <colgroup>

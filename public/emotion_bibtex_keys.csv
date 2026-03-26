@@ -1,0 +1,74 @@
+Emotion,Count,BibTexKeys,EmotionModel,DomainApp
+Negative emotions (unspecified),16,ancker2009healthrisks; anderson2021affective; arunkumar2025recall; blair2025immutable; garreton2023attitudinal; giacomin2012energyvis; harrison2013affpriming; holder2024tuesday; kauer2021publiclife; kennedy2025generic; klettner2025significance; markant2026sectarianism; mittenentzwei2023disease; van2021justagraph; zamil2025ccgame; zhao2022visasinfra,Circumplex Valence-Arousal Model; Elaboration Likelihood Model; Emotional flow; PANAS; Persuasive System Design; Valence/Arousal/Dominance; none,Agnostic; Climate; Journalism; Medicine; Public Health; Social/Civic; Various
+Surprise,16,abraha2025diabetes; alebri2023embellishments; allen2018visbrokerage; block2012deeptree; holder2024tuesday; kaufmann2023environart; koesten2025crisismaps; lan2021linearity; lan2021smile; lan2022kineticharts; markant2026sectarianism; pfeiffer2022makehappy; pirani2020femcart; rogha2024impactelic; xie2024emordle; yang2024swaying,Affective Lexicon; COM-B Framework; Emotional involvement; Geneva Emotion Wheel; PANAS; Sentiment analysis; User Engagement Scale; Wheel of Emotions; none; own,Agnostic; Climate; Industry; Journalism; Medicine; Public Health; Science Education; Social/Civic; Various
+Affective Trust,14,allen2018visbrokerage; banks2024benefits; davidson2025maps; elhamdadi2024vistrust; fox2025vibes; he2024receptivity; kennedy2025generic; knoll2025gulf; koesten2025crisismaps; markant2026sectarianism; mckinley2025trustworthy; song2025credibility; vandenbosch2022weather; wei2025atthepeak,Elaboration Likelihood Model; Emotional response; Wheel of Emotions; none; own,Agnostic; Climate; Industry; Public Health; Social/Civic; Various
+Interest,14,alebri2023embellishments; campbell2022Feeling; davidson2025maps; ehmel2021topography; fuest2023nudging; jain2025strolly; knoll2025gulf; koesten2025crisismaps; lan2021linearity; moin2025vagina; morini2024ShockShiftData; zamil2025ccgame; zhu2024reader; zou2025campus,Circumplex Valence-Arousal Model; Emotional involvement; Emotional resonance; Empathy; Geneva Emotion Wheel; PANAS; Persuasive System Design; Physiological; none; own,Climate; Culture/Humanities; Industry; Medicine; Public Health; Social/Civic; Various
+Positive emotions (unspecified),13,ancker2009healthrisks; arunkumar2025recall; blair2025immutable; garreton2023attitudinal; giacomin2012energyvis; harrison2013affpriming; holder2024tuesday; kauer2021publiclife; kennedy2025generic; mittenentzwei2023disease; van2021justagraph; zamil2025ccgame; zhao2022visasinfra,Circumplex Valence-Arousal Model; Elaboration Likelihood Model; Emotional flow; PANAS; Persuasive System Design; Valence/Arousal/Dominance; none,Agnostic; Climate; Journalism; Medicine; Public Health; Social/Civic; Various
+Sadness,12,campbell2022Feeling; fuest2023nudging; he2024receptivity; kennedy2018feeling; lan2021smile; li2023artistic; pfeiffer2022makehappy; pirani2020femcart; sakamoto2022datavideo; wei2025atthepeak; xie2024emordle; yang2024swaying,Affective Lexicon; Elaboration Likelihood Model; Geneva Emotion Wheel; PANAS; Wheel of Emotions; none,Agnostic; Climate; Public Health; Social/Civic; Various
+Curiosity,11,block2012deeptree; ehmel2021topography; ferreira2024arcadia; jain2025strolly; koesten2025crisismaps; lan2021linearity; morini2024ShockShiftData; pirani2020femcart; vandenbosch2022weather; zamil2025ccgame; zou2025campus,Elaboration Likelihood Model; Emotional involvement; Emotional resonance; Intrinsic Motivation Inventory; PANAS; Persuasive System Design; none; own,Climate; Culture/Humanities; Industry; Public Health; Science Education; Social/Civic; Various
+Joy,11,ferreira2024arcadia; fuest2023nudging; he2024receptivity; jain2025strolly; lan2022kineticharts; pfeiffer2022makehappy; wei2025atthepeak; wu2023datadata; xie2024emordle; zhang2021affcolmap; zou2025campus,Circumplex Valence-Arousal Model; Emotional involvement; Emotional resonance; Empathy perception/mapping; Geneva Emotion Wheel; Intrinsic Motivation Inventory; Wheel of Emotions; none,Agnostic; Climate; Culture/Humanities; Industry; Journalism; Public Health; Social/Civic; Various
+Anger,10,campbell2022Feeling; fuest2023nudging; kennedy2018feeling; li2023artistic; markant2026sectarianism; pfeiffer2022makehappy; pirani2020femcart; wei2025atthepeak; xie2024emordle; yang2024swaying,Geneva Emotion Wheel; PANAS; Wheel of Emotions; none,Agnostic; Climate; Social/Civic; Various
+Empathy,9,boy2017showing; concannon2020brooke; ehmel2021topography; ferreira2024arcadia; kennedy2018feeling; liem2020structure; oh2018harnessing; sakamoto2022datavideo; zhu2024reader,Elaboration Likelihood Model; Empathy; Empathy perception/mapping; Empathy-arousal; European Social Survey; Intrinsic Motivation Inventory; none,Climate; Culture/Humanities; Medicine; Public Health; Social/Civic; Various
+Anxiety,8,abraha2025diabetes; edgeley2024wildfire; hakone2016proact; kennedy2018feeling; mencarini2025peaks; sallam2002datavideos; sorapure2023user; wu2023datadata,5 Personality Traits; COM-B Framework; Emotional valence; Empathy perception/mapping; State Anxiety Scale; none,Climate; Medicine; Public Health; Various
+Enjoyment,7,arunkumar2024imageinfo; lan2021linearity; romat2020dearpict; vandenbosch2022weather; zamil2025ccgame; zhang2023digital; zhu2024reader,BeauVis Scale; Elaboration Likelihood Model; Empathy; Enjoyment; Persuasive System Design; User Engagement Scale; none,Agnostic; Climate; Industry; Journalism; Public Health; Social/Civic
+Fear,7,fuest2023nudging; holder2024tuesday; li2023artistic; markant2026sectarianism; sorapure2023user; wei2025atthepeak; xie2024emordle,Emotional valence; Geneva Emotion Wheel; Wheel of Emotions; none,Agnostic; Climate; Public Health; Social/Civic
+Aesthetic Appeal,5,alebri2023embellishments; arunkumar2024imageinfo; knoll2025gulf; schuster2024climate; sorapure2023user,BeauVis Scale; Emotional valence; none,Climate; Public Health; Social/Civic; Various
+Excitement,5,anderson2021affective; block2012deeptree; kennedy2018feeling; lan2021smile; lan2022kineticharts,Affective Lexicon; Circumplex Valence-Arousal Model; Emotional involvement; none,Journalism; Public Health; Science Education; Various
+Happiness,5,lan2021smile; li2023artistic; yang2024swaying; zhang2021affcolmap; zou2025campus,Affective Lexicon; Circumplex Valence-Arousal Model; Emotional resonance; Geneva Emotion Wheel; PANAS,Climate; Culture/Humanities; Industry; Social/Civic; Various
+Disgust,4,campbell2022Feeling; fuest2023nudging; pfeiffer2022makehappy; wei2025atthepeak,Geneva Emotion Wheel; Wheel of Emotions,Agnostic; Climate; Social/Civic
+Hope,4,ferreira2024arcadia; lan2021smile; li2023artistic; morini2024ShockShiftData,Affective Lexicon; Emotional involvement; Geneva Emotion Wheel; Intrinsic Motivation Inventory,Climate; Various
+Relief,4,fuest2023nudging; kaufmann2023environart; kennedy2018feeling; xie2024emordle,Geneva Emotion Wheel; Sentiment analysis; none,Agnostic; Climate; Social/Civic; Various
+Shock,4,abraha2025diabetes; lan2021smile; lieske2014climate; pirani2020femcart,Affective Lexicon; COM-B Framework; PANAS; none,Climate; Medicine; Social/Civic; Various
+Amusement,3,fuest2023nudging; lan2022kineticharts; xie2024emordle,Emotional involvement; Geneva Emotion Wheel,Agnostic; Journalism; Social/Civic
+Awe,3,block2012deeptree; lan2021smile; li2023artistic,Affective Lexicon; Geneva Emotion Wheel; none,Climate; Science Education; Various
+Calm,3,anderson2021affective; hakone2016proact; sallam2002datavideos,5 Personality Traits; Circumplex Valence-Arousal Model; State Anxiety Scale; none,Medicine; Public Health
+Concern,3,kaufmann2023environart; lan2021smile; mencarini2025peaks,Affective Lexicon; Sentiment analysis; none,Climate; Various
+Disappointment,3,fuest2023nudging; li2023artistic; markant2026sectarianism,Geneva Emotion Wheel; none,Climate; Social/Civic
+Distress,3,boy2017showing; moin2025vagina; pirani2020femcart,Circumplex Valence-Arousal Model; Empathy-arousal; PANAS; Physiological,Medicine; Social/Civic
+Guilt,3,fuest2023nudging; kennedy2018feeling; moin2025vagina,Circumplex Valence-Arousal Model; Geneva Emotion Wheel; PANAS; Physiological; none,Medicine; Social/Civic; Various
+Pleasure,3,fuest2023nudging; kennedy2018feeling; xie2024emordle,Geneva Emotion Wheel; none,Agnostic; Social/Civic; Various
+Stress,3,edgeley2024wildfire; hakone2016proact; sorapure2023user,Emotional valence; none,Climate; Medicine; Public Health
+Annoyance,2,lan2021smile; pirani2020femcart,Affective Lexicon; PANAS,Social/Civic; Various
+Attentive,2,moin2025vagina; yang2024swaying,Circumplex Valence-Arousal Model; PANAS; Physiological,Medicine; Social/Civic
+Bored,2,davidson2025maps; lan2021smile,Affective Lexicon; none,Social/Civic; Various
+Compassion,2,fuest2023nudging; morais2022exploring,Batson's empathic concern; Geneva Emotion Wheel,Public Health; Social/Civic
+Confidence,2,strain2025scatter; yang2024swaying,Emotional valence; PANAS,Social/Civic
+Contempt,2,fuest2023nudging; pfeiffer2022makehappy,Geneva Emotion Wheel; Wheel of Emotions,Climate; Social/Civic
+Content,2,fuest2023nudging; lan2021smile,Affective Lexicon; Geneva Emotion Wheel,Social/Civic; Various
+Inspired,2,li2023artistic; moin2025vagina,Circumplex Valence-Arousal Model; Geneva Emotion Wheel; PANAS; Physiological,Climate; Medicine
+Love,2,fuest2023nudging; kennedy2018feeling,Geneva Emotion Wheel; none,Social/Civic; Various
+Tenderness,2,lan2022kineticharts; xie2024emordle,Emotional involvement; Geneva Emotion Wheel,Agnostic; Journalism
+Active,1,moin2025vagina,Circumplex Valence-Arousal Model; PANAS; Physiological,Medicine
+Admiration,1,fuest2023nudging,Geneva Emotion Wheel,Social/Civic
+Alert,1,moin2025vagina,Circumplex Valence-Arousal Model; PANAS; Physiological,Medicine
+Anticipation,1,wei2025atthepeak,Wheel of Emotions,Agnostic
+Arousal,1,moin2025vagina,Circumplex Valence-Arousal Model; PANAS; Physiological,Medicine
+Confusion,1,kennedy2018feeling,none,Various
+Credibility,1,strain2025scatter,Emotional valence,
+Defensiveness,1,oh2018harnessing,Empathy perception/mapping,Medicine
+Depression,1,edgeley2024wildfire,none,Climate
+Determined,1,moin2025vagina,Circumplex Valence-Arousal Model; PANAS; Physiological,Medicine
+Dominance,1,moin2025vagina,Circumplex Valence-Arousal Model; PANAS; Physiological,Medicine
+Eco-Anxiety,1,mencarini2025peaks,none,Climate
+Enthusiastic,1,li2023artistic,Geneva Emotion Wheel,Climate
+Fatalism,1,holder2024tuesday,none,Public Health
+Frustration,1,kennedy2018feeling,none,Various
+Grief,1,edgeley2024wildfire,none,Climate
+Hate,1,fuest2023nudging,Geneva Emotion Wheel,Social/Civic
+High Arousal,1,hakone2016proact,none,Medicine
+Irritable,1,moin2025vagina,Circumplex Valence-Arousal Model; PANAS; Physiological,Medicine
+Longing,1,xie2024emordle,Geneva Emotion Wheel,Agnostic
+Manipulation,1,schuster2024climate,none,Climate
+Nervous,1,yang2024swaying,PANAS,Social/Civic
+Offended,1,kennedy2018feeling,none,Various
+Overwhelmed,1,lan2021smile,Affective Lexicon,Various
+Pride,1,fuest2023nudging,Geneva Emotion Wheel,Social/Civic
+Regret,1,fuest2023nudging,Geneva Emotion Wheel,Social/Civic
+Relaxed,1,yang2024swaying,PANAS,Social/Civic
+Repulsion,1,xie2024emordle,Geneva Emotion Wheel,Agnostic
+Shame,1,yang2024swaying,PANAS,Social/Civic
+Strong,1,moin2025vagina,Circumplex Valence-Arousal Model; PANAS; Physiological,Medicine
+Tired,1,yang2024swaying,PANAS,Social/Civic
+Uneasiness,1,li2023artistic,Geneva Emotion Wheel,Climate
+Valence,1,moin2025vagina,Circumplex Valence-Arousal Model; PANAS; Physiological,Medicine
+Wonderment,1,xie2024emordle,Geneva Emotion Wheel,Agnostic

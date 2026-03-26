@@ -72,14 +72,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--sheet-name",
         type=str,
-        default="corpus260130",
-        help="Worksheet title in the Google Sheet (default: corpus260130).",
+        default="classificationtable",
+        help="Worksheet title in the Google Sheet (default: classificationtable).",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("data/corpus260130_interactivity_animation.json"),
-        help="Output JSON file path (default: data/corpus260130_interactivity_animation.json).",
+        default=Path("public/classtable.json"),
+        help="Output JSON file path (default: public/classtable.json).",
     )
     args = parser.parse_args(argv)
 
@@ -101,10 +101,22 @@ def main(argv: list[str] | None = None) -> int:
                        "Science Education",
                        "Journalism",
                        "Culture/Humanities",
-                       "Various",
+                       "Diverse",
+                       "Information Receptivity",
+                       "Engagement",
+                       "Enjoyment",
+                       "Comprehension",
+                       "Recall",
+                       "Sense-Making",
+                       "Interpretation",
+                       "Trust",
+                       "Empathy",
+                       "Persuasion (Attitude or Behaviour Change, Nudging)",
+                       "Decision-Making",
                        "Negative",
                        "Neutral",
                        "Positive",
+                       "SpecificEmotionsCleaned",
                        "Chart",
                        "Graph",
                        "Tree",
@@ -152,7 +164,6 @@ def main(argv: list[str] | None = None) -> int:
                        "Biometric",
                        "Workshop",
                        "Other validated psychology measure",
-                       "SpecificEmotionsCleaned"
                        ]
 
     try:
