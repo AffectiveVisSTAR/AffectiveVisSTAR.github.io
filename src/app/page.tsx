@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Table, { type DataTableGroup } from "./table/table";
 
 const TABLE_GROUPS: DataTableGroup[] = [
@@ -383,14 +382,6 @@ const TABLE_TITLE = "AV STAR Classification";
 export default function TableTestPage() {
     return (
         <div>
-            <div style={{ display: "flex", gap: "12px", padding: "12px" }}>
-                <Link href="/" style={{ textDecoration: "underline" }}>
-                    Classification Table
-                </Link>
-                <Link href="/heatmap" style={{ textDecoration: "underline" }}>
-                    Heatmap
-                </Link>
-            </div>
             <Table groups={TABLE_GROUPS} dataUrl={TABLE_DATA_URL} title={TABLE_TITLE} />
         </div>
     );

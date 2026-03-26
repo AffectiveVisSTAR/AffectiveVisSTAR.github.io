@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/16/solid";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type FeatureFilter = "all" | "X" | "empty";
 type CorpusRow = Record<string, string | null>;
@@ -70,8 +70,17 @@ function toColumnId(dataKey: string): string {
 
 const DEFAULT_MIN_WIDTH = 22;
 const DEFAULT_INITIAL_WIDTH = 22;
+const MAX_COLUMN_LABEL_LENGTH = 30;
+
+function truncateLabel(label: string, maxLength: number = MAX_COLUMN_LABEL_LENGTH): string {
+    if (label.length <= maxLength) {
+        return label;
+    }
+    return `${label.slice(0, maxLength - 3)}...`;
+}
 
 export default function Table({ groups, dataUrl, title, debug = false }: DataTableProps) {
+    const tableWrapRef = useRef<HTMLDivElement | null>(null);
     const normalizedColumns = useMemo(() => {
         const seen = new Set<string>();
         return groups.reduce<ResolvedDataTableColumn[]>((acc, group) => {
@@ -123,6 +132,7 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
         }, {})
     );
     const [resizeState, setResizeState] = useState<ResizeState | null>(null);
+    const [tableWrapWidth, setTableWrapWidth] = useState(0);
     const [textFilters, setTextFilters] = useState<Record<string, string>>(() => {
         const initial: Record<string, string> = {};
         for (const column of normalizedColumns) {
@@ -224,6 +234,30 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
             isActive = false;
         };
     }, [dataUrl]);
+
+    useEffect(() => {
+        const element = tableWrapRef.current;
+        if (!element) {
+            return;
+        }
+
+        const updateWidth = () => {
+            setTableWrapWidth(element.clientWidth);
+        };
+
+        updateWidth();
+
+        const observer = new ResizeObserver((entries) => {
+            const width = entries[0]?.contentRect.width ?? element.clientWidth;
+            setTableWrapWidth(width);
+        });
+
+        observer.observe(element);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
 
     useEffect(() => {
         if (!resizeState) {
@@ -358,6 +392,28 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
         return segments;
     }, [columnOrder, columnsById]);
 
+    const effectiveColumnWidths = useMemo<Record<string, number>>(() => {
+        if (columnOrder.length === 0) {
+            return {};
+        }
+
+        const baseWidths = columnOrder.map((columnId) => {
+            const definition = columnsById[columnId];
+            const width = columnWidths[columnId] ?? definition?.initialWidth ?? DEFAULT_INITIAL_WIDTH;
+            const minWidth = definition?.minWidth ?? DEFAULT_MIN_WIDTH;
+            return Math.max(width, minWidth);
+        });
+
+        const totalBaseWidth = baseWidths.reduce((sum, width) => sum + width, 0);
+        const extraPerColumn =
+            tableWrapWidth > totalBaseWidth ? (tableWrapWidth - totalBaseWidth) / columnOrder.length : 0;
+
+        return columnOrder.reduce<Record<string, number>>((acc, columnId, index) => {
+            acc[columnId] = baseWidths[index] + extraPerColumn;
+            return acc;
+        }, {});
+    }, [columnOrder, columnsById, columnWidths, tableWrapWidth]);
+
     const renderLevelBox = (value: string | null, color: string) => {
         if (!hasYes(value) && !hasLow(value)) {
             return null;
@@ -464,7 +520,7 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
 
     return (
         <div className="page">
-            <div className="container">
+            <div className="">
                 <h1 className="title">{title}</h1>
                 <p className="subtitle">
                     Showing {sortedRows.length} of {rowCount} entries from {dataUrl.replace(/^\//, "")}
@@ -496,11 +552,11 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
                 )}
 
                 {!loading && !error && rowCount > 0 && (
-                    <div className="table-wrap">
+                    <div className="table-wrap" ref={tableWrapRef}>
                         <table className="dense-table">
                             <colgroup>
                                 {columnOrder.map((columnId) => (
-                                    <col key={columnId} style={{ width: `${columnWidths[columnId] ?? 60}px` }} />
+                                    <col key={columnId} style={{ width: `${effectiveColumnWidths[columnId] ?? 60}px` }} />
                                 ))}
                             </colgroup>
                             <thead>
@@ -577,7 +633,9 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
                                                             </span>
                                                         );
                                                     })()}
-                                                    <span className="vertical-label">{definition.label}</span>
+                                                    <span className="vertical-label" title={definition.label}>
+                                                        {truncateLabel(definition.label)}
+                                                    </span>
                                                 </div>
                                             </th>
                                         );
@@ -683,8 +741,7 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
           background: #f5f7fa;
         }
         .container {
-          // max-width: 300px;
-          width: min-content;
+          width: 100%;
           margin: 0 auto;
         }
         .title {
@@ -714,14 +771,22 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
           border-radius: 6px;
         }
         .table-wrap {
+          --table-viewport-offset: 140px;
+          width: 100%;
           background: #fff;
-          overflow: hidden;
+          max-height: max(320px, calc(100dvh - var(--table-viewport-offset)));
+          overflow: auto;
+          border: 1px solid #e2e8f0;
         }
         .dense-table {
           width: 100%;
-          //overflow-x: 100%;
+          min-width: 100%;
           border-collapse: collapse;
-          //table-layout: fixed;
+        }
+        .dense-table thead {
+          position: sticky;
+          top: 0;
+          z-index: 4;
         }
         .group-row .group-th {
           height:24px;
@@ -746,6 +811,7 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
           cursor: grab;
           user-select: none;
           position: relative;
+          z-index: 5;
         }
         .filter-row th {
           height: auto;
@@ -773,7 +839,7 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
           line-height: 0.5rem;
         }
         .col {
-          max-width: 200px;
+          max-width: none;
           min-width: 10px;
           text-align: left;
           white-space: nowrap;

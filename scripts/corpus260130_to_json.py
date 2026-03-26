@@ -23,7 +23,8 @@ def clean_cell_value(value: object) -> object:
     if value is None:
         return value
     if isinstance(value, str):
-        text = value.replace("\r\n", "\n").replace("\r", "\n").replace("\n", " ")
+        text = value.replace("\r\n", "\n").replace(
+            "\r", "\n").replace("\n", " ")
         text = " ".join(text.split())
         return text or None
     return value
@@ -42,7 +43,8 @@ def clean_records(records: list[dict[str, object]]) -> list[dict[str, object]]:
 def google_sheets_csv_url(sheet_url: str, sheet_name: str) -> str:
     parsed = urlparse(sheet_url)
     if "docs.google.com" not in parsed.netloc:
-        raise ValueError("Only Google Sheets URLs are supported for --input-url.")
+        raise ValueError(
+            "Only Google Sheets URLs are supported for --input-url.")
 
     match = re.search(r"/spreadsheets/d/([^/]+)", parsed.path)
     if not match:
@@ -91,6 +93,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     desired_columns = ["AuthorYear",
+                       "Year",
                        "Paper Nickname",
                        "Agnostic",
                        "Medicine",
@@ -167,7 +170,8 @@ def main(argv: list[str] | None = None) -> int:
                        ]
 
     try:
-        csv_url = google_sheets_csv_url(args.input_url.strip(), args.sheet_name.strip())
+        csv_url = google_sheets_csv_url(
+            args.input_url.strip(), args.sheet_name.strip())
         ssl_context = ssl.create_default_context(cafile=certifi.where())
         with urllib.request.urlopen(csv_url, context=ssl_context) as response:
             csv_data = response.read().decode("utf-8")
