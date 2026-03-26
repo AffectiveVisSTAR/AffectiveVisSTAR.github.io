@@ -32,9 +32,9 @@ export default function Navbar() {
       <Link href="/heatmap" style={linkStyle("/heatmap")}>
         Heatmap
       </Link>
-      <Link href="/design-space" style={linkStyle("/design-space")}>
+      {/* <Link href="/design-space" style={linkStyle("/design-space")}>
         Design Space
-      </Link>
+      </Link> */}
     </nav>
   );
 }

@@ -1,0 +1,41 @@
+[
+  {
+    "origName": "ElementsKeywords",
+    "name": "Element Studied",
+    "color": "#fb8072",
+    "superGroupName": "Element Sensemaking",
+    "superGroupColor": "#80b1d3",
+    "columns": [
+      { "dataKey": "chart type", "filterType": "feature" },
+      { "dataKey": "interactivity", "filterType": "feature" },
+      { "dataKey": "in-the-wild example(s)", "filterType": "feature" },
+      { "dataKey": "narrative element(s)", "filterType": "feature" },
+      { "dataKey": "elicitation", "filterType": "feature" },
+      { "dataKey": "colour", "filterType": "feature" },
+      { "dataKey": "data characteristics", "filterType": "feature" },
+      { "dataKey": "animation", "filterType": "feature" },
+      { "dataKey": "typeface", "filterType": "feature" },
+      { "dataKey": "bar style", "filterType": "feature" },
+      { "dataKey": "text", "filterType": "feature" },
+      { "dataKey": "topic", "filterType": "feature" },
+      { "dataKey": "visual representation", "filterType": "feature" },
+      { "dataKey": "metadata", "filterType": "feature" },
+      { "dataKey": "size", "filterType": "feature" },
+      { "dataKey": "saturation", "filterType": "feature" },
+      { "dataKey": "visual style", "filterType": "feature" },
+      { "dataKey": "presentation format", "filterType": "feature" },
+      { "dataKey": "pictograph", "filterType": "feature" },
+      { "dataKey": "map type", "filterType": "feature" },
+      { "dataKey": "narrative elements", "filterType": "feature" },
+      { "dataKey": "format", "filterType": "feature" },
+      { "dataKey": "line", "filterType": "feature" },
+      { "dataKey": "area geometries", "filterType": "feature" },
+      { "dataKey": "affective priming", "filterType": "feature" },
+      { "dataKey": "embellishment", "filterType": "feature" },
+      { "dataKey": "risk prediction type", "filterType": "feature" },
+      { "dataKey": "immersion", "filterType": "feature" },
+      { "dataKey": "personalization", "filterType": "feature" },
+      { "dataKey": "narrative element(s): personal stories (exemplification)", "filterType": "feature" }
+    ]
+  }
+]

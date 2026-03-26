@@ -1,11 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Table, { type DataTableGroup } from "./table/table";
 
 const TABLE_GROUPS: DataTableGroup[] = [
     {
         name: "Publications",
         color: "#8da0cb",
+        superGroupName: "Metadata",
         columns: [
             {
                 dataKey: "AuthorYear",
@@ -29,54 +31,10 @@ const TABLE_GROUPS: DataTableGroup[] = [
         ],
     },
     {
-        name: "Domain Application",
-        color: "#fc8d62",
-        columns: [
-            {
-                dataKey: "Agnostic",
-                filterType: "feature",
-            },
-            {
-                dataKey: "Medicine",
-                filterType: "feature",
-            },
-            {
-                dataKey: "Public Health",
-                filterType: "feature",
-            },
-            {
-                dataKey: "Social/Civic",
-                filterType: "feature",
-            },
-            {
-                dataKey: "Business/Industry",
-                filterType: "feature",
-            },
-            {
-                dataKey: "Climate",
-                filterType: "feature",
-            },
-            {
-                dataKey: "Science Education",
-                filterType: "feature",
-            },
-            {
-                dataKey: "Journalism",
-                filterType: "feature",
-            },
-            {
-                dataKey: "Culture/Humanities",
-                filterType: "feature",
-            },
-            {
-                dataKey: "Diverse",
-                filterType: "feature",
-            },
-        ],
-    },
-    {
         name: "Why Study Emotion",
-        color: "rgb(214, 224, 26)",
+        color: "#ffcc15",
+        superGroupName: "Conceptual Underpinning",
+        superGroupColor: "#ffcc15",
         columns: [
             {
                 dataKey: "Information Receptivity",
@@ -127,6 +85,7 @@ const TABLE_GROUPS: DataTableGroup[] = [
     {
         name: "Emotional Valence",
         color: "#ffd92f",
+        superGroupName: "Conceptual Underpinning",
         columns: [
             {
                 dataKey: "Negative",
@@ -143,8 +102,88 @@ const TABLE_GROUPS: DataTableGroup[] = [
         ]
     },
     {
-        name: "Visual Idiom",
+        name: "Domain Application",
+        color: "#c77bc1",
+        superGroupName: "Domain Aspects",
+        superGroupColor: "#c77bc1",
+        columns: [
+            {
+                dataKey: "Agnostic",
+                filterType: "feature",
+            },
+            {
+                dataKey: "Medicine",
+                filterType: "feature",
+            },
+            {
+                dataKey: "Public Health",
+                filterType: "feature",
+            },
+            {
+                dataKey: "Social/Civic",
+                filterType: "feature",
+            },
+            {
+                dataKey: "Business/Industry",
+                filterType: "feature",
+            },
+            {
+                dataKey: "Climate",
+                filterType: "feature",
+            },
+            {
+                dataKey: "Science Education",
+                filterType: "feature",
+            },
+            {
+                dataKey: "Journalism",
+                filterType: "feature",
+            },
+            {
+                dataKey: "Culture/Humanities",
+                filterType: "feature",
+            },
+            {
+                dataKey: "Diverse",
+                filterType: "feature",
+            },
+        ],
+    },
+    {
+        name: "Data Source",
+        color: "#e78ac3",
+        superGroupName: "Domain Aspects",
+        columns: [
+            {
+                dataKey: "Real-World",
+                filterType: "feature",
+            },
+            {
+                dataKey: "Synthetic",
+                filterType: "feature",
+            },
+        ]
+    },
+    {
+        name: "Vis Source",
         color: "#66c2a5",
+        superGroupName: "Design Aspects",
+        superGroupColor: "#66c2a5",
+        columns: [
+            {
+                dataKey: "In-the-Wild",
+                filterType: "feature",
+            },
+            {
+                dataKey: "Custom",
+                filterType: "feature",
+            },
+        ]
+    },
+    {
+        name: "Visual Idiom",
+        color: "#70d384",
+        superGroupName: "Design Aspects",
         columns: [
             {
                 dataKey: "Chart",
@@ -209,36 +248,10 @@ const TABLE_GROUPS: DataTableGroup[] = [
         ],
     },
     {
-        name: "Data Source",
-        color: "#e78ac3",
-        columns: [
-            {
-                dataKey: "Real-World",
-                filterType: "feature",
-            },
-            {
-                dataKey: "Synthetic",
-                filterType: "feature",
-            },
-        ]
-    },
-    {
-        name: "Vis Source",
-        color: "#a6d854",
-        columns: [
-            {
-                dataKey: "In-the-Wild",
-                filterType: "feature",
-            },
-            {
-                dataKey: "Custom",
-                filterType: "feature",
-            },
-        ]
-    },
-    {
         name: "Element Studied",
-        color: "#cab2d6",
+        color: "#aae274",
+        superGroupName: "Design Aspects",
+        superGroupColor: "#ffa55f",
         columns: [
             {
                 dataKey: "Topic",
@@ -288,25 +301,20 @@ const TABLE_GROUPS: DataTableGroup[] = [
     },
     {
         name: "Study Type",
-        color: "#fb8072",
+        superGroupName: "Study Method",
+        superGroupColor: "#fb8150",
+        color: "#fb8150",
         columns: [
-            {
-                dataKey: "Quantitative",
-                filterType: "feature",
-            },
-            {
-                dataKey: "Qualitative",
-                filterType: "feature",
-            },
-            {
-                dataKey: "Mixed",
-                filterType: "feature",
-            },
-        ]
+            { dataKey: "Quantitative", filterType: "feature" },
+            { dataKey: "Qualitative", filterType: "feature" },
+            { dataKey: "Mixed", filterType: "feature" },
+        ],
     },
     {
         name: "Study Instruments",
-        color: "#fb8150",
+        superGroupName: "Study Method",
+        superGroupColor: "#ffa55f",
+        color: "#ffa55f",
         columns: [
             {
                 dataKey: "Custom Questionnaire",
@@ -377,12 +385,92 @@ const TABLE_GROUPS: DataTableGroup[] = [
 ];
 
 const TABLE_DATA_URL = "/classtable.json";
+const TABLE_MAPPING_URL = "/classtable_column_mapping.json";
 const TABLE_TITLE = "AV STAR Classification";
+const FALLBACK_GENERATED_GROUPS: DataTableGroup[] = [];
+
+type GeneratedGroupColumn = {
+    dataKey?: unknown;
+    filterType?: unknown;
+};
+
+type GeneratedGroup = {
+    name?: unknown;
+    color?: unknown;
+    superGroupName?: unknown;
+    superGroupColor?: unknown;
+    columns?: unknown;
+};
+
+function toGeneratedGroups(raw: unknown): DataTableGroup[] {
+    if (!Array.isArray(raw)) {
+        return [];
+    }
+
+    const groups: DataTableGroup[] = [];
+    for (const item of raw) {
+        const candidate = item as GeneratedGroup;
+        const name = typeof candidate.name === "string" ? candidate.name : "";
+        const color = typeof candidate.color === "string" ? candidate.color : "#999999";
+        const superGroupName =
+            typeof candidate.superGroupName === "string" ? candidate.superGroupName : undefined;
+        const superGroupColor =
+            typeof candidate.superGroupColor === "string" ? candidate.superGroupColor : undefined;
+        const rawColumns = Array.isArray(candidate.columns) ? candidate.columns : [];
+        const columns = rawColumns
+            .map((column) => {
+                const col = column as GeneratedGroupColumn;
+                const dataKey = typeof col.dataKey === "string" ? col.dataKey : "";
+                const filterType = col.filterType === "feature" ? "feature" : null;
+                if (!dataKey || !filterType) {
+                    return null;
+                }
+                return { dataKey, filterType };
+            })
+            .filter((column): column is { dataKey: string; filterType: "feature" } => column !== null);
+
+        if (!name || columns.length === 0) {
+            continue;
+        }
+        groups.push({ name, color, superGroupName, superGroupColor, columns });
+    }
+    return groups;
+}
 
 export default function TableTestPage() {
+    const [generatedGroups, setGeneratedGroups] = useState<DataTableGroup[]>(FALLBACK_GENERATED_GROUPS);
+
+    useEffect(() => {
+        let isActive = true;
+
+        async function loadGeneratedGroups() {
+            try {
+                const res = await fetch(TABLE_MAPPING_URL, { cache: "no-store" });
+                if (!res.ok) {
+                    return;
+                }
+                const data = await res.json();
+                const parsed = toGeneratedGroups(data);
+                if (isActive) {
+                    setGeneratedGroups(parsed);
+                }
+            } catch {
+                // Keep fallback groups when mapping JSON is unavailable.
+            }
+        }
+
+        // loadGeneratedGroups();
+
+        return () => {
+            isActive = false;
+        };
+    }, []);
+
+    const groups = [...TABLE_GROUPS, ...generatedGroups];
+
     return (
         <div className="size-full">
-            <Table groups={TABLE_GROUPS} dataUrl={TABLE_DATA_URL} title={TABLE_TITLE} />
+            <Table groups={groups} dataUrl={TABLE_DATA_URL} title={TABLE_TITLE} />
         </div>
     );
 }

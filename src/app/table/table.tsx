@@ -24,12 +24,17 @@ export type DataTableColumn = {
 export type DataTableGroup = {
     name: string;
     color: string;
+    superGroupName?: string;
+    superGroupColor?: string;
     columns: DataTableColumn[];
 };
 
 type ResolvedDataTableColumn = DataTableColumn & {
     id: string;
     label: string;
+    hasExplicitSuperGroup: boolean;
+    superGroupName: string;
+    superGroupColor: string;
     groupName: string;
     groupColor: string;
     minWidth: number;
@@ -109,6 +114,9 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
                     ...column,
                     id,
                     label: column.dataKey,
+                    hasExplicitSuperGroup: Boolean(group.superGroupName),
+                    superGroupName: group.superGroupName ?? group.name,
+                    superGroupColor: group.superGroupColor ?? group.color,
                     groupName: group.name,
                     groupColor: group.color,
                     minWidth: column.minWidth ?? DEFAULT_MIN_WIDTH,
@@ -428,6 +436,64 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
         return segments;
     }, [columnOrder, columnsById]);
 
+    const showSuperGroupRow = useMemo(
+        () => normalizedColumns.some((column) => column.hasExplicitSuperGroup),
+        [normalizedColumns]
+    );
+
+    const superGroupedHeaderSegments = useMemo(() => {
+        const segments: { label: string; span: number; color: string }[] = [];
+        if (!showSuperGroupRow) {
+            return segments;
+        }
+        for (const columnId of columnOrder) {
+            const definition = columnsById[columnId];
+            if (!definition) {
+                continue;
+            }
+            const last = segments[segments.length - 1];
+            if (last && last.label === definition.superGroupName) {
+                last.span += 1;
+            } else {
+                segments.push({
+                    label: definition.superGroupName,
+                    span: 1,
+                    color: definition.superGroupColor,
+                });
+            }
+        }
+        return segments;
+    }, [columnOrder, columnsById, showSuperGroupRow]);
+
+    const superGroupBoundaryColumnIds = useMemo(() => {
+        const ends = new Set<string>();
+        if (!showSuperGroupRow) {
+            return ends;
+        }
+
+        for (let index = 0; index < columnOrder.length; index += 1) {
+            const columnId = columnOrder[index];
+            const definition = columnsById[columnId];
+            if (!definition) {
+                continue;
+            }
+            const nextColumnId = index < columnOrder.length - 1 ? columnOrder[index + 1] : null;
+            const nextDefinition = nextColumnId ? columnsById[nextColumnId] : undefined;
+            if (!nextDefinition || nextDefinition.superGroupName !== definition.superGroupName) {
+                ends.add(columnId);
+            }
+        }
+
+        return ends;
+    }, [columnOrder, columnsById, showSuperGroupRow]);
+
+    const getSuperGroupBoundaryClasses = (columnId: string) => {
+        if (!showSuperGroupRow) {
+            return "";
+        }
+        return superGroupBoundaryColumnIds.has(columnId) ? "super-group-end" : "";
+    };
+
     const numericColumnRanges = useMemo<Record<string, { min: number; max: number }>>(() => {
         const ranges: Record<string, { min: number; max: number }> = {};
 
@@ -703,6 +769,20 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
                                 ))}
                             </colgroup>
                             <thead>
+                                {showSuperGroupRow ? (
+                                    <tr className="super-group-row">
+                                        {superGroupedHeaderSegments.map((segment, index) => (
+                                            <th
+                                                key={`${segment.label}-${segment.span}-${index}`}
+                                                colSpan={segment.span}
+                                                className="super-group-th"
+                                                style={{ background: segment.color }}
+                                            >
+                                                <span className="super-group-label">{segment.label}</span>
+                                            </th>
+                                        ))}
+                                    </tr>
+                                ) : null}
                                 <tr className="group-row">
                                     {groupedHeaderSegments.map((segment, index) => (
                                         <th
@@ -726,7 +806,7 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
                                             <th
                                                 key={columnId}
                                                 draggable
-                                                className={`w-full col col-${columnId} ${draggedColumnId === columnId ? "column-dragging" : ""}`}
+                                                className={`w-full col col-${columnId} ${getSuperGroupBoundaryClasses(columnId)} ${draggedColumnId === columnId ? "column-dragging" : ""}`}
                                                 onMouseEnter={() => setHoveredColumnId(columnId)}
                                                 onMouseLeave={() => setHoveredColumnId(null)}
                                                 onClick={(event) => handleSort(columnId, event.shiftKey)}
@@ -792,7 +872,10 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
                                         }
 
                                         return (
-                                            <th key={`count-${columnId}`} className={`count-row-th col col-${columnId}`}>
+                                            <th
+                                                key={`count-${columnId}`}
+                                                className={`count-row-th col col-${columnId} ${getSuperGroupBoundaryClasses(columnId)}`}
+                                            >
                                                 {definition.filterType === "feature" ? (
                                                     <span className="feature-count-label">{featureXCounts[columnId] ?? 0}</span>
                                                 ) : null}
@@ -808,7 +891,10 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
                                         }
 
                                         return (
-                                            <th key={`filter-${columnId}`} className={`col col-${columnId}`}>
+                                            <th
+                                                key={`filter-${columnId}`}
+                                                className={`col col-${columnId} ${getSuperGroupBoundaryClasses(columnId)}`}
+                                            >
                                                 {definition.filterType === "text" ? (
                                                     <input
                                                         className="filter-input"
@@ -861,7 +947,10 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
                                             const value = getCellText(row, columnId);
 
                                             return (
-                                                <td key={`${columnId}-${index}`} className={`col col-${columnId}`}>
+                                                <td
+                                                    key={`${columnId}-${index}`}
+                                                    className={`col col-${columnId} ${getSuperGroupBoundaryClasses(columnId)}`}
+                                                >
                                                     {columnId === guidingColumnId
                                                         ? value
                                                         : definition.filterType === "feature"
@@ -941,6 +1030,17 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
           top: 0;
           z-index: 4;
         }
+        .super-group-row .super-group-th {
+          height: 24px;
+          padding: 0px 4px;
+          vertical-align: middle;
+          text-align: center;
+          background: #dbeafe;
+          cursor: default;
+        }
+        .col.super-group-end {
+          border-right: 2px solid #64748b;
+        }
         .group-row .group-th {
           height:24px;
           padding: 0px 4px;
@@ -948,6 +1048,13 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
           text-align: center;
           background: #eef2ff;
           cursor: default;
+        }
+        .super-group-label {
+          font-size: 0.62rem;
+          font-weight: 800;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+          color: #1e293b;
         }
         .group-label {
           font-size: 0.60rem;

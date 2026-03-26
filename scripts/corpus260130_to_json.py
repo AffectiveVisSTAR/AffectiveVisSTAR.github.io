@@ -40,6 +40,33 @@ def clean_records(records: list[dict[str, object]]) -> list[dict[str, object]]:
     return cleaned
 
 
+def parse_multi_value_cell(value: object) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, float) and value != value:
+        return []
+
+    text = str(value).strip()
+    if not text:
+        return []
+
+    parts = [part.strip() for part in text.split(",")]
+    cleaned: list[str] = []
+    seen_norm: set[str] = set()
+
+    for part in parts:
+        token = " ".join(part.split())
+        if not token:
+            continue
+        norm = normalize_col_name(token)
+        if not norm or norm in seen_norm:
+            continue
+        seen_norm.add(norm)
+        cleaned.append(token)
+
+    return cleaned
+
+
 def google_sheets_csv_url(sheet_url: str, sheet_name: str) -> str:
     parsed = urlparse(sheet_url)
     if "docs.google.com" not in parsed.netloc:
@@ -82,6 +109,15 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         default=Path("public/classtable.json"),
         help="Output JSON file path (default: public/classtable.json).",
+    )
+    parser.add_argument(
+        "--output-column-mapping",
+        type=Path,
+        default=Path("public/classtable_column_mapping.json"),
+        help=(
+            "Output JSON file path for generated table group mappings "
+            "(default: public/classtable_column_mapping.json)."
+        ),
     )
     args = parser.parse_args(argv)
 
@@ -169,6 +205,16 @@ def main(argv: list[str] | None = None) -> int:
                        "Other validated psychology measure",
                        ]
 
+    columns_to_process = [
+        {
+            "origName": "ElementsKeywords",
+            "name": "Element Studied",
+            "color": "#fb8072",
+            "superGroupName": "Element Sensemaking",
+            "superGroupColor": "#80b1d3",
+        }
+    ]
+
     try:
         csv_url = google_sheets_csv_url(
             args.input_url.strip(), args.sheet_name.strip())
@@ -211,6 +257,54 @@ def main(argv: list[str] | None = None) -> int:
 
     selected = df[actual_columns].copy()
     selected.columns = desired_columns
+
+    # Expand special "multi value" columns into one-hot "X" columns and
+    # emit a mapping JSON describing these generated groups for the table UI.
+    generated_group_mappings: list[dict[str, object]] = []
+    for spec in columns_to_process:
+        orig_name = str(spec.get("origName", "")).strip()
+        if not orig_name:
+            continue
+
+        actual = norm_to_actual.get(normalize_col_name(orig_name))
+        if actual is None:
+            continue
+
+        token_by_norm: dict[str, str] = {}
+        row_tokens: list[set[str]] = []
+
+        for _, row in df[[actual]].iterrows():
+            tokens_norm: set[str] = set()
+            for token in parse_multi_value_cell(row.get(actual)):
+                norm = normalize_col_name(token)
+                if norm not in token_by_norm:
+                    token_by_norm[norm] = token
+                tokens_norm.add(norm)
+            row_tokens.append(tokens_norm)
+
+        for token in token_by_norm.values():
+            if token not in selected.columns:
+                selected[token] = None
+
+        for row_idx, tokens_norm in enumerate(row_tokens):
+            for token_norm in tokens_norm:
+                token_column = token_by_norm[token_norm]
+                selected.at[row_idx, token_column] = "X"
+
+        generated_group_mappings.append(
+            {
+                "origName": orig_name,
+                "name": str(spec.get("name", orig_name)),
+                "color": str(spec.get("color", "#999999")),
+                "superGroupName": str(spec.get("superGroupName", "")),
+                "superGroupColor": str(spec.get("superGroupColor", "")),
+                "columns": [
+                    {"dataKey": token, "filterType": "feature"}
+                    for token in token_by_norm.values()
+                ],
+            }
+        )
+
     selected = selected.where(pd.notna(selected), None)
 
     records = selected.to_dict(orient="records")
@@ -220,7 +314,15 @@ def main(argv: list[str] | None = None) -> int:
     with args.output.open("w", encoding="utf-8") as f:
         json.dump(records, f, ensure_ascii=False, indent=2)
 
+    args.output_column_mapping.parent.mkdir(parents=True, exist_ok=True)
+    with args.output_column_mapping.open("w", encoding="utf-8") as f:
+        json.dump(generated_group_mappings, f, ensure_ascii=False, indent=2)
+
     print(f"Wrote {len(records)} records to {args.output}")
+    print(
+        f"Wrote {len(generated_group_mappings)} generated group mappings to "
+        f"{args.output_column_mapping}"
+    )
     return 0
 
 
