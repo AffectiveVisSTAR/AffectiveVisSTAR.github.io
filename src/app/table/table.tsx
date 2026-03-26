@@ -804,7 +804,7 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
           color: #334155;
         }
         .dense-table th {
-          padding: 0px;
+          padding: 2px 4px;
           vertical-align: bottom;
           text-align: center;
           background: #f8fafc;
@@ -815,7 +815,7 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
         }
         .filter-row th {
           height: auto;
-          padding: 0px;
+          padding: 2px 4px;
           background: #f9fafb;
           cursor: default;
         }
@@ -834,7 +834,7 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
         }
         .dense-table td {
           height: 16px;
-        //   padding: 1px 6px;
+          padding: 2px 4px;
           font-size: 0.75rem;
           line-height: 0.5rem;
         }
