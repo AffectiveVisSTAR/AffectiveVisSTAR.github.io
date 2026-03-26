@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate:heatmap-table": "node scripts/generate_heatmap_table_json.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

@@ -82,9 +82,8 @@ export default function HeatmapTable() {
   return (
     <Table
       groups={groups}
-      dataUrl="/api/heatmap-table"
+      dataUrl="/heatmap-table.json"
       title="Emotion Counts by Domain"
     />
   );
 }
-
