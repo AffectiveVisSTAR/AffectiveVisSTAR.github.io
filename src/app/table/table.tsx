@@ -540,6 +540,23 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
             return null;
         }
 
+        if (numericValue === 0) {
+            return (
+                <div
+                    className="level-box"
+                    title={numericValue.toString()}
+                    style={{
+                        width: 10,
+                        height: 10,
+                        borderRadius: 2,
+                        backgroundColor: color,
+                        opacity: 0,
+                        margin: "0 auto",
+                    }}
+                />
+            );
+        }
+
         const span = range.max - range.min;
         const normalized = span > 0 ? (numericValue - range.min) / span : 1;
         const opacity = 0.15 + normalized * 0.85;
