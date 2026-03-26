@@ -28,7 +28,6 @@ export default function DesignSpaceTable() {
             ],
         },
         {
-            "origName": "ElementsKeywords",
             "name": "Element Studied",
             "color": "#fb8072",
             "columns": [
