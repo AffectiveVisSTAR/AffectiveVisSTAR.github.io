@@ -5,6 +5,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type FeatureFilter = "all" | "X" | "empty";
 type CorpusRow = Record<string, string | null>;
+type SortDirection = "asc" | "desc";
+type SortRule = { columnId: string; direction: SortDirection };
 
 type ResizeState = {
     columnId: string;
@@ -16,7 +18,7 @@ export type DataTableColumn = {
     dataKey: string;
     minWidth?: number;
     initialWidth?: number;
-    filterType: "text" | "feature";
+    filterType: "text" | "feature" | "numeric-heatmap";
 };
 
 export type DataTableGroup = {
@@ -68,9 +70,22 @@ function toColumnId(dataKey: string): string {
     return dataKey.replace(/\s+/g, "");
 }
 
+function parseNumericValue(value: string | null): number | null {
+    if (value === null) {
+        return null;
+    }
+    const normalized = value.toString().trim().replace(",", ".");
+    if (normalized.length === 0) {
+        return null;
+    }
+    const parsed = Number(normalized);
+    return Number.isFinite(parsed) ? parsed : null;
+}
+
 const DEFAULT_MIN_WIDTH = 22;
 const DEFAULT_INITIAL_WIDTH = 22;
 const MAX_COLUMN_LABEL_LENGTH = 30;
+const SCROLLBAR_GUTTER_PX = 16;
 
 function truncateLabel(label: string, maxLength: number = MAX_COLUMN_LABEL_LENGTH): string {
     if (label.length <= maxLength) {
@@ -120,7 +135,7 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
     const [error, setError] = useState<string | null>(null);
     const [hoveredColumnId, setHoveredColumnId] = useState<string | null>(null);
     const [hoveredRow, setHoveredRow] = useState<number | null>(null);
-    const [sortRules, setSortRules] = useState<any[]>(
+    const [sortRules, setSortRules] = useState<SortRule[]>(
         guidingColumnId ? [{ columnId: guidingColumnId, direction: "asc" }] : []
     );
     const [columnOrder, setColumnOrder] = useState<string[]>(normalizedColumns.map((column) => column.id));
@@ -336,9 +351,30 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
 
         const sorted = [...filteredRows].sort((a, b) => {
             for (const rule of sortRules) {
-                const aValue = normalizeValue(getCellText(a, rule.columnId));
-                const bValue = normalizeValue(getCellText(b, rule.columnId));
-                const comparison = aValue.localeCompare(bValue);
+                const definition = columnsById[rule.columnId];
+                if (!definition) {
+                    continue;
+                }
+
+                let comparison = 0;
+                if (definition.filterType === "numeric-heatmap") {
+                    const aValue = parseNumericValue(getCellText(a, rule.columnId));
+                    const bValue = parseNumericValue(getCellText(b, rule.columnId));
+                    if (aValue === null && bValue === null) {
+                        comparison = 0;
+                    } else if (aValue === null) {
+                        comparison = 1;
+                    } else if (bValue === null) {
+                        comparison = -1;
+                    } else {
+                        comparison = aValue - bValue;
+                    }
+                } else {
+                    const aValue = normalizeValue(getCellText(a, rule.columnId));
+                    const bValue = normalizeValue(getCellText(b, rule.columnId));
+                    comparison = aValue.localeCompare(bValue);
+                }
+
                 if (comparison !== 0) {
                     return rule.direction === "asc" ? comparison : -comparison;
                 }
@@ -347,7 +383,7 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
         });
 
         return sorted;
-    }, [filteredRows, sortRules, getCellText]);
+    }, [filteredRows, sortRules, getCellText, columnsById]);
 
     const featureXCounts = useMemo(() => {
         const counts: Record<string, number> = {};
@@ -392,24 +428,84 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
         return segments;
     }, [columnOrder, columnsById]);
 
+    const numericColumnRanges = useMemo<Record<string, { min: number; max: number }>>(() => {
+        const ranges: Record<string, { min: number; max: number }> = {};
+
+        for (const columnId of columnOrder) {
+            const definition = columnsById[columnId];
+            if (!definition || definition.filterType !== "numeric-heatmap") {
+                continue;
+            }
+
+            let min = Number.POSITIVE_INFINITY;
+            let max = Number.NEGATIVE_INFINITY;
+
+            for (const row of rows) {
+                const value = parseNumericValue(getCellText(row, columnId));
+                if (value === null) {
+                    continue;
+                }
+                if (value < min) {
+                    min = value;
+                }
+                if (value > max) {
+                    max = value;
+                }
+            }
+
+            if (min !== Number.POSITIVE_INFINITY && max !== Number.NEGATIVE_INFINITY) {
+                ranges[columnId] = { min, max };
+            }
+        }
+
+        return ranges;
+    }, [columnOrder, columnsById, rows, getCellText]);
+
     const effectiveColumnWidths = useMemo<Record<string, number>>(() => {
         if (columnOrder.length === 0) {
             return {};
         }
 
-        const baseWidths = columnOrder.map((columnId) => {
+        const availableWidth = Math.max(0, tableWrapWidth - SCROLLBAR_GUTTER_PX);
+        const preferredWidths = columnOrder.map((columnId) => {
             const definition = columnsById[columnId];
             const width = columnWidths[columnId] ?? definition?.initialWidth ?? DEFAULT_INITIAL_WIDTH;
             const minWidth = definition?.minWidth ?? DEFAULT_MIN_WIDTH;
             return Math.max(width, minWidth);
         });
+        const minWidths = columnOrder.map((columnId) => {
+            const definition = columnsById[columnId];
+            return definition?.minWidth ?? DEFAULT_MIN_WIDTH;
+        });
 
-        const totalBaseWidth = baseWidths.reduce((sum, width) => sum + width, 0);
-        const extraPerColumn =
-            tableWrapWidth > totalBaseWidth ? (tableWrapWidth - totalBaseWidth) / columnOrder.length : 0;
+        const totalPreferredWidth = preferredWidths.reduce((sum, width) => sum + width, 0);
+        const totalMinWidth = minWidths.reduce((sum, width) => sum + width, 0);
+
+        let resolvedWidths = [...preferredWidths];
+
+        if (availableWidth >= totalPreferredWidth) {
+            const extraPerColumn = (availableWidth - totalPreferredWidth) / columnOrder.length;
+            resolvedWidths = preferredWidths.map((width) => width + extraPerColumn);
+        } else if (availableWidth >= totalMinWidth) {
+            const shrinkNeeded = totalPreferredWidth - availableWidth;
+            const totalShrinkCapacity = preferredWidths.reduce(
+                (sum, width, index) => sum + (width - minWidths[index]),
+                0
+            );
+
+            if (totalShrinkCapacity > 0) {
+                resolvedWidths = preferredWidths.map((width, index) => {
+                    const shrinkCapacity = width - minWidths[index];
+                    const shrinkShare = (shrinkCapacity / totalShrinkCapacity) * shrinkNeeded;
+                    return Math.max(minWidths[index], width - shrinkShare);
+                });
+            }
+        } else {
+            resolvedWidths = [...minWidths];
+        }
 
         return columnOrder.reduce<Record<string, number>>((acc, columnId, index) => {
-            acc[columnId] = baseWidths[index] + extraPerColumn;
+            acc[columnId] = resolvedWidths[index];
             return acc;
         }, {});
     }, [columnOrder, columnsById, columnWidths, tableWrapWidth]);
@@ -428,6 +524,36 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
                     borderRadius: 2,
                     backgroundColor: color,
                     opacity: hasLow(value) ? 0.35 : 1,
+                    margin: "0 auto",
+                }}
+            />
+        );
+    };
+
+    const renderNumericHeatmapBox = (
+        value: string | null,
+        color: string,
+        range: { min: number; max: number } | undefined
+    ) => {
+        const numericValue = parseNumericValue(value);
+        if (numericValue === null || !range) {
+            return null;
+        }
+
+        const span = range.max - range.min;
+        const normalized = span > 0 ? (numericValue - range.min) / span : 1;
+        const opacity = 0.15 + normalized * 0.85;
+
+        return (
+            <div
+                className="level-box"
+                title={numericValue.toString()}
+                style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 2,
+                    backgroundColor: color,
+                    opacity,
                     margin: "0 auto",
                 }}
             />
@@ -510,8 +636,8 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
 
     if (normalizedColumns.length === 0) {
         return (
-            <div className="page">
-                <div className="container">
+            <div className="">
+                <div className="">
                     <div className="error">No columns configured.</div>
                 </div>
             </div>
@@ -519,8 +645,8 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
     }
 
     return (
-        <div className="page">
-            <div className="">
+        <div className="size-full p-5">
+            <div className="size-full">
                 <h1 className="title">{title}</h1>
                 <p className="subtitle">
                     Showing {sortedRows.length} of {rowCount} entries from {dataUrl.replace(/^\//, "")}
@@ -552,8 +678,8 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
                 )}
 
                 {!loading && !error && rowCount > 0 && (
-                    <div className="table-wrap" ref={tableWrapRef}>
-                        <table className="dense-table">
+                    <div className="table-wrap size-full" ref={tableWrapRef}>
+                        <table className="dense-table size-full max-w-full">
                             <colgroup>
                                 {columnOrder.map((columnId) => (
                                     <col key={columnId} style={{ width: `${effectiveColumnWidths[columnId] ?? 60}px` }} />
@@ -723,7 +849,13 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
                                                         ? value
                                                         : definition.filterType === "feature"
                                                             ? renderLevelBox(value, definition.groupColor)
-                                                            : value}
+                                                            : definition.filterType === "numeric-heatmap"
+                                                                ? renderNumericHeatmapBox(
+                                                                    value,
+                                                                    definition.groupColor,
+                                                                    numericColumnRanges[columnId]
+                                                                )
+                                                                : value}
                                                 </td>
                                             );
                                         })}
@@ -776,12 +908,16 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
           background: #fff;
           max-height: max(320px, calc(100dvh - var(--table-viewport-offset)));
           overflow: auto;
+          scrollbar-gutter: stable;
+          padding-right: ${SCROLLBAR_GUTTER_PX}px;
+          box-sizing: border-box;
           border: 1px solid #e2e8f0;
         }
         .dense-table {
           width: 100%;
           min-width: 100%;
           border-collapse: collapse;
+          table-layout: fixed;
         }
         .dense-table thead {
           position: sticky;

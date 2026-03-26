@@ -381,7 +381,7 @@ const TABLE_TITLE = "AV STAR Classification";
 
 export default function TableTestPage() {
     return (
-        <div>
+        <div className="size-full">
             <Table groups={TABLE_GROUPS} dataUrl={TABLE_DATA_URL} title={TABLE_TITLE} />
         </div>
     );
