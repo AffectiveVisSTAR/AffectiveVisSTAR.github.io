@@ -29,6 +29,9 @@ export default function Navbar() {
       <Link href="/" style={linkStyle("/")}>
         Classification Table
       </Link>
+      <Link href="/emotions-everything" style={linkStyle("/emotions-everything")}>
+        Everything by Emotions
+      </Link>
       <Link href="/heatmap" style={linkStyle("/heatmap")}>
         Heatmap
       </Link>
