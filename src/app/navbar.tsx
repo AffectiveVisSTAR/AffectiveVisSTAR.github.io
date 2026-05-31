@@ -25,7 +25,7 @@ export default function Navbar() {
         borderBottom: "1px solid rgba(127, 127, 127, 0.25)",
       }}
     >
-      <b>AffectiveVisSTAR</b>
+      <b>Responsible Affective Visualization Survey</b>
       <Link href="/" style={linkStyle("/")}>
         Classification Table
       </Link>

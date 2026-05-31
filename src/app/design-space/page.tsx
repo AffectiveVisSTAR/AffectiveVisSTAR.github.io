@@ -156,7 +156,7 @@ export default function DesignSpaceTable() {
     ];
 
     const TABLE_DATA_URL = "/classtable.json";
-    const TABLE_TITLE = "AV STAR Classification";
+    const TABLE_TITLE = "Affective Visualization Survey Classification";
 
     return (
         <div>

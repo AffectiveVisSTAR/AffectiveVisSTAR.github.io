@@ -386,7 +386,7 @@ const TABLE_GROUPS: DataTableGroup[] = [
 
 const TABLE_DATA_URL = "/classtable.json";
 const TABLE_MAPPING_URL = "/classtable_column_mapping.json";
-const TABLE_TITLE = "AV STAR Classification";
+const TABLE_TITLE = "Affective Visualization Survey Classification";
 const FALLBACK_GENERATED_GROUPS: DataTableGroup[] = [];
 
 type GeneratedGroupColumn = {
