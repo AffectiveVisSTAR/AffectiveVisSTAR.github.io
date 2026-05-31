@@ -173,8 +173,8 @@ def main(argv: list[str] | None = None) -> int:
                        "Animation",
                        "Real-World",
                        "Synthetic",
-                       "In-the-Wild",
-                       "Custom",
+                       "Vis Source In-the-Wild",
+                       "Vis Source Custom",
                        "Topic",
                        "Vis Type",
                        "Design Element",
@@ -206,13 +206,13 @@ def main(argv: list[str] | None = None) -> int:
                        ]
 
     columns_to_process = [
-        {
-            "origName": "ElementsKeywords",
-            "name": "Element Studied",
-            "color": "#fb8072",
-            "superGroupName": "Element Sensemaking",
-            "superGroupColor": "#80b1d3",
-        }
+     #  {
+     #       "origName": "ElementsKeywords",
+     #       "name": "Element Studied",
+     #       "color": "#fb8072",
+     #       "superGroupName": "Element Sensemaking",
+     #       "superGroupColor": "#80b1d3",
+     #   }
     ]
 
     try:

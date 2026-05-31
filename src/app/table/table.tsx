@@ -4,7 +4,7 @@ import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/16/solid";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type FeatureFilter = "all" | "X" | "empty";
-type CorpusRow = Record<string, string | null>;
+type CorpusRow = Record<string, unknown>;
 type SortDirection = "asc" | "desc";
 type SortRule = { columnId: string; direction: SortDirection };
 
@@ -46,6 +46,7 @@ type DataTableProps = {
     dataUrl: string;
     title: string;
     debug?: boolean;
+    getCellTooltip?: (row: CorpusRow, columnId: string) => string | null;
 };
 
 function normalizeValue(value: string | null): string {
@@ -99,7 +100,7 @@ function truncateLabel(label: string, maxLength: number = MAX_COLUMN_LABEL_LENGT
     return `${label.slice(0, maxLength - 3)}...`;
 }
 
-export default function Table({ groups, dataUrl, title, debug = false }: DataTableProps) {
+export default function Table({ groups, dataUrl, title, debug = false, getCellTooltip }: DataTableProps) {
     const tableWrapRef = useRef<HTMLDivElement | null>(null);
     const normalizedColumns = useMemo(() => {
         const seen = new Set<string>();
@@ -181,7 +182,8 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
             if (!definition) {
                 return "";
             }
-            return row[definition.dataKey] ?? "";
+            const value = row[definition.dataKey];
+            return value === null || value === undefined ? "" : String(value);
         },
         [columnsById]
     );
@@ -610,7 +612,7 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
             return (
                 <div
                     className="level-box"
-                    title={numericValue.toString()}
+                    //title={numericValue.toString()}
                     style={{
                         width: 10,
                         height: 10,
@@ -630,7 +632,7 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
         return (
             <div
                 className="level-box"
-                title={numericValue.toString()}
+                //title={numericValue.toString()}
                 style={{
                     width: 10,
                     height: 10,
@@ -950,6 +952,7 @@ export default function Table({ groups, dataUrl, title, debug = false }: DataTab
                                                 <td
                                                     key={`${columnId}-${index}`}
                                                     className={`col col-${columnId} ${getSuperGroupBoundaryClasses(columnId)}`}
+                                                    title={getCellTooltip?.(row, columnId) ?? undefined}
                                                 >
                                                     {columnId === guidingColumnId
                                                         ? value
