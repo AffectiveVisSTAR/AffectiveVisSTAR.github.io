@@ -598,6 +598,30 @@ export default function Table({ groups, dataUrl, title, debug = false, getCellTo
         );
     };
 
+    const getCountOpacity = (count: number): number => {
+        if (count >= 11) return 1;
+        if (count >= 9) return 0.9;
+        if (count >= 7) return 0.7;
+        if (count >= 5) return 0.5;
+        if (count >= 3) return 0.3;
+        if (count >= 1) return 0.1;
+        return 0;
+    };
+
+    const darkenHexColor = (hex: string, amount = 0.15): string => {
+        const normalized = hex.replace("#", "");
+        if (normalized.length !== 6) {
+            return hex;
+        }
+
+        const channels = [0, 2, 4].map((start) => {
+            const value = parseInt(normalized.slice(start, start + 2), 16);
+            return Math.max(0, Math.round(value * (1 - amount)));
+        });
+
+        return `#${channels.map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+    };
+
     const renderNumericHeatmapBox = (
         value: string | null,
         color: string,
@@ -625,19 +649,17 @@ export default function Table({ groups, dataUrl, title, debug = false, getCellTo
             );
         }
 
-        const span = range.max - range.min;
-        const normalized = span > 0 ? (numericValue - range.min) / span : 1;
-        const opacity = 0.15 + normalized * 0.85;
+        const opacity = getCountOpacity(numericValue);
+        const backgroundColor = numericValue >= 11 ? darkenHexColor(color) : color;
 
         return (
             <div
                 className="level-box"
-                //title={numericValue.toString()}
                 style={{
                     width: 10,
                     height: 10,
                     borderRadius: 2,
-                    backgroundColor: color,
+                    backgroundColor,
                     opacity,
                     margin: "0 auto",
                 }}
