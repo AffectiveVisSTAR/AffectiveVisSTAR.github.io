@@ -217,7 +217,7 @@ def add_valence_aggregate_rows(rows: list[dict[str, object]]) -> list[dict[str, 
     for valence_category, category_rows in grouped_rows.items():
         output_rows.append(
             {
-                "name": f"{valence_category} (Aggregate)",
+                "name": valence_category,
                 "Basic Emotion": "Aggregate",
                 "Valence Category": valence_category,
                 "publications": sorted(publication_sets[valence_category]),

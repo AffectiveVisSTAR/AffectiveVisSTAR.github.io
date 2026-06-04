@@ -10,6 +10,20 @@ const TABLE_GROUPS: DataTableGroup[] = [
         superGroupName: "Emotions",
         columns: [
             {
+                dataKey: "Valence Section",
+                label: "Section",
+                minWidth: 120,
+                initialWidth: 120,
+                filterType: "text",
+                getValue: (row) => {
+                    const valenceCategory = typeof row["Valence Category"] === "string" ? row["Valence Category"] : "";
+                    if (valenceCategory === "Main") {
+                        return "Main (high level)";
+                    }
+                    return valenceCategory;
+                },
+            },
+            {
                 dataKey: "name",
                 label: "Affect",
                 minWidth: 200,
@@ -384,6 +398,7 @@ const TABLE_MAPPING_URL = "/classtable_column_mapping.json";
 const TABLE_TITLE = "Affective Visualization Survey Classification";
 const FALLBACK_GENERATED_GROUPS: DataTableGroup[] = [];
 const INITIAL_SORT_RULES: DataTableInitialSortRule[] = [
+    { dataKey: "Valence Section", direction: "asc" },
     { dataKey: "Basic Emotion", direction: "asc" },
     { dataKey: "name", direction: "asc" },
 ];
@@ -579,6 +594,7 @@ export default function TableTestPage() {
                 disableHoverFade
                 aggregateRowsAsHeaders
                 aggregateRowsByColumn="Basic Emotion"
+                hideTopLevelAggregateRows
             />
         </div>
     );

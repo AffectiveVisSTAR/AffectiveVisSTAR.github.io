@@ -17,6 +17,8 @@ type ResizeState = {
 
 export type DataTableColumn = {
     dataKey: string;
+    label?: string;
+    getValue?: (row: CorpusRow) => string;
     minWidth?: number;
     initialWidth?: number;
     filterType: "text" | "feature" | "numeric-heatmap";
@@ -51,6 +53,8 @@ type DataTableProps = {
     getCellTooltip?: (row: CorpusRow, columnId: string) => string | null;
     disableHoverFade?: boolean;
     aggregateRowsAsHeaders?: boolean;
+    aggregateRowsByColumn?: string;
+    hideTopLevelAggregateRows?: boolean;
 };
 
 function normalizeValue(value: string | null): string {
@@ -96,10 +100,29 @@ function isAggregateRow(row: CorpusRow): boolean {
     return normalizeValue(row.isAggregate === null || row.isAggregate === undefined ? null : String(row.isAggregate)) === "x";
 }
 
+function getValenceAffectLabel(value: string): string | null {
+    const normalized = normalizeValue(value);
+    if (normalized === "positive") {
+        return "Positive Affect";
+    }
+    if (normalized === "negative") {
+        return "Negative Affect";
+    }
+    if (normalized === "neutral") {
+        return "Neutral Affect";
+    }
+    return null;
+}
+
+function stripAggregateLabel(value: string): string {
+    return value.replace(/\s*\(Aggregate\)\s*$/i, "").trim();
+}
+
 const DEFAULT_MIN_WIDTH = 22;
 const DEFAULT_INITIAL_WIDTH = 22;
 const MAX_COLUMN_LABEL_LENGTH = 30;
 const SCROLLBAR_GUTTER_PX = 16;
+const MIN_UNIQUE_EMOTIONS_FOR_AGGREGATE = 3;
 
 function truncateLabel(label: string, maxLength: number = MAX_COLUMN_LABEL_LENGTH): string {
     if (label.length <= maxLength) {
@@ -117,6 +140,8 @@ export default function Table({
     getCellTooltip,
     disableHoverFade = false,
     aggregateRowsAsHeaders = false,
+    aggregateRowsByColumn,
+    hideTopLevelAggregateRows = false,
 }: DataTableProps) {
     const tableWrapRef = useRef<HTMLDivElement | null>(null);
     const normalizedColumns = useMemo(() => {
@@ -131,7 +156,7 @@ export default function Table({
                 acc.push({
                     ...column,
                     id,
-                    label: column.dataKey,
+                    label: column.label ?? column.dataKey,
                     hasExplicitSuperGroup: Boolean(group.superGroupName),
                     superGroupName: group.superGroupName ?? group.name,
                     superGroupColor: group.superGroupColor ?? group.color,
@@ -209,6 +234,9 @@ export default function Table({
             const definition = columnsById[columnId];
             if (!definition) {
                 return "";
+            }
+            if (definition.getValue) {
+                return definition.getValue(row);
             }
             const value = row[definition.dataKey];
             return value === null || value === undefined ? "" : String(value);
@@ -432,18 +460,122 @@ export default function Table({
     }, [sortRules, getCellText, columnsById]);
 
     const sortedRows = useMemo(() => sortTableRows(filteredRows), [filteredRows, sortTableRows]);
+    const aggregateRowsByColumnId = aggregateRowsByColumn ? toColumnId(aggregateRowsByColumn) : null;
 
-    const visibleRows = useMemo(() => {
+    const { visibleRows, expandableAggregateKeys } = useMemo(() => {
         if (!aggregateRowsAsHeaders) {
-            return sortedRows.map((row, index) => ({
-                row,
-                sourceIndex: index,
-                isAggregateHeader: false,
-                aggregateKey: null,
-            }));
+            return {
+                visibleRows: sortedRows.map((row, index) => ({
+                    row,
+                    sourceIndex: index,
+                    isAggregateHeader: false,
+                    aggregateKey: null,
+                })),
+                expandableAggregateKeys: [],
+            };
+        }
+
+        if (aggregateRowsByColumnId && !rows.some(isAggregateRow)) {
+            const groupByDefinition = columnsById[aggregateRowsByColumnId];
+            if (!groupByDefinition) {
+                return {
+                    visibleRows: sortedRows.map((row, index) => ({
+                        row,
+                        sourceIndex: index,
+                        isAggregateHeader: false,
+                        aggregateKey: null,
+                    })),
+                    expandableAggregateKeys: [],
+                };
+            }
+
+            const groupsByValue = new Map<string, { label: string; detailRows: { row: CorpusRow; sourceIndex: number }[] }>();
+            rows.forEach((row, index) => {
+                if (isAggregateRow(row)) {
+                    return;
+                }
+
+                const label = getCellText(row, aggregateRowsByColumnId).trim();
+                if (!label) {
+                    return;
+                }
+
+                const normalizedLabel = normalizeValue(label);
+                const group = groupsByValue.get(normalizedLabel) ?? { label, detailRows: [] };
+                group.detailRows.push({ row, sourceIndex: index });
+                groupsByValue.set(normalizedLabel, group);
+            });
+
+            const filteredRowSet = new Set(filteredRows);
+            const aggregateGroups = Array.from(groupsByValue.entries()).map(([normalizedLabel, group], groupIndex) => {
+                const filteredDetailRows = group.detailRows.filter(({ row }) => filteredRowSet.has(row));
+                const aggregateRow: CorpusRow = {
+                    isAggregate: "X",
+                    [columnsById[guidingColumnId]?.dataKey ?? guidingColumnId]: group.label,
+                    [groupByDefinition.dataKey]: group.label,
+                };
+
+                for (const column of normalizedColumns) {
+                    if (column.filterType !== "numeric-heatmap") {
+                        continue;
+                    }
+
+                    const total = group.detailRows.reduce((sum, { row }) => {
+                        const value = parseNumericValue(getCellText(row, column.id));
+                        return value === null ? sum : sum + value;
+                    }, 0);
+                    aggregateRow[column.dataKey] = total;
+                }
+
+                return {
+                    aggregateRow,
+                    aggregateKey: `${aggregateRowsByColumnId}-${normalizedLabel}`,
+                    aggregateSourceIndex: -groupIndex - 1,
+                    filteredDetailRows,
+                };
+            }).filter((group) => group.filteredDetailRows.length > 0);
+
+            const nextRows: {
+                row: CorpusRow;
+                sourceIndex: number;
+                isAggregateHeader: boolean;
+                aggregateKey: string | null;
+            }[] = [];
+            const expandableKeys = aggregateGroups.map(({ aggregateKey }) => aggregateKey);
+
+            for (const group of sortTableRows(aggregateGroups.map(({ aggregateRow }) => aggregateRow))) {
+                const aggregateGroup = aggregateGroups.find(({ aggregateRow }) => aggregateRow === group);
+                if (!aggregateGroup) {
+                    continue;
+                }
+
+                nextRows.push({
+                    row: aggregateGroup.aggregateRow,
+                    sourceIndex: aggregateGroup.aggregateSourceIndex,
+                    isAggregateHeader: true,
+                    aggregateKey: aggregateGroup.aggregateKey,
+                });
+
+                if (expandedAggregateRows.has(aggregateGroup.aggregateKey)) {
+                    const detailSourceIndexByRow = new Map(
+                        aggregateGroup.filteredDetailRows.map(({ row, sourceIndex }) => [row, sourceIndex])
+                    );
+                    for (const row of sortTableRows(aggregateGroup.filteredDetailRows.map(({ row }) => row))) {
+                        nextRows.push({
+                            row,
+                            sourceIndex: detailSourceIndexByRow.get(row) ?? nextRows.length,
+                            isAggregateHeader: false,
+                            aggregateKey: aggregateGroup.aggregateKey,
+                        });
+                    }
+                }
+            }
+
+            return { visibleRows: nextRows, expandableAggregateKeys: expandableKeys };
         }
 
         const filteredRowSet = new Set(filteredRows);
+        const groupByDefinition = aggregateRowsByColumnId ? columnsById[aggregateRowsByColumnId] : undefined;
         const aggregateGroups: {
             aggregateRow: CorpusRow;
             aggregateSourceIndex: number;
@@ -479,6 +611,7 @@ export default function Table({
             isAggregateHeader: boolean;
             aggregateKey: string | null;
         }[] = [];
+        const expandableKeys: string[] = [];
 
         for (const group of aggregateGroups) {
             const filteredDetailRows = group.detailRows.filter(({ row }) => filteredRowSet.has(row));
@@ -487,22 +620,118 @@ export default function Table({
                 continue;
             }
 
-            nextRows.push({
-                row: group.aggregateRow,
-                sourceIndex: group.aggregateSourceIndex,
-                isAggregateHeader: true,
-                aggregateKey: group.aggregateKey,
-            });
+            if (!hideTopLevelAggregateRows) {
+                nextRows.push({
+                    row: group.aggregateRow,
+                    sourceIndex: group.aggregateSourceIndex,
+                    isAggregateHeader: true,
+                    aggregateKey: group.aggregateKey,
+                });
+            }
+            expandableKeys.push(group.aggregateKey);
 
-            if (expandedAggregateRows.has(group.aggregateKey)) {
-                const detailSourceIndexByRow = new Map(filteredDetailRows.map(({ row, sourceIndex }) => [row, sourceIndex]));
-                for (const row of sortTableRows(filteredDetailRows.map(({ row }) => row))) {
-                    nextRows.push({
-                        row,
-                        sourceIndex: detailSourceIndexByRow.get(row) ?? nextRows.length,
-                        isAggregateHeader: false,
-                        aggregateKey: group.aggregateKey,
-                    });
+            const detailGroups = aggregateRowsByColumnId && groupByDefinition
+                ? Array.from(
+                    filteredDetailRows.reduce<
+                        Map<string, { label: string; detailRows: { row: CorpusRow; sourceIndex: number }[] }>
+                    >((detailRowsByGroup, detailRow) => {
+                        const label = getCellText(detailRow.row, aggregateRowsByColumnId).trim();
+                        if (!label || normalizeValue(label) === "aggregate") {
+                            return detailRowsByGroup;
+                        }
+
+                        const normalizedLabel = normalizeValue(label);
+                        const detailGroup = detailRowsByGroup.get(normalizedLabel) ?? { label, detailRows: [] };
+                        detailGroup.detailRows.push(detailRow);
+                        detailRowsByGroup.set(normalizedLabel, detailGroup);
+                        return detailRowsByGroup;
+                    }, new Map()).entries()
+                ).map(([normalizedLabel, detailGroup], detailGroupIndex) => {
+                    const aggregateRow: CorpusRow = {
+                        isAggregate: "X",
+                        [columnsById[guidingColumnId]?.dataKey ?? guidingColumnId]: detailGroup.label,
+                        [groupByDefinition.dataKey]: detailGroup.label,
+                        "Valence Category": getCellText(group.aggregateRow, toColumnId("Valence Category")),
+                    };
+
+                    for (const column of normalizedColumns) {
+                        if (column.filterType !== "numeric-heatmap") {
+                            continue;
+                        }
+
+                        const total = detailGroup.detailRows.reduce((sum, { row }) => {
+                            const value = parseNumericValue(getCellText(row, column.id));
+                            return value === null ? sum : sum + value;
+                        }, 0);
+                        aggregateRow[column.dataKey] = total;
+                    }
+
+                    return {
+                        aggregateRow,
+                        aggregateKey: `${group.aggregateKey}-${aggregateRowsByColumnId}-${normalizedLabel}`,
+                        aggregateSourceIndex: -(group.aggregateSourceIndex + 1) * 1000 - detailGroupIndex - 1,
+                        detailRows: detailGroup.detailRows,
+                        shouldAggregate:
+                            new Set(
+                                detailGroup.detailRows
+                                    .map(({ row }) => normalizeValue(getCellText(row, guidingColumnId)))
+                                    .filter(Boolean)
+                            ).size >= MIN_UNIQUE_EMOTIONS_FOR_AGGREGATE,
+                    };
+                })
+                : null;
+
+            if (detailGroups) {
+                expandableKeys.push(
+                    ...detailGroups
+                        .filter(({ shouldAggregate }) => shouldAggregate)
+                        .map(({ aggregateKey }) => aggregateKey)
+                );
+            }
+
+            if (hideTopLevelAggregateRows || expandedAggregateRows.has(group.aggregateKey)) {
+                if (detailGroups) {
+                    for (const detailAggregateRow of sortTableRows(detailGroups.map(({ aggregateRow }) => aggregateRow))) {
+                        const detailGroup = detailGroups.find(
+                            ({ aggregateRow }) => aggregateRow === detailAggregateRow
+                        );
+                        if (!detailGroup) {
+                            continue;
+                        }
+
+                        if (detailGroup.shouldAggregate) {
+                            nextRows.push({
+                                row: detailGroup.aggregateRow,
+                                sourceIndex: detailGroup.aggregateSourceIndex,
+                                isAggregateHeader: true,
+                                aggregateKey: detailGroup.aggregateKey,
+                            });
+                        }
+
+                        if (!detailGroup.shouldAggregate || expandedAggregateRows.has(detailGroup.aggregateKey)) {
+                            const detailSourceIndexByRow = new Map(
+                                detailGroup.detailRows.map(({ row, sourceIndex }) => [row, sourceIndex])
+                            );
+                            for (const row of sortTableRows(detailGroup.detailRows.map(({ row }) => row))) {
+                                nextRows.push({
+                                    row,
+                                    sourceIndex: detailSourceIndexByRow.get(row) ?? nextRows.length,
+                                    isAggregateHeader: false,
+                                    aggregateKey: detailGroup.shouldAggregate ? detailGroup.aggregateKey : group.aggregateKey,
+                                });
+                            }
+                        }
+                    }
+                } else {
+                    const detailSourceIndexByRow = new Map(filteredDetailRows.map(({ row, sourceIndex }) => [row, sourceIndex]));
+                    for (const row of sortTableRows(filteredDetailRows.map(({ row }) => row))) {
+                        nextRows.push({
+                            row,
+                            sourceIndex: detailSourceIndexByRow.get(row) ?? nextRows.length,
+                            isAggregateHeader: false,
+                            aggregateKey: group.aggregateKey,
+                        });
+                    }
                 }
             }
         }
@@ -516,13 +745,17 @@ export default function Table({
             });
         }
 
-        return nextRows;
+        return { visibleRows: nextRows, expandableAggregateKeys: expandableKeys };
     }, [
         aggregateRowsAsHeaders,
+        aggregateRowsByColumnId,
         expandedAggregateRows,
         filteredRows,
         getCellText,
         guidingColumnId,
+        hideTopLevelAggregateRows,
+        normalizedColumns,
+        columnsById,
         rows,
         sortTableRows,
         sortedRows,
@@ -720,8 +953,8 @@ export default function Table({
             <div
                 className="level-box"
                 style={{
-                    width: 10,
-                    height: 10,
+                    width: 16,
+                    height: 16,
                     borderRadius: 2,
                     backgroundColor: color,
                     opacity: hasLow(value) ? 0.35 : 1,
@@ -789,8 +1022,8 @@ export default function Table({
             <div
                 className="level-box"
                 style={{
-                    width: 10,
-                    height: 10,
+                    width: 16,
+                    height: 16,
                     borderRadius: 2,
                     backgroundColor,
                     opacity,
@@ -868,6 +1101,18 @@ export default function Table({
         });
     };
 
+    const allAggregateRowsExpanded =
+        expandableAggregateKeys.length > 0 && expandableAggregateKeys.every((key) => expandedAggregateRows.has(key));
+
+    const toggleAllAggregateRows = () => {
+        setExpandedAggregateRows((prev) => {
+            if (allAggregateRowsExpanded) {
+                return new Set([...prev].filter((key) => !expandableAggregateKeys.includes(key)));
+            }
+            return new Set([...prev, ...expandableAggregateKeys]);
+        });
+    };
+
     const moveColumn = (fromId: string, toId: string) => {
         if (fromId === toId) {
             return;
@@ -901,9 +1146,16 @@ export default function Table({
         <div className="size-full p-5">
             <div className="size-full">
                 <h1 className="title">{title}</h1>
-                <p className="subtitle">
-                    Showing {visibleRows.length} of {rowCount} entries from {dataUrl.replace(/^\//, "")}
-                </p>
+                <div className="table-summary">
+                    <p className="subtitle">
+                        Showing {visibleRows.length} of {rowCount} entries from {dataUrl.replace(/^\//, "")}
+                    </p>
+                    {aggregateRowsAsHeaders && expandableAggregateKeys.length > 0 ? (
+                        <button type="button" className="expand-all-button" onClick={toggleAllAggregateRows}>
+                            {allAggregateRowsExpanded ? "Collapse all subcategories" : "Expand all subcategories"}
+                        </button>
+                    ) : null}
+                </div>
 
                 {loading && <div className="status">Loading data...</div>}
 
@@ -1103,288 +1355,77 @@ export default function Table({
                             </thead>
                             <tbody className={hasActiveHighlight ? "highlight-mode" : ""}>
                                 {visibleRows.map(({ row, sourceIndex, isAggregateHeader, aggregateKey }, index) => (
-                                    <tr
-                                        key={`${getCellText(row, guidingColumnId) || "row"}-${sourceIndex}`}
-                                        className={`${isRowHighlighted(row, index) ? "row-highlighted" : ""} ${isAggregateHeader ? "aggregate-row" : "emotion-detail-row"}`}
-                                        onMouseEnter={() => setHoveredRow(index)}
-                                        onMouseLeave={() => setHoveredRow(null)}
-                                    >
-                                        {columnOrder.map((columnId) => {
-                                            const definition = columnsById[columnId];
-                                            if (!definition) {
-                                                return null;
-                                            }
-                                            const value = getCellText(row, columnId);
+                                    (() => {
+                                        const isAggregateSubRow =
+                                            isAggregateHeader &&
+                                            aggregateRowsByColumnId &&
+                                            aggregateKey?.includes(`-${aggregateRowsByColumnId}-`);
 
-                                            return (
-                                                <td
-                                                    key={`${columnId}-${sourceIndex}`}
-                                                    className={`col col-${columnId} ${getSuperGroupBoundaryClasses(columnId)}`}
-                                                    title={getCellTooltip?.(row, columnId) ?? undefined}
-                                                >
-                                                    {columnId === guidingColumnId
-                                                        ? isAggregateHeader && aggregateKey
-                                                            ? (
-                                                                <button
-                                                                    type="button"
-                                                                    className="aggregate-toggle"
-                                                                    aria-expanded={expandedAggregateRows.has(aggregateKey)}
-                                                                    onClick={(event) => {
-                                                                        event.stopPropagation();
-                                                                        toggleAggregateRow(aggregateKey);
-                                                                    }}
-                                                                >
-                                                                    <span aria-hidden="true">
-                                                                        {expandedAggregateRows.has(aggregateKey) ? "▾" : "▸"}
-                                                                    </span>
-                                                                    <span>{value}</span>
-                                                                </button>
-                                                            )
-                                                            : value
-                                                        : definition.filterType === "feature"
-                                                            ? renderLevelBox(value, definition.groupColor)
-                                                            : definition.filterType === "numeric-heatmap"
-                                                                ? renderNumericHeatmapBox(
-                                                                    value,
-                                                                    definition.groupColor,
-                                                                    numericColumnRanges[columnId]
-                                                                )
-                                                                : value}
-                                                </td>
-                                            );
-                                        })}
-                                    </tr>
+                                        return (
+                                            <tr
+                                                key={`${getCellText(row, guidingColumnId) || "row"}-${sourceIndex}`}
+                                                className={`${isRowHighlighted(row, index) ? "row-highlighted" : ""} ${isAggregateHeader ? "aggregate-row" : "emotion-detail-row"} ${isAggregateSubRow ? "aggregate-sub-row" : ""}`}
+                                                onMouseEnter={() => setHoveredRow(index)}
+                                                onMouseLeave={() => setHoveredRow(null)}
+                                            >
+                                                {columnOrder.map((columnId) => {
+                                                    const definition = columnsById[columnId];
+                                                    if (!definition) {
+                                                        return null;
+                                                    }
+                                                    const value = getCellText(row, columnId);
+                                                    const displayValue =
+                                                        columnId === guidingColumnId && isAggregateHeader && !isAggregateSubRow
+                                                            ? getValenceAffectLabel(getCellText(row, toColumnId("Valence Category"))) ||
+                                                            stripAggregateLabel(value)
+                                                            : value;
+
+                                                    return (
+                                                        <td
+                                                            key={`${columnId}-${sourceIndex}`}
+                                                            className={`col col-${columnId} ${getSuperGroupBoundaryClasses(columnId)}`}
+                                                            title={getCellTooltip?.(row, columnId) ?? undefined}
+                                                        >
+                                                            {columnId === guidingColumnId
+                                                                ? isAggregateHeader && aggregateKey
+                                                                    ? (
+                                                                        <button
+                                                                            type="button"
+                                                                            className="aggregate-toggle"
+                                                                            aria-expanded={expandedAggregateRows.has(aggregateKey)}
+                                                                            onClick={(event) => {
+                                                                                event.stopPropagation();
+                                                                                toggleAggregateRow(aggregateKey);
+                                                                            }}
+                                                                        >
+                                                                            <span aria-hidden="true">
+                                                                                {expandedAggregateRows.has(aggregateKey) ? "▾" : "▸"}
+                                                                            </span>
+                                                                            <span>{displayValue}</span>
+                                                                        </button>
+                                                                    )
+                                                                    : displayValue
+                                                                : definition.filterType === "feature"
+                                                                    ? renderLevelBox(value, definition.groupColor)
+                                                                    : definition.filterType === "numeric-heatmap"
+                                                                        ? renderNumericHeatmapBox(
+                                                                            value,
+                                                                            definition.groupColor,
+                                                                            numericColumnRanges[columnId]
+                                                                        )
+                                                                        : value}
+                                                        </td>
+                                                    );
+                                                })}
+                                            </tr>
+                                        );
+                                    })()
                                 ))}
                             </tbody>
                         </table>
                     </div>
                 )}
             </div>
-            <style jsx>{`
-        .page {
-          min-height: 100vh;
-          padding: 12px;
-          background: #f5f7fa;
-        }
-        .container {
-          width: 100%;
-          margin: 0 auto;
-        }
-        .title {
-          margin: 0 0 4px;
-          font-size: 1.8rem;
-          line-height: 1.2;
-          font-weight: 700;
-          color: #111827;
-        }
-        .subtitle {
-          margin: 0 0 12px;
-          color: #4b5563;
-          font-size: 0.95rem;
-        }
-        .status {
-          padding: 16px;
-          text-align: center;
-          color: #334155;
-          background: #fff;
-          border: 1px solid #e2e8f0;
-        }
-        .error {
-          padding: 10px 12px;
-          color: #991b1b;
-          background: #fee2e2;
-          border: 1px solid #fecaca;
-          border-radius: 6px;
-        }
-        .table-wrap {
-          --table-viewport-offset: 140px;
-          width: 100%;
-          background: #fff;
-          max-height: max(320px, calc(100dvh - var(--table-viewport-offset)));
-          overflow: auto;
-          scrollbar-gutter: stable;
-          padding-right: ${SCROLLBAR_GUTTER_PX}px;
-          box-sizing: border-box;
-          border: 1px solid #e2e8f0;
-        }
-        .dense-table {
-          width: 100%;
-          min-width: 100%;
-          border-collapse: collapse;
-          table-layout: fixed;
-        }
-        .dense-table thead {
-          position: sticky;
-          top: 0;
-          z-index: 4;
-        }
-        .super-group-row .super-group-th {
-          height: 24px;
-          padding: 0px 4px;
-          vertical-align: middle;
-          text-align: center;
-          background: #dbeafe;
-          cursor: default;
-        }
-        .col.super-group-end {
-          border-right: 2px solid #64748b;
-        }
-        .group-row .group-th {
-          height:24px;
-          padding: 0px 4px;
-          vertical-align: middle;
-          text-align: center;
-          background: #eef2ff;
-          cursor: default;
-        }
-        .super-group-label {
-          font-size: 0.62rem;
-          font-weight: 800;
-          letter-spacing: 0.02em;
-          text-transform: uppercase;
-          color: #1e293b;
-        }
-        .group-label {
-          font-size: 0.60rem;
-          font-weight: 700;
-          letter-spacing: 0.02em;
-          text-transform: uppercase;
-          color: #334155;
-        }
-        .dense-table th {
-          padding: 2px 4px;
-          vertical-align: bottom;
-          text-align: center;
-          background: #f8fafc;
-          cursor: grab;
-          user-select: none;
-          position: relative;
-          z-index: 5;
-        }
-        .filter-row th {
-          height: auto;
-          padding: 2px 4px;
-          background: #f9fafb;
-          cursor: default;
-        }
-        .count-row-th {
-          height: auto;
-          padding: 2px 4px;
-          background: #f8fafc;
-          cursor: default;
-        }
-        .feature-count-label {
-          display: inline-block;
-          font-size: 0.60rem;
-          font-weight: 700;
-          color: #334155;
-          line-height: 1;
-        }
-        .dense-table td {
-          height: 16px;
-          padding: 4px 4px;
-          font-size: 0.75rem;
-          line-height: 0.5rem;
-        }
-        .col {
-          max-width: none;
-          min-width: 10px;
-          text-align: left;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        .dense-table tbody tr:last-child td {
-          border-bottom: none;
-        }
-        .vertical-label {
-          display: inline-block;
-          writing-mode: vertical-rl;
-          transform: rotate(180deg);
-          white-space: nowrap;
-          font-weight: 550;
-          line-height: 1.1;
-          font-size: small;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        .sort-indicator {
-          display: flex;
-          align-items: center;
-          gap: 2px;
-        }
-        .sort-rank {
-          font-size: 0.65rem;
-          font-weight: 700;
-          line-height: 1;
-        }
-        .aggregate-toggle {
-          display: inline-flex;
-          align-items: center;
-          gap: 4px;
-          border: 0;
-          background: transparent;
-          padding: 0;
-          color: inherit;
-          font: inherit;
-          cursor: pointer;
-          max-width: 100%;
-        }
-        .aggregate-toggle span:last-child {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .dense-table tbody tr.aggregate-row td {
-          height: 20px;
-          padding: 6px 4px;
-          line-height: 1rem;
-        }
-        .dense-table tbody tr.aggregate-row .aggregate-toggle {
-          line-height: 1rem;
-        }
-        .dense-table tbody tr.emotion-detail-row .col-name {
-          padding-left: 24px;
-        }
-        .highlight-mode tr:not(.row-highlighted) td {
-          opacity: 0.4;
-        }
-        .column-dragging {
-          opacity: 0.6;
-        }
-        .filter-input,
-        .filter-select {
-          width: 100%;
-          height: 22px;
-          border: 1px solid #cbd5e1;
-          background: #ffffff;
-          border-radius: 3px;
-          font-size: 0.72rem;
-          color: #1f2937;
-          padding: 0 6px;
-        }
-        .filter-select-active {
-          background: #dbeafe;
-          border-color: #93c5fd;
-        }
-        .filter-input:focus,
-        .filter-select:focus {
-          outline: 1px solid #3b82f6;
-          border-color: #3b82f6;
-        }
-        .resize-handle {
-          position: absolute;
-          top: 0;
-          right: -4px;
-          width: 8px;
-          height: 100%;
-          cursor: col-resize;
-          z-index: 2;
-        }
-        .resize-handle:hover {
-          background: rgba(37, 99, 235, 0.2);
-        }
-      `}</style>
         </div>
     );
 }

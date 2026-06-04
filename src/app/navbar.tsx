@@ -32,6 +32,9 @@ export default function Navbar() {
       <Link href="/emotions-everything" style={linkStyle("/emotions-everything")}>
         Everything by Emotions
       </Link>
+      <Link href="/emotions-everything-dup" style={linkStyle("/emotions-everything-dup")}>
+        Emotions by Section
+      </Link>
       <Link href="/heatmap" style={linkStyle("/heatmap")}>
         Heatmap
       </Link>
