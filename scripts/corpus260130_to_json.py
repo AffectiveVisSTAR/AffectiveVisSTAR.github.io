@@ -188,7 +188,46 @@ def build_emotions_by_everything(
                 **dict(counter),
             }
         )
-    return rows
+    return add_valence_aggregate_rows(rows)
+
+
+def add_valence_aggregate_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+    aggregates: dict[str, Counter[str]] = defaultdict(Counter)
+    grouped_rows: dict[str, list[dict[str, object]]] = defaultdict(list)
+    publication_sets: dict[str, set[str]] = defaultdict(set)
+
+    for row in rows:
+        valence_category = row.get("Valence Category")
+        if not isinstance(valence_category, str) or not valence_category:
+            continue
+
+        grouped_rows[valence_category].append(row)
+
+        publications = row.get("publications")
+        if isinstance(publications, list):
+            for publication in publications:
+                if isinstance(publication, str):
+                    publication_sets[valence_category].add(publication)
+
+        for key, value in row.items():
+            if isinstance(value, int):
+                aggregates[valence_category][key] += value
+
+    output_rows: list[dict[str, object]] = []
+    for valence_category, category_rows in grouped_rows.items():
+        output_rows.append(
+            {
+                "name": f"{valence_category} (Aggregate)",
+                "Basic Emotion": "Aggregate",
+                "Valence Category": valence_category,
+                "publications": sorted(publication_sets[valence_category]),
+                "isAggregate": "X",
+                **dict(aggregates[valence_category]),
+            }
+        )
+        output_rows.extend(category_rows)
+
+    return output_rows
 
 
 def main(argv: list[str] | None = None) -> int:

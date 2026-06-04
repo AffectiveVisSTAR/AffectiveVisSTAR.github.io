@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Table, { type DataTableGroup } from "../table/table";
+import Table, { type DataTableGroup, type DataTableInitialSortRule } from "../table/table";
 
 const TABLE_GROUPS: DataTableGroup[] = [
     {
@@ -388,6 +388,10 @@ const TABLE_RAW_DATA_URL = "/classtable.json";
 const TABLE_MAPPING_URL = "/classtable_column_mapping.json";
 const TABLE_TITLE = "Affective Visualization Survey Classification";
 const FALLBACK_GENERATED_GROUPS: DataTableGroup[] = [];
+const INITIAL_SORT_RULES: DataTableInitialSortRule[] = [
+    { dataKey: "Basic Emotion", direction: "asc" },
+    { dataKey: "name", direction: "asc" },
+];
 
 type EmotionRow = Record<string, unknown>;
 
@@ -575,8 +579,10 @@ export default function TableTestPage() {
             <Table
                 groups={groups}
                 dataUrl={TABLE_DATA_URL}
-                title={TABLE_TITLE}
+                initialSortRules={INITIAL_SORT_RULES}
                 getCellTooltip={getCellTooltip}
+                disableHoverFade
+                aggregateRowsAsHeaders
             />
         </div>
     );

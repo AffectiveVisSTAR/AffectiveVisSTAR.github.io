@@ -7,6 +7,7 @@ type FeatureFilter = "all" | "X" | "empty";
 type CorpusRow = Record<string, unknown>;
 type SortDirection = "asc" | "desc";
 type SortRule = { columnId: string; direction: SortDirection };
+export type DataTableInitialSortRule = { dataKey: string; direction: SortDirection };
 
 type ResizeState = {
     columnId: string;
@@ -44,9 +45,12 @@ type ResolvedDataTableColumn = DataTableColumn & {
 type DataTableProps = {
     groups: DataTableGroup[];
     dataUrl: string;
-    title: string;
+    title?: string;
     debug?: boolean;
+    initialSortRules?: DataTableInitialSortRule[];
     getCellTooltip?: (row: CorpusRow, columnId: string) => string | null;
+    disableHoverFade?: boolean;
+    aggregateRowsAsHeaders?: boolean;
 };
 
 function normalizeValue(value: string | null): string {
@@ -88,6 +92,10 @@ function parseNumericValue(value: string | null): number | null {
     return Number.isFinite(parsed) ? parsed : null;
 }
 
+function isAggregateRow(row: CorpusRow): boolean {
+    return normalizeValue(row.isAggregate === null || row.isAggregate === undefined ? null : String(row.isAggregate)) === "x";
+}
+
 const DEFAULT_MIN_WIDTH = 22;
 const DEFAULT_INITIAL_WIDTH = 22;
 const MAX_COLUMN_LABEL_LENGTH = 30;
@@ -100,7 +108,16 @@ function truncateLabel(label: string, maxLength: number = MAX_COLUMN_LABEL_LENGT
     return `${label.slice(0, maxLength - 3)}...`;
 }
 
-export default function Table({ groups, dataUrl, title, debug = false, getCellTooltip }: DataTableProps) {
+export default function Table({
+    groups,
+    dataUrl,
+    title,
+    debug = false,
+    initialSortRules,
+    getCellTooltip,
+    disableHoverFade = false,
+    aggregateRowsAsHeaders = false,
+}: DataTableProps) {
     const tableWrapRef = useRef<HTMLDivElement | null>(null);
     const normalizedColumns = useMemo(() => {
         const seen = new Set<string>();
@@ -138,15 +155,26 @@ export default function Table({ groups, dataUrl, title, debug = false, getCellTo
     );
 
     const guidingColumnId = normalizedColumns[0]?.id ?? "";
+    const resolvedInitialSortRules = useMemo<SortRule[]>(() => {
+        if (!initialSortRules || initialSortRules.length === 0) {
+            return guidingColumnId ? [{ columnId: guidingColumnId, direction: "asc" }] : [];
+        }
+
+        return initialSortRules
+            .map((rule) => ({
+                columnId: toColumnId(rule.dataKey),
+                direction: rule.direction,
+            }))
+            .filter((rule) => Boolean(columnsById[rule.columnId]));
+    }, [columnsById, guidingColumnId, initialSortRules]);
 
     const [rows, setRows] = useState<CorpusRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [hoveredColumnId, setHoveredColumnId] = useState<string | null>(null);
     const [hoveredRow, setHoveredRow] = useState<number | null>(null);
-    const [sortRules, setSortRules] = useState<SortRule[]>(
-        guidingColumnId ? [{ columnId: guidingColumnId, direction: "asc" }] : []
-    );
+    const [expandedAggregateRows, setExpandedAggregateRows] = useState<Set<string>>(() => new Set());
+    const [sortRules, setSortRules] = useState<SortRule[]>(resolvedInitialSortRules);
     const [columnOrder, setColumnOrder] = useState<string[]>(normalizedColumns.map((column) => column.id));
     const [draggedColumnId, setDraggedColumnId] = useState<string | null>(null);
     const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() =>
@@ -194,7 +222,9 @@ export default function Table({ groups, dataUrl, title, debug = false, getCellTo
             const validColumnIds = new Set(normalizedColumns.map((column) => column.id));
             const next = prev.filter((rule) => validColumnIds.has(rule.columnId));
             if (next.length === 0 && guidingColumnId) {
-                return [{ columnId: guidingColumnId, direction: "asc" }];
+                return resolvedInitialSortRules.length > 0
+                    ? resolvedInitialSortRules
+                    : [{ columnId: guidingColumnId, direction: "asc" }];
             }
             return next;
         });
@@ -223,7 +253,7 @@ export default function Table({ groups, dataUrl, title, debug = false, getCellTo
             }
             return next;
         });
-    }, [normalizedColumns, guidingColumnId]);
+    }, [normalizedColumns, guidingColumnId, resolvedInitialSortRules]);
 
     useEffect(() => {
         let isActive = true;
@@ -354,12 +384,12 @@ export default function Table({ groups, dataUrl, title, debug = false, getCellTo
         });
     }, [rows, columnOrder, columnsById, featureFilters, textFilters, getCellText, guidingColumnId]);
 
-    const sortedRows = useMemo(() => {
+    const sortTableRows = useCallback((rowsToSort: CorpusRow[]) => {
         if (sortRules.length === 0) {
-            return filteredRows;
+            return rowsToSort;
         }
 
-        const sorted = [...filteredRows].sort((a, b) => {
+        return [...rowsToSort].sort((a, b) => {
             for (const rule of sortRules) {
                 const definition = columnsById[rule.columnId];
                 if (!definition) {
@@ -388,12 +418,115 @@ export default function Table({ groups, dataUrl, title, debug = false, getCellTo
                 if (comparison !== 0) {
                     return rule.direction === "asc" ? comparison : -comparison;
                 }
+
+                if (definition.dataKey === "Valence Category") {
+                    const aIsAggregate = isAggregateRow(a);
+                    const bIsAggregate = isAggregateRow(b);
+                    if (aIsAggregate !== bIsAggregate) {
+                        return aIsAggregate ? -1 : 1;
+                    }
+                }
             }
             return 0;
         });
+    }, [sortRules, getCellText, columnsById]);
 
-        return sorted;
-    }, [filteredRows, sortRules, getCellText, columnsById]);
+    const sortedRows = useMemo(() => sortTableRows(filteredRows), [filteredRows, sortTableRows]);
+
+    const visibleRows = useMemo(() => {
+        if (!aggregateRowsAsHeaders) {
+            return sortedRows.map((row, index) => ({
+                row,
+                sourceIndex: index,
+                isAggregateHeader: false,
+                aggregateKey: null,
+            }));
+        }
+
+        const filteredRowSet = new Set(filteredRows);
+        const aggregateGroups: {
+            aggregateRow: CorpusRow;
+            aggregateSourceIndex: number;
+            aggregateKey: string;
+            detailRows: { row: CorpusRow; sourceIndex: number }[];
+        }[] = [];
+        const standaloneRows: { row: CorpusRow; sourceIndex: number }[] = [];
+        let currentGroup: (typeof aggregateGroups)[number] | null = null;
+
+        rows.forEach((row, index) => {
+            if (isAggregateRow(row)) {
+                currentGroup = {
+                    aggregateRow: row,
+                    aggregateSourceIndex: index,
+                    aggregateKey: `${getCellText(row, guidingColumnId) || "aggregate"}-${index}`,
+                    detailRows: [],
+                };
+                aggregateGroups.push(currentGroup);
+                return;
+            }
+
+            if (currentGroup) {
+                currentGroup.detailRows.push({ row, sourceIndex: index });
+                return;
+            }
+
+            standaloneRows.push({ row, sourceIndex: index });
+        });
+
+        const nextRows: {
+            row: CorpusRow;
+            sourceIndex: number;
+            isAggregateHeader: boolean;
+            aggregateKey: string | null;
+        }[] = [];
+
+        for (const group of aggregateGroups) {
+            const filteredDetailRows = group.detailRows.filter(({ row }) => filteredRowSet.has(row));
+            const shouldShowAggregate = filteredRowSet.has(group.aggregateRow) || filteredDetailRows.length > 0;
+            if (!shouldShowAggregate) {
+                continue;
+            }
+
+            nextRows.push({
+                row: group.aggregateRow,
+                sourceIndex: group.aggregateSourceIndex,
+                isAggregateHeader: true,
+                aggregateKey: group.aggregateKey,
+            });
+
+            if (expandedAggregateRows.has(group.aggregateKey)) {
+                const detailSourceIndexByRow = new Map(filteredDetailRows.map(({ row, sourceIndex }) => [row, sourceIndex]));
+                for (const row of sortTableRows(filteredDetailRows.map(({ row }) => row))) {
+                    nextRows.push({
+                        row,
+                        sourceIndex: detailSourceIndexByRow.get(row) ?? nextRows.length,
+                        isAggregateHeader: false,
+                        aggregateKey: group.aggregateKey,
+                    });
+                }
+            }
+        }
+
+        for (const row of sortTableRows(standaloneRows.filter(({ row }) => filteredRowSet.has(row)).map(({ row }) => row))) {
+            nextRows.push({
+                row,
+                sourceIndex: standaloneRows.find((standaloneRow) => standaloneRow.row === row)?.sourceIndex ?? nextRows.length,
+                isAggregateHeader: false,
+                aggregateKey: null,
+            });
+        }
+
+        return nextRows;
+    }, [
+        aggregateRowsAsHeaders,
+        expandedAggregateRows,
+        filteredRows,
+        getCellText,
+        guidingColumnId,
+        rows,
+        sortTableRows,
+        sortedRows,
+    ]);
 
     const featureXCounts = useMemo(() => {
         const counts: Record<string, number> = {};
@@ -686,10 +819,11 @@ export default function Table({ groups, dataUrl, title, debug = false, getCellTo
     };
 
     const hasActiveHighlight =
-        hoveredRow !== null ||
-        (hoveredColumnId !== null &&
-            hoveredColumnId !== guidingColumnId &&
-            columnsById[hoveredColumnId]?.filterType === "feature");
+        !disableHoverFade &&
+        (hoveredRow !== null ||
+            (hoveredColumnId !== null &&
+                hoveredColumnId !== guidingColumnId &&
+                columnsById[hoveredColumnId]?.filterType === "feature"));
 
     const handleSort = (columnId: string, additive: boolean) => {
         setSortRules((prev) => {
@@ -717,6 +851,18 @@ export default function Table({ groups, dataUrl, title, debug = false, getCellTo
             const next = prev.filter((rule) => rule.columnId !== columnId);
             if (next.length === 0 && guidingColumnId) {
                 return [{ columnId: guidingColumnId, direction: "asc" }];
+            }
+            return next;
+        });
+    };
+
+    const toggleAggregateRow = (aggregateKey: string) => {
+        setExpandedAggregateRows((prev) => {
+            const next = new Set(prev);
+            if (next.has(aggregateKey)) {
+                next.delete(aggregateKey);
+            } else {
+                next.add(aggregateKey);
             }
             return next;
         });
@@ -756,7 +902,7 @@ export default function Table({ groups, dataUrl, title, debug = false, getCellTo
             <div className="size-full">
                 <h1 className="title">{title}</h1>
                 <p className="subtitle">
-                    Showing {sortedRows.length} of {rowCount} entries from {dataUrl.replace(/^\//, "")}
+                    Showing {visibleRows.length} of {rowCount} entries from {dataUrl.replace(/^\//, "")}
                 </p>
 
                 {loading && <div className="status">Loading data...</div>}
@@ -785,8 +931,8 @@ export default function Table({ groups, dataUrl, title, debug = false, getCellTo
                 )}
 
                 {!loading && !error && rowCount > 0 && (
-                    <div className="table-wrap size-full" ref={tableWrapRef}>
-                        <table className="dense-table size-full max-w-full">
+                    <div className="table-wrap" ref={tableWrapRef}>
+                        <table className="dense-table max-w-full">
                             <colgroup>
                                 {columnOrder.map((columnId) => (
                                     <col key={columnId} style={{ width: `${effectiveColumnWidths[columnId] ?? 60}px` }} />
@@ -956,10 +1102,10 @@ export default function Table({ groups, dataUrl, title, debug = false, getCellTo
                                 </tr>
                             </thead>
                             <tbody className={hasActiveHighlight ? "highlight-mode" : ""}>
-                                {sortedRows.map((row, index) => (
+                                {visibleRows.map(({ row, sourceIndex, isAggregateHeader, aggregateKey }, index) => (
                                     <tr
-                                        key={`${getCellText(row, guidingColumnId) || "row"}-${index}`}
-                                        className={isRowHighlighted(row, index) ? "row-highlighted" : ""}
+                                        key={`${getCellText(row, guidingColumnId) || "row"}-${sourceIndex}`}
+                                        className={`${isRowHighlighted(row, index) ? "row-highlighted" : ""} ${isAggregateHeader ? "aggregate-row" : "emotion-detail-row"}`}
                                         onMouseEnter={() => setHoveredRow(index)}
                                         onMouseLeave={() => setHoveredRow(null)}
                                     >
@@ -972,12 +1118,29 @@ export default function Table({ groups, dataUrl, title, debug = false, getCellTo
 
                                             return (
                                                 <td
-                                                    key={`${columnId}-${index}`}
+                                                    key={`${columnId}-${sourceIndex}`}
                                                     className={`col col-${columnId} ${getSuperGroupBoundaryClasses(columnId)}`}
                                                     title={getCellTooltip?.(row, columnId) ?? undefined}
                                                 >
                                                     {columnId === guidingColumnId
-                                                        ? value
+                                                        ? isAggregateHeader && aggregateKey
+                                                            ? (
+                                                                <button
+                                                                    type="button"
+                                                                    className="aggregate-toggle"
+                                                                    aria-expanded={expandedAggregateRows.has(aggregateKey)}
+                                                                    onClick={(event) => {
+                                                                        event.stopPropagation();
+                                                                        toggleAggregateRow(aggregateKey);
+                                                                    }}
+                                                                >
+                                                                    <span aria-hidden="true">
+                                                                        {expandedAggregateRows.has(aggregateKey) ? "▾" : "▸"}
+                                                                    </span>
+                                                                    <span>{value}</span>
+                                                                </button>
+                                                            )
+                                                            : value
                                                         : definition.filterType === "feature"
                                                             ? renderLevelBox(value, definition.groupColor)
                                                             : definition.filterType === "numeric-heatmap"
@@ -1119,7 +1282,7 @@ export default function Table({ groups, dataUrl, title, debug = false, getCellTo
         }
         .dense-table td {
           height: 16px;
-          padding: 2px 4px;
+          padding: 4px 4px;
           font-size: 0.75rem;
           line-height: 0.5rem;
         }
@@ -1154,6 +1317,34 @@ export default function Table({ groups, dataUrl, title, debug = false, getCellTo
           font-size: 0.65rem;
           font-weight: 700;
           line-height: 1;
+        }
+        .aggregate-toggle {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          border: 0;
+          background: transparent;
+          padding: 0;
+          color: inherit;
+          font: inherit;
+          cursor: pointer;
+          max-width: 100%;
+        }
+        .aggregate-toggle span:last-child {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .dense-table tbody tr.aggregate-row td {
+          height: 20px;
+          padding: 6px 4px;
+          line-height: 1rem;
+        }
+        .dense-table tbody tr.aggregate-row .aggregate-toggle {
+          line-height: 1rem;
+        }
+        .dense-table tbody tr.emotion-detail-row .col-name {
+          padding-left: 24px;
         }
         .highlight-mode tr:not(.row-highlighted) td {
           opacity: 0.4;
