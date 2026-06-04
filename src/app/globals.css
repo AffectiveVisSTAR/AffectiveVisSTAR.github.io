@@ -149,6 +149,16 @@ body {
   color: #334155;
 }
 
+.row-group-header-th {
+  height: 100%;
+  padding: 0 4px;
+  vertical-align: middle;
+  text-align: center;
+  background: #f1f5f9;
+  cursor: default;
+  border-right: 2px solid #64748b;
+}
+
 .dense-table th {
   padding: 2px 4px;
   vertical-align: bottom;
@@ -187,6 +197,31 @@ body {
   padding: 4px;
   font-size: 0.75rem;
   line-height: 0.5rem;
+}
+
+.dense-table tbody .row-group-cell {
+  vertical-align: middle;
+  text-align: center;
+  background: #f8fafc;
+  border-right: 2px solid #64748b;
+  color: #334155;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.dense-table tbody tr.row-group-end td,
+.dense-table tbody .row-group-cell {
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.row-group-cell span {
+  display: inline-block;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
 }
 
 .col {

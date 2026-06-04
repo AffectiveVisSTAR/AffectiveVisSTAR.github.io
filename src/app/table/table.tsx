@@ -55,6 +55,8 @@ type DataTableProps = {
     aggregateRowsAsHeaders?: boolean;
     aggregateRowsByColumn?: string;
     hideTopLevelAggregateRows?: boolean;
+    rowGroupByColumn?: string;
+    rowGroupColumnLabel?: string;
 };
 
 function normalizeValue(value: string | null): string {
@@ -118,11 +120,16 @@ function stripAggregateLabel(value: string): string {
     return value.replace(/\s*\(Aggregate\)\s*$/i, "").trim();
 }
 
+function getRowGroupLabel(value: string): string {
+    return normalizeValue(value) === "main" ? "General" : value;
+}
+
 const DEFAULT_MIN_WIDTH = 22;
 const DEFAULT_INITIAL_WIDTH = 22;
 const MAX_COLUMN_LABEL_LENGTH = 30;
 const SCROLLBAR_GUTTER_PX = 16;
 const MIN_UNIQUE_EMOTIONS_FOR_AGGREGATE = 3;
+const ROW_GROUP_COLUMN_WIDTH = 72;
 
 function truncateLabel(label: string, maxLength: number = MAX_COLUMN_LABEL_LENGTH): string {
     if (label.length <= maxLength) {
@@ -142,6 +149,8 @@ export default function Table({
     aggregateRowsAsHeaders = false,
     aggregateRowsByColumn,
     hideTopLevelAggregateRows = false,
+    rowGroupByColumn,
+    rowGroupColumnLabel,
 }: DataTableProps) {
     const tableWrapRef = useRef<HTMLDivElement | null>(null);
     const normalizedColumns = useMemo(() => {
@@ -243,6 +252,11 @@ export default function Table({
         },
         [columnsById]
     );
+
+    const getRawCellText = useCallback((row: CorpusRow, dataKey: string): string => {
+        const value = row[dataKey];
+        return value === null || value === undefined ? "" : String(value);
+    }, []);
 
     useEffect(() => {
         setColumnOrder(normalizedColumns.map((column) => column.id));
@@ -651,7 +665,7 @@ export default function Table({
                         isAggregate: "X",
                         [columnsById[guidingColumnId]?.dataKey ?? guidingColumnId]: detailGroup.label,
                         [groupByDefinition.dataKey]: detailGroup.label,
-                        "Valence Category": getCellText(group.aggregateRow, toColumnId("Valence Category")),
+                        "Valence Category": getRawCellText(group.aggregateRow, "Valence Category"),
                     };
 
                     for (const column of normalizedColumns) {
@@ -752,6 +766,7 @@ export default function Table({
         expandedAggregateRows,
         filteredRows,
         getCellText,
+        getRawCellText,
         guidingColumnId,
         hideTopLevelAggregateRows,
         normalizedColumns,
@@ -760,6 +775,56 @@ export default function Table({
         sortTableRows,
         sortedRows,
     ]);
+
+    const rowGroupSpans = useMemo(() => {
+        const spans = new Map<number, { label: string; span: number }>();
+        if (!rowGroupByColumn) {
+            return spans;
+        }
+
+        let groupStartIndex: number | null = null;
+        let groupLabel = "";
+
+        const flushGroup = (endIndex: number) => {
+            if (groupStartIndex === null || !groupLabel) {
+                return;
+            }
+            spans.set(groupStartIndex, { label: getRowGroupLabel(groupLabel), span: endIndex - groupStartIndex });
+        };
+
+        visibleRows.forEach(({ row }, index) => {
+            const nextLabel = getRawCellText(row, rowGroupByColumn).trim();
+            if (!nextLabel) {
+                flushGroup(index);
+                groupStartIndex = null;
+                groupLabel = "";
+                return;
+            }
+
+            if (groupStartIndex === null) {
+                groupStartIndex = index;
+                groupLabel = nextLabel;
+                return;
+            }
+
+            if (normalizeValue(nextLabel) !== normalizeValue(groupLabel)) {
+                flushGroup(index);
+                groupStartIndex = index;
+                groupLabel = nextLabel;
+            }
+        });
+
+        flushGroup(visibleRows.length);
+        return spans;
+    }, [getRawCellText, rowGroupByColumn, visibleRows]);
+
+    const rowGroupEndIndexes = useMemo(() => {
+        const indexes = new Set<number>();
+        for (const [startIndex, { span }] of rowGroupSpans.entries()) {
+            indexes.add(startIndex + span - 1);
+        }
+        return indexes;
+    }, [rowGroupSpans]);
 
     const featureXCounts = useMemo(() => {
         const counts: Record<string, number> = {};
@@ -900,7 +965,8 @@ export default function Table({
             return {};
         }
 
-        const availableWidth = Math.max(0, tableWrapWidth - SCROLLBAR_GUTTER_PX);
+        const rowGroupWidth = rowGroupByColumn ? ROW_GROUP_COLUMN_WIDTH : 0;
+        const availableWidth = Math.max(0, tableWrapWidth - SCROLLBAR_GUTTER_PX - rowGroupWidth);
         const preferredWidths = columnOrder.map((columnId) => {
             const definition = columnsById[columnId];
             const width = columnWidths[columnId] ?? definition?.initialWidth ?? DEFAULT_INITIAL_WIDTH;
@@ -942,7 +1008,7 @@ export default function Table({
             acc[columnId] = resolvedWidths[index];
             return acc;
         }, {});
-    }, [columnOrder, columnsById, columnWidths, tableWrapWidth]);
+    }, [columnOrder, columnsById, columnWidths, rowGroupByColumn, tableWrapWidth]);
 
     const renderLevelBox = (value: string | null, color: string) => {
         if (!hasYes(value) && !hasLow(value)) {
@@ -1186,6 +1252,7 @@ export default function Table({
                     <div className="table-wrap" ref={tableWrapRef}>
                         <table className="dense-table max-w-full">
                             <colgroup>
+                                {rowGroupByColumn ? <col style={{ width: `${ROW_GROUP_COLUMN_WIDTH}px` }} /> : null}
                                 {columnOrder.map((columnId) => (
                                     <col key={columnId} style={{ width: `${effectiveColumnWidths[columnId] ?? 60}px` }} />
                                 ))}
@@ -1193,6 +1260,13 @@ export default function Table({
                             <thead>
                                 {showSuperGroupRow ? (
                                     <tr className="super-group-row">
+                                        {rowGroupByColumn ? (
+                                            <th rowSpan={5} className="row-group-header-th">
+                                                <span className="vertical-label" title={rowGroupColumnLabel ?? rowGroupByColumn}>
+                                                    {truncateLabel(rowGroupColumnLabel ?? rowGroupByColumn)}
+                                                </span>
+                                            </th>
+                                        ) : null}
                                         {superGroupedHeaderSegments.map((segment, index) => (
                                             <th
                                                 key={`${segment.label}-${segment.span}-${index}`}
@@ -1206,6 +1280,13 @@ export default function Table({
                                     </tr>
                                 ) : null}
                                 <tr className="group-row">
+                                    {!showSuperGroupRow && rowGroupByColumn ? (
+                                        <th rowSpan={4} className="row-group-header-th">
+                                            <span className="vertical-label" title={rowGroupColumnLabel ?? rowGroupByColumn}>
+                                                {truncateLabel(rowGroupColumnLabel ?? rowGroupByColumn)}
+                                            </span>
+                                        </th>
+                                    ) : null}
                                     {groupedHeaderSegments.map((segment, index) => (
                                         <th
                                             key={`${segment.label}-${segment.span}-${index}`}
@@ -1360,14 +1441,21 @@ export default function Table({
                                             isAggregateHeader &&
                                             aggregateRowsByColumnId &&
                                             aggregateKey?.includes(`-${aggregateRowsByColumnId}-`);
+                                        const rowGroupSpan = rowGroupSpans.get(index);
+                                        const isRowGroupEnd = rowGroupEndIndexes.has(index);
 
                                         return (
                                             <tr
                                                 key={`${getCellText(row, guidingColumnId) || "row"}-${sourceIndex}`}
-                                                className={`${isRowHighlighted(row, index) ? "row-highlighted" : ""} ${isAggregateHeader ? "aggregate-row" : "emotion-detail-row"} ${isAggregateSubRow ? "aggregate-sub-row" : ""}`}
+                                                className={`${isRowHighlighted(row, index) ? "row-highlighted" : ""} ${isAggregateHeader ? "aggregate-row" : "emotion-detail-row"} ${isAggregateSubRow ? "aggregate-sub-row" : ""} ${isRowGroupEnd ? "row-group-end" : ""}`}
                                                 onMouseEnter={() => setHoveredRow(index)}
                                                 onMouseLeave={() => setHoveredRow(null)}
                                             >
+                                                {rowGroupSpan ? (
+                                                    <td rowSpan={rowGroupSpan.span} className="row-group-cell">
+                                                        <span>{rowGroupSpan.label}</span>
+                                                    </td>
+                                                ) : null}
                                                 {columnOrder.map((columnId) => {
                                                     const definition = columnsById[columnId];
                                                     if (!definition) {
@@ -1376,7 +1464,7 @@ export default function Table({
                                                     const value = getCellText(row, columnId);
                                                     const displayValue =
                                                         columnId === guidingColumnId && isAggregateHeader && !isAggregateSubRow
-                                                            ? getValenceAffectLabel(getCellText(row, toColumnId("Valence Category"))) ||
+                                                            ? getValenceAffectLabel(getRawCellText(row, "Valence Category")) ||
                                                             stripAggregateLabel(value)
                                                             : value;
 
