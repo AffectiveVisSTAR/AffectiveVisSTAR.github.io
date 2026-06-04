@@ -109,14 +109,13 @@ body {
 }
 
 .table-with-footer .table-wrap {
-  flex: 1 1 auto;
   min-height: 0;
   max-height: none;
 }
 
 .dense-table {
   width: 100%;
-  min-width: 100%;
+
   border-collapse: collapse;
   table-layout: fixed;
 }
@@ -411,22 +410,26 @@ tr.aggregate-row:not(.aggregate-sub-row) {
 
 .paper-list {
   display: grid;
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
   margin-top: 10px;
 }
 
 .paper-list-item {
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.paper-list-item:first-child {
   padding-top: 10px;
   border-top: 1px solid #e2e8f0;
 }
 
-.paper-list-item:first-child {
-  padding-top: 0;
-  border-top: 0;
-}
-
 .paper-list-item .paper-citation {
   color: #1f2937;
+  font-weight: 500;
 }
 
 .paper-list-item details {
