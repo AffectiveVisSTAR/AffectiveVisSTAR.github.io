@@ -15,6 +15,18 @@ const TABLE_GROUPS: DataTableGroup[] = [
                 initialWidth: 150,
                 filterType: "text",
             },
+            {
+                dataKey: "Basic Emotion",
+                minWidth: 120,
+                initialWidth: 120,
+                filterType: "text",
+            },
+            {
+                dataKey: "Valence Category",
+                minWidth: 140,
+                initialWidth: 140,
+                filterType: "text",
+            },
         ],
     },
     {

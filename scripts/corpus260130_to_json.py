@@ -6,7 +6,10 @@ import argparse
 import json
 import re
 import sys
+from collections import Counter, defaultdict
+from io import StringIO
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlparse
 import ssl
 import certifi
@@ -82,6 +85,112 @@ def google_sheets_csv_url(sheet_url: str, sheet_name: str) -> str:
     return f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
 
 
+def load_google_sheet_csv(sheet_url: str, sheet_name: str, pd: Any) -> Any:
+    csv_url = google_sheets_csv_url(sheet_url.strip(), sheet_name.strip())
+    ssl_context = ssl.create_default_context(cafile=certifi.where())
+    with urllib.request.urlopen(csv_url, context=ssl_context) as response:
+        csv_data = response.read().decode("utf-8")
+    return pd.read_csv(StringIO(csv_data))
+
+
+def get_actual_column(df: Any, candidates: list[str]) -> str | None:
+    norm_to_actual: dict[str, str] = {}
+    for col in list(df.columns):
+        norm = normalize_col_name(col)
+        if norm and norm not in norm_to_actual:
+            norm_to_actual[norm] = str(col)
+
+    for candidate in candidates:
+        actual = norm_to_actual.get(normalize_col_name(candidate))
+        if actual is not None:
+            return actual
+    return None
+
+
+def load_emotion_assignments(
+    sheet_url: str,
+    sheet_name: str,
+    pd: Any,
+) -> dict[str, dict[str, str]]:
+    df = load_google_sheet_csv(sheet_url, sheet_name, pd)
+    emotion_column = get_actual_column(
+        df,
+        ["Emotion", "Specific Emotion", "SpecificEmotionsCleaned", "name"],
+    )
+    basic_column = get_actual_column(df, ["Basic Emotion"])
+    valence_column = get_actual_column(df, ["Valence Category"])
+
+    missing = [
+        label
+        for label, column in [
+            ("Emotion", emotion_column),
+            ("Basic Emotion", basic_column),
+            ("Valence Category", valence_column),
+        ]
+        if column is None
+    ]
+    if missing:
+        raise ValueError(
+            f"Missing required emotionmapping columns: {', '.join(missing)}. "
+            f"Available: {', '.join(str(c) for c in df.columns)}"
+        )
+
+    assignments: dict[str, dict[str, str]] = {}
+    for _, row in df.iterrows():
+        emotion = clean_cell_value(row.get(emotion_column))
+        if not isinstance(emotion, str) or not emotion:
+            continue
+
+        basic_emotion = clean_cell_value(row.get(basic_column))
+        valence_category = clean_cell_value(row.get(valence_column))
+        assignments[normalize_col_name(emotion)] = {
+            "Basic Emotion": basic_emotion if isinstance(basic_emotion, str) else "",
+            "Valence Category": valence_category if isinstance(valence_category, str) else "",
+        }
+
+    return assignments
+
+
+def build_emotions_by_everything(
+    records: list[dict[str, object]],
+    emotion_assignments: dict[str, dict[str, str]],
+) -> list[dict[str, object]]:
+    grouped: dict[str, Counter[str]] = defaultdict(Counter)
+    publications: dict[str, list[str]] = defaultdict(list)
+    seen_publication: dict[str, set[str]] = defaultdict(set)
+
+    for row in records:
+        emotions = parse_multi_value_cell(row.get("SpecificEmotionsCleaned"))
+        if not emotions:
+            continue
+
+        author = row.get("AuthorYear")
+        for emotion in emotions:
+            if author and isinstance(author, str) and author not in seen_publication[emotion]:
+                publications[emotion].append(author)
+                seen_publication[emotion].add(author)
+
+            for key, value in row.items():
+                if key == "SpecificEmotionsCleaned":
+                    continue
+                if value == "X":
+                    grouped[emotion][key] += 1
+
+    rows: list[dict[str, object]] = []
+    for emotion, counter in grouped.items():
+        assignments = emotion_assignments.get(normalize_col_name(emotion), {})
+        rows.append(
+            {
+                "name": emotion,
+                "Basic Emotion": assignments.get("Basic Emotion", ""),
+                "Valence Category": assignments.get("Valence Category", ""),
+                "publications": publications[emotion],
+                **dict(counter),
+            }
+        )
+    return rows
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description=(
@@ -117,6 +226,21 @@ def main(argv: list[str] | None = None) -> int:
         help=(
             "Output JSON file path for generated table group mappings "
             "(default: public/classtable_column_mapping.json)."
+        ),
+    )
+    parser.add_argument(
+        "--emotion-mapping-sheet-name",
+        type=str,
+        default="emotionmapping",
+        help="Worksheet title containing emotion assignments (default: emotionmapping).",
+    )
+    parser.add_argument(
+        "--output-emotions-by-everything",
+        type=Path,
+        default=Path("public/emotions_by_everything.json"),
+        help=(
+            "Output JSON file path for grouped emotion counts "
+            "(default: public/emotions_by_everything.json)."
         ),
     )
     args = parser.parse_args(argv)
@@ -216,17 +340,27 @@ def main(argv: list[str] | None = None) -> int:
     ]
 
     try:
-        csv_url = google_sheets_csv_url(
-            args.input_url.strip(), args.sheet_name.strip())
-        ssl_context = ssl.create_default_context(cafile=certifi.where())
-        with urllib.request.urlopen(csv_url, context=ssl_context) as response:
-            csv_data = response.read().decode("utf-8")
-        from io import StringIO
-        df = pd.read_csv(StringIO(csv_data))
+        df = load_google_sheet_csv(args.input_url, args.sheet_name, pd)
     except Exception as e:
         print(
             "ERROR: Failed to load Google Sheet as CSV. Ensure the sheet is accessible "
             "and --sheet-name is correct.",
+            file=sys.stderr,
+        )
+        print(f"  Details: {e}", file=sys.stderr)
+        return 2
+
+    try:
+        emotion_assignments = load_emotion_assignments(
+            args.input_url,
+            args.emotion_mapping_sheet_name,
+            pd,
+        )
+    except Exception as e:
+        print(
+            "ERROR: Failed to load emotion assignments. Ensure the emotionmapping "
+            "sheet is accessible and contains Emotion, Basic Emotion, and Valence "
+            "Category columns.",
             file=sys.stderr,
         )
         print(f"  Details: {e}", file=sys.stderr)
@@ -318,10 +452,19 @@ def main(argv: list[str] | None = None) -> int:
     with args.output_column_mapping.open("w", encoding="utf-8") as f:
         json.dump(generated_group_mappings, f, ensure_ascii=False, indent=2)
 
+    emotions_by_everything = build_emotions_by_everything(records, emotion_assignments)
+    args.output_emotions_by_everything.parent.mkdir(parents=True, exist_ok=True)
+    with args.output_emotions_by_everything.open("w", encoding="utf-8") as f:
+        json.dump(emotions_by_everything, f, ensure_ascii=False, indent=2)
+
     print(f"Wrote {len(records)} records to {args.output}")
     print(
         f"Wrote {len(generated_group_mappings)} generated group mappings to "
         f"{args.output_column_mapping}"
+    )
+    print(
+        f"Wrote {len(emotions_by_everything)} grouped emotion records to "
+        f"{args.output_emotions_by_everything}"
     )
     return 0
 
