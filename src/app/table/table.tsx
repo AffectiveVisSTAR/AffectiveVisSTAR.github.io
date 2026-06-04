@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/16/solid";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type FeatureFilter = "all" | "X" | "empty";
 type CorpusRow = Record<string, unknown>;
@@ -48,9 +48,11 @@ type DataTableProps = {
     groups: DataTableGroup[];
     dataUrl: string;
     title?: string;
+    footer?: ReactNode;
     debug?: boolean;
     initialSortRules?: DataTableInitialSortRule[];
     getCellTooltip?: (row: CorpusRow, columnId: string) => string | null;
+    onCellClick?: (row: CorpusRow, columnId: string, tooltip: string | null) => void;
     disableHoverFade?: boolean;
     aggregateRowsAsHeaders?: boolean;
     aggregateRowsByColumn?: string;
@@ -142,9 +144,11 @@ export default function Table({
     groups,
     dataUrl,
     title,
+    footer,
     debug = false,
     initialSortRules,
     getCellTooltip,
+    onCellClick,
     disableHoverFade = false,
     aggregateRowsAsHeaders = false,
     aggregateRowsByColumn,
@@ -527,6 +531,17 @@ export default function Table({
                     isAggregate: "X",
                     [columnsById[guidingColumnId]?.dataKey ?? guidingColumnId]: group.label,
                     [groupByDefinition.dataKey]: group.label,
+                    childEmotions: group.detailRows
+                        .map(({ row }) => getCellText(row, guidingColumnId).trim())
+                        .filter(Boolean),
+                    publications: Array.from(new Set(
+                        group.detailRows.flatMap(({ row }) => {
+                            const publications = row.publications;
+                            return Array.isArray(publications)
+                                ? publications.filter((publication): publication is string => typeof publication === "string")
+                                : [];
+                        })
+                    )),
                 };
 
                 for (const column of normalizedColumns) {
@@ -666,6 +681,17 @@ export default function Table({
                         [columnsById[guidingColumnId]?.dataKey ?? guidingColumnId]: detailGroup.label,
                         [groupByDefinition.dataKey]: detailGroup.label,
                         "Valence Category": getRawCellText(group.aggregateRow, "Valence Category"),
+                        childEmotions: detailGroup.detailRows
+                            .map(({ row }) => getCellText(row, guidingColumnId).trim())
+                            .filter(Boolean),
+                        publications: Array.from(new Set(
+                            detailGroup.detailRows.flatMap(({ row }) => {
+                                const publications = row.publications;
+                                return Array.isArray(publications)
+                                    ? publications.filter((publication): publication is string => typeof publication === "string")
+                                    : [];
+                            })
+                        )),
                     };
 
                     for (const column of normalizedColumns) {
@@ -1209,8 +1235,8 @@ export default function Table({
     }
 
     return (
-        <div className="size-full p-5">
-            <div className="size-full">
+        <div className={`size-full p-5 ${footer ? "table-with-footer" : ""}`}>
+            <div className="size-full table-panel-inner">
                 <h1 className="title">{title}</h1>
                 <div className="table-summary">
                     <p className="subtitle">
@@ -1462,6 +1488,9 @@ export default function Table({
                                                         return null;
                                                     }
                                                     const value = getCellText(row, columnId);
+                                                    const cellTooltip = getCellTooltip?.(row, columnId) ?? null;
+                                                    const isClickableHeatmapCell =
+                                                        definition.filterType === "numeric-heatmap" && Boolean(cellTooltip);
                                                     const displayValue =
                                                         columnId === guidingColumnId && isAggregateHeader && !isAggregateSubRow
                                                             ? getValenceAffectLabel(getRawCellText(row, "Valence Category")) ||
@@ -1471,8 +1500,13 @@ export default function Table({
                                                     return (
                                                         <td
                                                             key={`${columnId}-${sourceIndex}`}
-                                                            className={`col col-${columnId} ${getSuperGroupBoundaryClasses(columnId)}`}
-                                                            title={getCellTooltip?.(row, columnId) ?? undefined}
+                                                            className={`col col-${columnId} ${getSuperGroupBoundaryClasses(columnId)} ${isClickableHeatmapCell ? "clickable-cell" : ""}`}
+                                                            title={cellTooltip ?? undefined}
+                                                            onClick={() => {
+                                                                if (isClickableHeatmapCell) {
+                                                                    onCellClick?.(row, columnId, cellTooltip);
+                                                                }
+                                                            }}
                                                         >
                                                             {columnId === guidingColumnId
                                                                 ? isAggregateHeader && aggregateKey
@@ -1513,6 +1547,7 @@ export default function Table({
                         </table>
                     </div>
                 )}
+                {footer}
             </div>
         </div>
     );

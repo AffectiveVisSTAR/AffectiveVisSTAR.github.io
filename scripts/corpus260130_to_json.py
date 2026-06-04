@@ -43,6 +43,33 @@ def clean_records(records: list[dict[str, object]]) -> list[dict[str, object]]:
     return cleaned
 
 
+def select_sheet_columns(
+    df: Any,
+    desired_columns: list[str],
+) -> tuple[Any | None, list[str]]:
+    norm_to_actual: dict[str, str] = {}
+    for col in list(df.columns):
+        norm = normalize_col_name(col)
+        if norm and norm not in norm_to_actual:
+            norm_to_actual[norm] = str(col)
+
+    missing: list[str] = []
+    actual_columns: list[str] = []
+    for desired in desired_columns:
+        actual = norm_to_actual.get(normalize_col_name(desired))
+        if actual is None:
+            missing.append(desired)
+        else:
+            actual_columns.append(actual)
+
+    if missing:
+        return None, missing
+
+    selected = df[actual_columns].copy()
+    selected.columns = desired_columns
+    return selected, []
+
+
 def parse_multi_value_cell(value: object) -> list[str]:
     if value is None:
         return []
@@ -282,6 +309,15 @@ def main(argv: list[str] | None = None) -> int:
             "(default: public/emotions_by_everything.json)."
         ),
     )
+    parser.add_argument(
+        "--output-metadata",
+        type=Path,
+        default=Path("public/classtable_metadata.json"),
+        help=(
+            "Output JSON file path for publication metadata records "
+            "(default: public/classtable_metadata.json)."
+        ),
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -368,6 +404,18 @@ def main(argv: list[str] | None = None) -> int:
                        "Other validated psychology measure",
                        ]
 
+    metadata_columns = [
+        "AuthorYear",
+        "Title",
+        "Year",
+        "Journal",
+        "Country",
+        "Abstract",
+        "DomainApp",
+        "DOI",
+        "BibTex Key",
+    ]
+
     columns_to_process = [
      #  {
      #       "origName": "ElementsKeywords",
@@ -411,14 +459,7 @@ def main(argv: list[str] | None = None) -> int:
         if norm and norm not in norm_to_actual:
             norm_to_actual[norm] = str(col)
 
-    missing: list[str] = []
-    actual_columns: list[str] = []
-    for desired in desired_columns:
-        actual = norm_to_actual.get(normalize_col_name(desired))
-        if actual is None:
-            missing.append(desired)
-        else:
-            actual_columns.append(actual)
+    selected, missing = select_sheet_columns(df, desired_columns)
 
     if missing:
         print(
@@ -428,8 +469,14 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 2
 
-    selected = df[actual_columns].copy()
-    selected.columns = desired_columns
+    metadata_selected, metadata_missing = select_sheet_columns(df, metadata_columns)
+    if metadata_missing:
+        print(
+            f"ERROR: Missing required metadata columns: {', '.join(metadata_missing)}. "
+            f"Available: {', '.join(str(c) for c in df.columns)}",
+            file=sys.stderr,
+        )
+        return 2
 
     # Expand special "multi value" columns into one-hot "X" columns and
     # emit a mapping JSON describing these generated groups for the table UI.
@@ -479,9 +526,13 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     selected = selected.where(pd.notna(selected), None)
+    metadata_selected = metadata_selected.where(pd.notna(metadata_selected), None)
 
     records = selected.to_dict(orient="records")
     records = clean_records(records)
+
+    metadata_records = metadata_selected.to_dict(orient="records")
+    metadata_records = clean_records(metadata_records)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", encoding="utf-8") as f:
@@ -490,6 +541,10 @@ def main(argv: list[str] | None = None) -> int:
     args.output_column_mapping.parent.mkdir(parents=True, exist_ok=True)
     with args.output_column_mapping.open("w", encoding="utf-8") as f:
         json.dump(generated_group_mappings, f, ensure_ascii=False, indent=2)
+
+    args.output_metadata.parent.mkdir(parents=True, exist_ok=True)
+    with args.output_metadata.open("w", encoding="utf-8") as f:
+        json.dump(metadata_records, f, ensure_ascii=False, indent=2)
 
     emotions_by_everything = build_emotions_by_everything(records, emotion_assignments)
     args.output_emotions_by_everything.parent.mkdir(parents=True, exist_ok=True)
@@ -501,6 +556,7 @@ def main(argv: list[str] | None = None) -> int:
         f"Wrote {len(generated_group_mappings)} generated group mappings to "
         f"{args.output_column_mapping}"
     )
+    print(f"Wrote {len(metadata_records)} metadata records to {args.output_metadata}")
     print(
         f"Wrote {len(emotions_by_everything)} grouped emotion records to "
         f"{args.output_emotions_by_everything}"

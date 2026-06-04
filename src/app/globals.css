@@ -98,6 +98,22 @@ body {
   border: 1px solid #e2e8f0;
 }
 
+.table-with-footer {
+  min-height: 0;
+}
+
+.table-with-footer .table-panel-inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.table-with-footer .table-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+}
+
 .dense-table {
   width: 100%;
   min-width: 100%;
@@ -312,6 +328,122 @@ tr.aggregate-row:not(.aggregate-sub-row) {
 
 .column-dragging {
   opacity: 0.6;
+}
+
+.clickable-cell {
+  cursor: pointer;
+}
+
+.clickable-cell:hover {
+  background: #f1f5f9;
+}
+
+.cell-details-panel {
+  flex: 0 0 auto;
+  margin: 12px 0 0;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1f2937;
+  max-height: 24dvh;
+  overflow: auto;
+}
+
+.cell-details-panel h2 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.cell-details-panel p {
+  margin: 0 0 6px;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.cell-details-panel a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.metadata-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 10px;
+}
+
+.metadata-filter-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 150px;
+  padding: 6px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.metadata-filter-row select {
+  width: 100%;
+  height: 24px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 0.78rem;
+  font-weight: 400;
+  padding: 0 6px;
+  cursor: pointer;
+}
+
+.metadata-filter-row select:hover {
+  border-color: #94a3b8;
+}
+
+.metadata-filter-row select:focus {
+  outline: 2px solid #bfdbfe;
+  border-color: #3b82f6;
+}
+
+.paper-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.paper-list-item {
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.paper-list-item:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.paper-list-item .paper-citation {
+  color: #1f2937;
+}
+
+.paper-list-item details {
+  margin: 4px 0 6px;
+}
+
+.paper-list-item summary {
+  cursor: pointer;
+  color: #334155;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.paper-list-item details p {
+  margin-top: 6px;
+  color: #475569;
+  line-height: 1.45;
 }
 
 .filter-input,

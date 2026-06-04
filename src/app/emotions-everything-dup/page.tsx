@@ -381,6 +381,7 @@ const TABLE_GROUPS: DataTableGroup[] = [
 const TABLE_DATA_URL = "/emotions_by_everything.json";
 const TABLE_RAW_DATA_URL = "/classtable.json";
 const TABLE_MAPPING_URL = "/classtable_column_mapping.json";
+const TABLE_METADATA_URL = "/classtable_metadata.json";
 const TABLE_TITLE = "Affective Visualization Survey Classification";
 const FALLBACK_GENERATED_GROUPS: DataTableGroup[] = [];
 const INITIAL_SORT_RULES: DataTableInitialSortRule[] = [
@@ -389,6 +390,42 @@ const INITIAL_SORT_RULES: DataTableInitialSortRule[] = [
 ];
 
 type EmotionRow = Record<string, unknown>;
+
+type SelectedCellDetails = {
+    title: string;
+    count: number;
+    authorYears: string[];
+};
+
+type MetadataFilters = {
+    journal: string;
+    country: string;
+    domain: string;
+};
+
+type MetadataRow = {
+    AuthorYear?: unknown;
+    Title?: unknown;
+    Year?: unknown;
+    Journal?: unknown;
+    Country?: unknown;
+    Abstract?: unknown;
+    DomainApp?: unknown;
+    DOI?: unknown;
+    "BibTex Key"?: unknown;
+};
+
+type PaperMetadata = {
+    authorYear: string;
+    title: string;
+    year: string;
+    journal: string;
+    country: string;
+    abstract: string;
+    domain: string;
+    doi: string;
+    bibTexKey: string;
+};
 
 type GeneratedGroupColumn = {
     dataKey?: unknown;
@@ -402,6 +439,30 @@ type GeneratedGroup = {
     superGroupColor?: unknown;
     columns?: unknown;
 };
+
+const ALL_METADATA_FILTERS: MetadataFilters = {
+    journal: "all",
+    country: "all",
+    domain: "all",
+};
+
+function splitMetadataValues(value: string): string[] {
+    return value
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+}
+
+function getFilterOptions(values: string[]): string[] {
+    return Array.from(new Set(values.filter(Boolean))).sort((a, b) => a.localeCompare(b));
+}
+
+function matchesMetadataFilter(value: string, filter: string): boolean {
+    if (filter === "all") {
+        return true;
+    }
+    return splitMetadataValues(value).includes(filter);
+}
 
 function toGeneratedGroups(raw: unknown): DataTableGroup[] {
     if (!Array.isArray(raw)) {
@@ -440,6 +501,9 @@ function toGeneratedGroups(raw: unknown): DataTableGroup[] {
 
 export default function TableTestPage() {
     const [generatedGroups, setGeneratedGroups] = useState<DataTableGroup[]>(FALLBACK_GENERATED_GROUPS);
+    const [selectedCellDetails, setSelectedCellDetails] = useState<SelectedCellDetails | null>(null);
+    const [metadataFilters, setMetadataFilters] = useState<MetadataFilters>(ALL_METADATA_FILTERS);
+    const [paperMetadata, setPaperMetadata] = useState<PaperMetadata[]>([]);
 
     useEffect(() => {
         let isActive = true;
@@ -467,8 +531,51 @@ export default function TableTestPage() {
         };
     }, []);
 
-    const groups = [...TABLE_GROUPS, ...generatedGroups];
+    const groups = useMemo(() => [...TABLE_GROUPS, ...generatedGroups], [generatedGroups]);
     const [rawRows, setRawRows] = useState<EmotionRow[]>([]);
+
+    useEffect(() => {
+        let isActive = true;
+
+        async function loadPaperMetadata() {
+            try {
+                const res = await fetch(TABLE_METADATA_URL, { cache: "no-store" });
+                if (!res.ok) {
+                    throw new Error(`Request failed with status ${res.status}`);
+                }
+                const data = (await res.json()) as MetadataRow[];
+                if (!isActive || !Array.isArray(data)) {
+                    return;
+                }
+
+                setPaperMetadata(
+                    data
+                        .map((row) => ({
+                            authorYear: typeof row.AuthorYear === "string" ? row.AuthorYear : "",
+                            title: typeof row.Title === "string" ? row.Title : "",
+                            year: row.Year === null || row.Year === undefined ? "" : String(row.Year),
+                            journal: typeof row.Journal === "string" ? row.Journal : "",
+                            country: typeof row.Country === "string" ? row.Country : "",
+                            abstract: typeof row.Abstract === "string" ? row.Abstract : "",
+                            domain: typeof row.DomainApp === "string" ? row.DomainApp : "",
+                            doi: typeof row.DOI === "string" ? row.DOI : "",
+                            bibTexKey: typeof row["BibTex Key"] === "string" ? row["BibTex Key"] : "",
+                        }))
+                        .filter((row) => row.authorYear)
+                );
+            } catch {
+                if (isActive) {
+                    setPaperMetadata([]);
+                }
+            }
+        }
+
+        loadPaperMetadata();
+
+        return () => {
+            isActive = false;
+        };
+    }, []);
 
     useEffect(() => {
         let isActive = true;
@@ -511,6 +618,14 @@ export default function TableTestPage() {
         return map;
     }, [rawRows]);
 
+    const paperMetadataByAuthorYear = useMemo(() => {
+        const map = new Map<string, PaperMetadata>();
+        for (const item of paperMetadata) {
+            map.set(item.authorYear, item);
+        }
+        return map;
+    }, [paperMetadata]);
+
     const getDataKeyForColumn = useCallback(
         (columnId: string): string | null => {
             for (const group of groups) {
@@ -544,6 +659,11 @@ export default function TableTestPage() {
             if (!emotion) {
                 return null;
             }
+            const childEmotions = Array.isArray(row.childEmotions)
+                ? row.childEmotions.filter((item): item is string => typeof item === "string")
+                : [];
+            const emotionsToMatch = childEmotions.length > 0 ? childEmotions : [emotion];
+            const emotionsToMatchSet = new Set(emotionsToMatch);
 
             const matchingPublications = Array.from(new Set(
                 publications.filter((publication) => {
@@ -559,7 +679,7 @@ export default function TableTestPage() {
                         const specific = typeof rawRow.SpecificEmotionsCleaned === "string"
                             ? rawRow.SpecificEmotionsCleaned.split(",").map((item) => item.trim())
                             : [];
-                        return specific.includes(emotion);
+                        return specific.some((item) => emotionsToMatchSet.has(item));
                     });
                 })
             ));
@@ -569,6 +689,61 @@ export default function TableTestPage() {
         [getDataKeyForColumn, rawRowsByAuthorYear]
     );
 
+    const handleCellClick = useCallback(
+        (row: EmotionRow, columnId: string, tooltip: string | null) => {
+            if (!tooltip) {
+                return;
+            }
+
+            const tooltipLines = tooltip.split("\n").map((line) => line.trim()).filter(Boolean);
+            const countMatch = tooltipLines[0]?.match(/^(\d+)/);
+            const count = countMatch ? Number(countMatch[1]) : Math.max(0, tooltipLines.length - 1);
+            const authorYears = tooltipLines.slice(1);
+            const dataKey = getDataKeyForColumn(columnId);
+            const emotion = typeof row.name === "string" ? row.name : "Selected cell";
+            const title = dataKey ? `${emotion} / ${dataKey}` : emotion;
+            setSelectedCellDetails({ title, count, authorYears });
+            setMetadataFilters(ALL_METADATA_FILTERS);
+        },
+        [getDataKeyForColumn]
+    );
+
+    const selectedPapers = useMemo(
+        () =>
+            selectedCellDetails
+                ? selectedCellDetails.authorYears.map((authorYear) => ({
+                    authorYear,
+                    paper: paperMetadataByAuthorYear.get(authorYear),
+                }))
+                : [],
+        [paperMetadataByAuthorYear, selectedCellDetails]
+    );
+
+    const metadataFilterOptions = useMemo(
+        () => ({
+            journals: getFilterOptions(selectedPapers.map(({ paper }) => paper?.journal ?? "")),
+            countries: getFilterOptions(selectedPapers.flatMap(({ paper }) => splitMetadataValues(paper?.country ?? ""))),
+            domains: getFilterOptions(selectedPapers.flatMap(({ paper }) => splitMetadataValues(paper?.domain ?? ""))),
+        }),
+        [selectedPapers]
+    );
+
+    const filteredSelectedPapers = useMemo(
+        () =>
+            selectedPapers.filter(({ paper }) => {
+                if (!paper) {
+                    return metadataFilters.journal === "all" &&
+                        metadataFilters.country === "all" &&
+                        metadataFilters.domain === "all";
+                }
+
+                return matchesMetadataFilter(paper.journal, metadataFilters.journal) &&
+                    matchesMetadataFilter(paper.country, metadataFilters.country) &&
+                    matchesMetadataFilter(paper.domain, metadataFilters.domain);
+            }),
+        [metadataFilters, selectedPapers]
+    );
+
     return (
         <div className="size-full">
             <Table
@@ -576,6 +751,114 @@ export default function TableTestPage() {
                 dataUrl={TABLE_DATA_URL}
                 initialSortRules={INITIAL_SORT_RULES}
                 getCellTooltip={getCellTooltip}
+                onCellClick={handleCellClick}
+                footer={
+                    <section className="cell-details-panel" aria-live="polite">
+                        {selectedCellDetails ? (
+                            <>
+                                <h2>{selectedCellDetails.title}</h2>
+                                <p>
+                                    {filteredSelectedPapers.length} of {selectedCellDetails.count} papers
+                                </p>
+                                <div className="metadata-filter-row">
+                                    <label>
+                                        <span>Journal</span>
+                                        <select
+                                            value={metadataFilters.journal}
+                                            onChange={(event) =>
+                                                setMetadataFilters((prev) => ({ ...prev, journal: event.target.value }))
+                                            }
+                                        >
+                                            <option value="all">All journals</option>
+                                            {metadataFilterOptions.journals.map((journal) => (
+                                                <option key={journal} value={journal}>
+                                                    {journal}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </label>
+                                    <label>
+                                        <span>Country</span>
+                                        <select
+                                            value={metadataFilters.country}
+                                            onChange={(event) =>
+                                                setMetadataFilters((prev) => ({ ...prev, country: event.target.value }))
+                                            }
+                                        >
+                                            <option value="all">All countries</option>
+                                            {metadataFilterOptions.countries.map((country) => (
+                                                <option key={country} value={country}>
+                                                    {country}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </label>
+                                    <label>
+                                        <span>Domain</span>
+                                        <select
+                                            value={metadataFilters.domain}
+                                            onChange={(event) =>
+                                                setMetadataFilters((prev) => ({ ...prev, domain: event.target.value }))
+                                            }
+                                        >
+                                            <option value="all">All domains</option>
+                                            {metadataFilterOptions.domains.map((domain) => (
+                                                <option key={domain} value={domain}>
+                                                    {domain}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </label>
+                                </div>
+                                <div className="paper-list">
+                                    {filteredSelectedPapers.map(({ authorYear, paper }) => {
+                                        const doi = paper?.doi ?? "";
+                                        const doiHref = doi
+                                            ? doi.startsWith("http")
+                                                ? doi
+                                                : `https://doi.org/${doi}`
+                                            : "";
+
+                                        return (
+                                            <article className="paper-list-item" key={authorYear}>
+                                                <p className="paper-citation">
+                                                    <strong>{authorYear}.</strong>{" "}
+                                                    {paper?.title ? `${paper.title}.` : "Metadata not found."}
+                                                </p>
+                                                {paper ? (
+                                                    <>
+                                                        <p>
+                                                            Journal: {paper.journal || "Unknown"}. Country: {paper.country || "Unknown"}. Domain: {paper.domain || "Unknown"}.
+                                                        </p>
+                                                        {paper.abstract ? (
+                                                            <details>
+                                                                <summary>Abstract</summary>
+                                                                <p>{paper.abstract}</p>
+                                                            </details>
+                                                        ) : null}
+                                                        {doiHref ? (
+                                                            <p>
+                                                                DOI:{" "}
+                                                                <a href={doiHref} target="_blank" rel="noreferrer">
+                                                                    {doi}
+                                                                </a>
+                                                            </p>
+                                                        ) : null}
+                                                    </>
+                                                ) : null}
+                                            </article>
+                                        );
+                                    })}
+                                    {filteredSelectedPapers.length === 0 ? (
+                                        <p>No papers match the selected metadata filters.</p>
+                                    ) : null}
+                                </div>
+                            </>
+                        ) : (
+                            <p>Click a coloured square to show its publication count and AuthorYear list.</p>
+                        )}
+                    </section>
+                }
                 disableHoverFade
                 aggregateRowsAsHeaders
                 aggregateRowsByColumn="Basic Emotion"
