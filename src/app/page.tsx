@@ -102,9 +102,9 @@ const TABLE_GROUPS: DataTableGroup[] = [
         ]
     },
     {
-        name: "Domain Application",
+        name: " ",
         color: "#c77bc1",
-        superGroupName: "Domain Aspects",
+        superGroupName: "Domain Application",
         superGroupColor: "#c77bc1",
         columns: [
             {
@@ -150,9 +150,10 @@ const TABLE_GROUPS: DataTableGroup[] = [
         ],
     },
     {
-        name: "Data Source",
-        color: "#e78ac3",
-        superGroupName: "Domain Aspects",
+        name: "Data",
+        color: "#5fc9bb",
+        superGroupName: "Sources",
+        superGroupColor: "#42a89a",
         columns: [
             {
                 dataKey: "Real-World",
@@ -165,17 +166,17 @@ const TABLE_GROUPS: DataTableGroup[] = [
         ]
     },
     {
-        name: "Vis Source",
-        color: "#66c2a5",
-        superGroupName: "Design Aspects",
-        superGroupColor: "#66c2a5",
+        name: "Vis",
+        color: "#8ae7db",
+        superGroupName: "Sources",
+        //superGroupColor: "#66c2a5",
         columns: [
             {
-                dataKey: "In-the-Wild",
+                dataKey: "Vis Source In-the-Wild",
                 filterType: "feature",
             },
             {
-                dataKey: "Custom",
+                dataKey: "Vis Source Custom",
                 filterType: "feature",
             },
         ]

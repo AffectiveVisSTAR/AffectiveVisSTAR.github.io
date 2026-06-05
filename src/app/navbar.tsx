@@ -27,20 +27,11 @@ export default function Navbar() {
     >
       <b>Responsible Affective Visualization Survey</b>
       <Link href="/" style={linkStyle("/")}>
-        Classification Table
-      </Link>
-      <Link href="/emotions-everything" style={linkStyle("/emotions-everything")}>
-        Everything by Emotions
+        Corpus Classification Table
       </Link>
       <Link href="/emotions-everything-dup" style={linkStyle("/emotions-everything-dup")}>
-        Emotions by Section
+        Emotions by Everything
       </Link>
-      <Link href="/heatmap" style={linkStyle("/heatmap")}>
-        Heatmap
-      </Link>
-      {/* <Link href="/design-space" style={linkStyle("/design-space")}>
-        Design Space
-      </Link> */}
     </nav>
   );
 }
