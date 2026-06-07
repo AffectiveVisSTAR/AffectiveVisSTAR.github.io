@@ -52,3 +52,20 @@ npm run generate:heatmap-table
 ```
 
 This keeps the heatmap page static-hosting friendly (no API route required at runtime).
+
+## GitHub Pages
+
+This repository is configured as an organization/user GitHub Pages site:
+
+- Repository: `AffectiveVisSTAR/AffectiveVisSTAR.github.io`
+- Site URL: `https://affectivevisstar.github.io/`
+- Pages source: GitHub Actions
+
+If the repository is renamed, renamed back, or the site starts returning 404:
+
+1. Confirm the repository name is exactly `AffectiveVisSTAR.github.io`.
+2. In GitHub, open **Settings → Pages** and set **Source** to **GitHub Actions**.
+3. Push to `main` or rerun the `Deploy Next.js site to Pages` workflow.
+4. Check the workflow deploy URL is `https://affectivevisstar.github.io/`.
+
+The Next.js app uses a static export (`output: "export"`) so the workflow can upload the generated `out/` directory to GitHub Pages.
