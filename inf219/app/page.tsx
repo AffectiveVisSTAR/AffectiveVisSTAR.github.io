@@ -1,7 +1,11 @@
-export default function Home() {
+"use client";
+
+import Table from "./table";
+
+export default function Page() {
   return (
-    <main>
-      <h1></h1>
-    </main>
+    <div className="size-full">
+      <Table />
+    </div>
   );
 }
