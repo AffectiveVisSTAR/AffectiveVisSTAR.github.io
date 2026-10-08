@@ -1,11 +1,9 @@
-"use client";
-
-import Table from "./table";
+import CorpusTable from "@/components/corpus/CorpusTable";
 
 export default function Page() {
   return (
-    <div className="size-full">
-      <Table />
-    </div>
+    <main className="h-screen">
+      <CorpusTable />
+    </main>
   );
 }
