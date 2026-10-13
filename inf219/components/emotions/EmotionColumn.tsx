@@ -28,8 +28,60 @@ function groupByValence(emotions: EmotionRow[]) {
   return categories.map((category) => ({ category, rows: groups.get(category)! }));
 }
 
+type DisplayRow = {
+  id: string;
+  name: string;
+  basicEmotion: string;
+  isGroup: boolean;
+  isChild: boolean;
+};
+
+// The original table hides category totals and groups the remaining emotions.
+function buildDisplayRows(rows: EmotionRow[]): DisplayRow[] {
+  const basics = new Map<string, EmotionRow[]>();
+  for (const row of rows) {
+    if (row.isAggregate === "X") continue;
+    const basic = row["Basic Emotion"];
+    const members = basics.get(basic) ?? [];
+    members.push(row);
+    basics.set(basic, members);
+  }
+
+  const result: DisplayRow[] = [];
+  const names = Array.from(basics.keys()).sort((a, b) =>
+    a === "_" ? -1 : b === "_" ? 1 : a.localeCompare(b),
+  );
+
+  for (const basic of names) {
+    const members = basics.get(basic)!;
+    const hasGroup = basic !== "_" && members.length > 1;
+    if (hasGroup) {
+      result.push({
+        id: "group:" + basic,
+        name: basic,
+        basicEmotion: basic,
+        isGroup: true,
+        isChild: false,
+      });
+    }
+    for (const member of [...members].sort((a, b) => a.name.localeCompare(b.name))) {
+      result.push({
+        id: "emotion:" + member.name,
+        name: member.name,
+        basicEmotion: basic === "_" ? "–" : basic,
+        isGroup: false,
+        isChild: hasGroup,
+      });
+    }
+  }
+  return result;
+}
+
 export default function EmotionColumn({ emotions }: EmotionColumnProps) {
-  const groups = groupByValence(emotions);
+  const groups = groupByValence(emotions).map((group) => ({
+    category: group.category,
+    rows: buildDisplayRows(group.rows),
+  })).filter((group) => group.rows.length > 0);
 
   return (
     <section className="sticky left-0 z-20 shrink-0 self-start border-r-2 border-slate-500 bg-white">
@@ -81,7 +133,7 @@ export default function EmotionColumn({ emotions }: EmotionColumnProps) {
         {groups.map(({ category, rows }) => (
           <tbody key={category}>
             {rows.map((emotion, index) => (
-              <tr key={emotion.name}>
+              <tr key={emotion.id}>
                 {index === 0 && (
                   <th rowSpan={rows.length} scope="rowgroup" className="border-r-2 border-t border-slate-300 bg-slate-50 p-0 align-middle">
                     <div className="flex items-center justify-center" style={{ width: CATEGORY_WIDTH }}>
@@ -91,19 +143,24 @@ export default function EmotionColumn({ emotions }: EmotionColumnProps) {
                     </div>
                   </th>
                 )}
-                {EMOTION_COLUMNS.map((column) => (
-                  <td key={column.key} className={index === 0 ? "border-t border-slate-300 p-0" : "p-0"}>
-                    <div
-                      title={emotion[column.key]}
-                      className={emotion.isAggregate === "X" ? "truncate px-2 font-semibold" : "truncate px-2"}
-                      style={{ height: ROW_HEIGHT, lineHeight: `${ROW_HEIGHT}px`, width: column.width }}
-                    >
-                      {column.key === "Basic Emotion" && emotion.isAggregate === "X"
-                        ? "–"
-                        : emotion[column.key]}
-                    </div>
-                  </td>
-                ))}
+                <th scope="row" className={index === 0 ? "border-t border-slate-300 p-0 text-left" : "p-0 text-left"}>
+                  <div
+                    title={emotion.name}
+                    className={emotion.isChild ? "truncate pl-6 pr-2 font-normal" : "truncate px-2 font-semibold"}
+                    style={{ height: ROW_HEIGHT, lineHeight: `${ROW_HEIGHT}px`, width: EMOTION_COLUMNS[0].width }}
+                  >
+                    {emotion.name}
+                  </div>
+                </th>
+                <td className={index === 0 ? "border-t border-slate-300 p-0" : "p-0"}>
+                  <div
+                    title={emotion.basicEmotion}
+                    className={emotion.isGroup ? "truncate px-2 font-semibold" : "truncate px-2"}
+                    style={{ height: ROW_HEIGHT, lineHeight: `${ROW_HEIGHT}px`, width: EMOTION_COLUMNS[1].width }}
+                  >
+                    {emotion.basicEmotion}
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
