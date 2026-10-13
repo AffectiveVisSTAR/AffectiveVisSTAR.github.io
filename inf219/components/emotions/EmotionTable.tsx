@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { loadEmotions } from "@/lib/emotion-data";
 import type { EmotionRow } from "@/lib/types";
+import EmotionColumn from "./EmotionColumn";
 
-// First step: load the emotion data and display the names.
+// Loads the emotion data and places its panels in one scroll container.
 export default function EmotionTable() {
   const [emotions, setEmotions] = useState<EmotionRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,17 +42,14 @@ export default function EmotionTable() {
   }
 
   return (
-    <section className="p-4">
-      <h1 className="mb-3 text-xl font-semibold">Emotions</h1>
-      {emotions.length === 0 ? (
-        <p>No emotions found.</p>
-      ) : (
-        <ul className="list-disc space-y-1 pl-5">
-          {emotions.map((emotion) => (
-            <li key={emotion.name}>{emotion.name}</li>
-          ))}
-        </ul>
-      )}
-    </section>
+    <div className="size-full overflow-auto bg-neutral-100">
+      <div className="flex w-max items-start gap-3 p-3">
+        {emotions.length === 0 ? (
+          <p className="p-4 text-sm text-neutral-600">No emotions found.</p>
+        ) : (
+          <EmotionColumn emotions={emotions} />
+        )}
+      </div>
+    </div>
   );
 }
