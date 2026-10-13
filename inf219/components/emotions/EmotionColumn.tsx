@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import type { EmotionRow } from "@/lib/types";
+import { groupKey, type EmotionDisplayGroup } from "@/lib/emotion-layout";
 import { LABEL_HEIGHT, ROW_HEIGHT, SUBGROUP_HEIGHT, TITLE_HEIGHT } from "../corpus/layout";
 
 type EmotionColumnProps = {
-  emotions: EmotionRow[];
+  groups: EmotionDisplayGroup[];
+  collapsedGroups: Set<string>;
+  onToggleGroup: (key: string) => void;
 };
 
 const CATEGORY_WIDTH = 44;
@@ -13,98 +14,7 @@ const EMOTION_COLUMNS = [
   { key: "name", label: "Affect", width: 200 },
   { key: "Basic Emotion", label: "Basic Emotion", width: 140 },
 ] as const;
-const CATEGORY_ORDER = ["Negative", "Positive", "Neutral", "Main"];
-
-// Put rows with the same valence together without changing the source data.
-function groupByValence(emotions: EmotionRow[]) {
-  const groups = new Map<string, EmotionRow[]>();
-  for (const emotion of emotions) {
-    const category = emotion["Valence Category"];
-    const rows = groups.get(category) ?? [];
-    rows.push(emotion);
-    groups.set(category, rows);
-  }
-  const categories = [
-    ...CATEGORY_ORDER.filter((category) => groups.has(category)),
-    ...Array.from(groups.keys()).filter((category) => !CATEGORY_ORDER.includes(category)),
-  ];
-  return categories.map((category) => ({ category, rows: groups.get(category)! }));
-}
-
-type DisplayRow = {
-  id: string;
-  name: string;
-  basicEmotion: string;
-  isGroup: boolean;
-  isChild: boolean;
-  groupId?: string;
-};
-
-// The original table hides category totals and groups the remaining emotions.
-function buildDisplayRows(rows: EmotionRow[]): DisplayRow[] {
-  const basics = new Map<string, EmotionRow[]>();
-  for (const row of rows) {
-    if (row.isAggregate === "X") continue;
-    const basic = row["Basic Emotion"];
-    const members = basics.get(basic) ?? [];
-    members.push(row);
-    basics.set(basic, members);
-  }
-
-  const result: DisplayRow[] = [];
-  const names = Array.from(basics.keys()).sort((a, b) =>
-    a === "_" ? -1 : b === "_" ? 1 : a.localeCompare(b),
-  );
-
-  for (const basic of names) {
-    const members = basics.get(basic)!;
-    const hasGroup = basic !== "_" && members.length > 1;
-    if (hasGroup) {
-      result.push({
-        id: "group:" + basic,
-        name: basic,
-        basicEmotion: basic,
-        isGroup: true,
-        isChild: false,
-        groupId: basic,
-      });
-    }
-    for (const member of [...members].sort((a, b) => a.name.localeCompare(b.name))) {
-      result.push({
-        id: "emotion:" + member.name,
-        name: member.name,
-        basicEmotion: basic === "_" ? "–" : basic,
-        isGroup: false,
-        isChild: hasGroup,
-        groupId: hasGroup ? basic : undefined,
-      });
-    }
-  }
-  return result;
-}
-
-export default function EmotionColumn({ emotions }: EmotionColumnProps) {
-  // An empty set means every group starts open.
-  // Include the valence category: Negative/Action and Positive/Action toggle independently.
-  const [collapsedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set());
-  const groupKey = (category: string, basic: string) => JSON.stringify([category, basic]);
-
-  function toggleGroup(key: string) {
-    setExpandedGroups((previous) => {
-      const next = new Set(previous);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  }
-
-  const groups = groupByValence(emotions).map((group) => ({
-    category: group.category,
-    rows: buildDisplayRows(group.rows).filter((row) =>
-      !row.isChild || !collapsedGroups.has(groupKey(group.category, row.groupId!)),
-    ),
-  })).filter((group) => group.rows.length > 0);
-
+export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup }: EmotionColumnProps) {
   return (
     <section className="sticky left-0 z-20 shrink-0 self-start border-r-2 border-slate-500 bg-white">
       <table className="border-separate border-spacing-0 text-xs text-neutral-800">
@@ -176,7 +86,7 @@ export default function EmotionColumn({ emotions }: EmotionColumnProps) {
                         type="button"
                         className="flex h-full w-full items-center gap-1 text-left font-semibold hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-blue-600"
                         aria-expanded={!collapsedGroups.has(groupKey(category, emotion.groupId!))}
-                        onClick={() => toggleGroup(groupKey(category, emotion.groupId!))}
+                        onClick={() => onToggleGroup(groupKey(category, emotion.groupId!))}
                       >
                         <span aria-hidden="true">
                           {collapsedGroups.has(groupKey(category, emotion.groupId!)) ? "▸" : "▾"}
