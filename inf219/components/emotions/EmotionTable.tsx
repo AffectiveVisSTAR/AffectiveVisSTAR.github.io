@@ -4,12 +4,26 @@ import { useEffect, useState } from "react";
 import { loadEmotions } from "@/lib/emotion-data";
 import type { EmotionRow } from "@/lib/types";
 import EmotionColumn from "./EmotionColumn";
+import EmotionGroupPanel from "./EmotionGroupPanel";
+import { SUPER_GROUPS } from "@/lib/columns";
+import { getVisibleEmotionGroups } from "@/lib/emotion-layout";
 
 // Loads the emotion data and places its panels in one scroll container.
 export default function EmotionTable() {
   const [emotions, setEmotions] = useState<EmotionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => new Set());
+  const groups = getVisibleEmotionGroups(emotions, collapsedGroups);
+  function toggleGroup(key: string) {
+    setCollapsedGroups((previous) => {
+      const next = new Set(previous);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
 
   useEffect(() => {
     let active = true;
@@ -47,7 +61,12 @@ export default function EmotionTable() {
         {emotions.length === 0 ? (
           <p className="p-4 text-sm text-neutral-600">No emotions found.</p>
         ) : (
-          <EmotionColumn emotions={emotions} />
+          <>
+            <EmotionColumn groups={groups} collapsedGroups={collapsedGroups} onToggleGroup={toggleGroup} />
+            {SUPER_GROUPS.map((superGroup) => (
+              <EmotionGroupPanel key={superGroup.id} superGroup={superGroup} groups={groups} />
+            ))}
+          </>
         )}
       </div>
     </div>
