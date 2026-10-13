@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import type { EmotionRow } from "@/lib/types";
 import { LABEL_HEIGHT, ROW_HEIGHT, SUBGROUP_HEIGHT, TITLE_HEIGHT } from "../corpus/layout";
 
@@ -34,6 +37,7 @@ type DisplayRow = {
   basicEmotion: string;
   isGroup: boolean;
   isChild: boolean;
+  groupId?: string;
 };
 
 // The original table hides category totals and groups the remaining emotions.
@@ -62,6 +66,7 @@ function buildDisplayRows(rows: EmotionRow[]): DisplayRow[] {
         basicEmotion: basic,
         isGroup: true,
         isChild: false,
+        groupId: basic,
       });
     }
     for (const member of [...members].sort((a, b) => a.name.localeCompare(b.name))) {
@@ -71,6 +76,7 @@ function buildDisplayRows(rows: EmotionRow[]): DisplayRow[] {
         basicEmotion: basic === "_" ? "–" : basic,
         isGroup: false,
         isChild: hasGroup,
+        groupId: hasGroup ? basic : undefined,
       });
     }
   }
@@ -78,9 +84,24 @@ function buildDisplayRows(rows: EmotionRow[]): DisplayRow[] {
 }
 
 export default function EmotionColumn({ emotions }: EmotionColumnProps) {
+  // Include the valence category: Negative/Action and Positive/Action toggle independently.
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set());
+  const groupKey = (category: string, basic: string) => JSON.stringify([category, basic]);
+
+  function toggleGroup(key: string) {
+    setExpandedGroups((previous) => {
+      const next = new Set(previous);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
+
   const groups = groupByValence(emotions).map((group) => ({
     category: group.category,
-    rows: buildDisplayRows(group.rows),
+    rows: buildDisplayRows(group.rows).filter((row) =>
+      !row.isChild || expandedGroups.has(groupKey(group.category, row.groupId!)),
+    ),
   })).filter((group) => group.rows.length > 0);
 
   return (
@@ -149,7 +170,19 @@ export default function EmotionColumn({ emotions }: EmotionColumnProps) {
                     className={emotion.isChild ? "truncate pl-6 pr-2 font-normal" : "truncate px-2 font-semibold"}
                     style={{ height: ROW_HEIGHT, lineHeight: `${ROW_HEIGHT}px`, width: EMOTION_COLUMNS[0].width }}
                   >
-                    {emotion.name}
+                    {emotion.isGroup ? (
+                      <button
+                        type="button"
+                        className="flex h-full w-full items-center gap-1 text-left font-semibold hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-blue-600"
+                        aria-expanded={expandedGroups.has(groupKey(category, emotion.groupId!))}
+                        onClick={() => toggleGroup(groupKey(category, emotion.groupId!))}
+                      >
+                        <span aria-hidden="true">
+                          {expandedGroups.has(groupKey(category, emotion.groupId!)) ? "▾" : "▸"}
+                        </span>
+                        <span className="truncate">{emotion.name}</span>
+                      </button>
+                    ) : emotion.name}
                   </div>
                 </th>
                 <td className={index === 0 ? "border-t border-slate-300 p-0" : "p-0"}>
