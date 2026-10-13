@@ -84,8 +84,9 @@ function buildDisplayRows(rows: EmotionRow[]): DisplayRow[] {
 }
 
 export default function EmotionColumn({ emotions }: EmotionColumnProps) {
+  // An empty set means every group starts open.
   // Include the valence category: Negative/Action and Positive/Action toggle independently.
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set());
+  const [collapsedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set());
   const groupKey = (category: string, basic: string) => JSON.stringify([category, basic]);
 
   function toggleGroup(key: string) {
@@ -100,7 +101,7 @@ export default function EmotionColumn({ emotions }: EmotionColumnProps) {
   const groups = groupByValence(emotions).map((group) => ({
     category: group.category,
     rows: buildDisplayRows(group.rows).filter((row) =>
-      !row.isChild || expandedGroups.has(groupKey(group.category, row.groupId!)),
+      !row.isChild || !collapsedGroups.has(groupKey(group.category, row.groupId!)),
     ),
   })).filter((group) => group.rows.length > 0);
 
@@ -174,11 +175,11 @@ export default function EmotionColumn({ emotions }: EmotionColumnProps) {
                       <button
                         type="button"
                         className="flex h-full w-full items-center gap-1 text-left font-semibold hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-blue-600"
-                        aria-expanded={expandedGroups.has(groupKey(category, emotion.groupId!))}
+                        aria-expanded={!collapsedGroups.has(groupKey(category, emotion.groupId!))}
                         onClick={() => toggleGroup(groupKey(category, emotion.groupId!))}
                       >
                         <span aria-hidden="true">
-                          {expandedGroups.has(groupKey(category, emotion.groupId!)) ? "▾" : "▸"}
+                          {collapsedGroups.has(groupKey(category, emotion.groupId!)) ? "▸" : "▾"}
                         </span>
                         <span className="truncate">{emotion.name}</span>
                       </button>
