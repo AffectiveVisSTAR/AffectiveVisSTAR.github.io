@@ -86,7 +86,7 @@ export default function EmotionColumn({ emotions }: EmotionColumnProps) {
                   <th rowSpan={rows.length} scope="rowgroup" className="border-r-2 border-t border-slate-300 bg-slate-50 p-0 align-middle">
                     <div className="flex items-center justify-center" style={{ width: CATEGORY_WIDTH }}>
                       <span className="uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-                        {category}
+                        {category === "Main" ? "General" : category}
                       </span>
                     </div>
                   </th>
