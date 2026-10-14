@@ -15,13 +15,13 @@ export default function NavigationBar() {
 
       <div className="flex items-center gap-6 text-sm">
         <Link href="/" className="text-neutral-700 transition hover:text-neutral-950">
-          Corpus
+          Corpus Classification Table
         </Link>
         <Link
           href="/emotions"
           className="text-neutral-700 transition hover:text-neutral-950"
         >
-          Emotions
+          Emotions by Everything
         </Link>
       </div>
     </nav>
