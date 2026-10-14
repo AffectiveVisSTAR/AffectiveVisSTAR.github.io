@@ -19,6 +19,17 @@ Copy this block and fill it in:
 
 ---
 
+## 2026-10-14 – Deploy inf219 app to GitHub Pages
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** 
+  Make our new app the page people see on affectivevisstar.github.io, instead of the old website.
+- **What the AI did:** 
+  Found out why the old website was still showing, suggested how to fix it, and changed the settings so that GitHub builds and publishes our new app instead.
+- **What we did / verified:** 
+  We approved the plan and checked that the project still built on our machine. 
+- **Link:** [202ddad](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/202ddad5f49d60a97878e0cfd65d51cf9f7dddae)
+
 ## 2026-10-08 – Add corpus table with grouped classification panels
 - **Who:** Aimee Hong
 - **Tool:** Claude Code (Opus 5.5)
