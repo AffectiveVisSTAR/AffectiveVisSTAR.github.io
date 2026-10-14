@@ -1,5 +1,5 @@
 import { getEmotionCount, type EmotionDisplayGroup } from "@/lib/emotion-layout";
-import type { SuperGroup } from "@/lib/types";
+import type { Paper, SuperGroup } from "@/lib/types";
 
 import {
   CELL_SIZE,
@@ -15,16 +15,17 @@ import {
 type GroupPanelProps = {
   superGroup: SuperGroup;
   groups: EmotionDisplayGroup[];
+  papers: Paper[];
 };
 
 // Corpus-style headers with numeric emotion counts shown as heatmap squares.
-export default function EmotionGroupPanel({ superGroup, groups: rowGroups }: GroupPanelProps) {
+export default function EmotionGroupPanel({ superGroup, groups: rowGroups, papers }: GroupPanelProps) {
   const { label, color, groups } = superGroup;
   const maximums = new Map<string, number>();
   for (const group of groups) {
     for (const column of group.columns) {
       maximums.set(column, Math.max(1, ...rowGroups.flatMap((section) =>
-        section.rows.map((row) => getEmotionCount(row, column)),
+        section.rows.map((row) => getEmotionCount(row, column, papers)),
       )));
     }
   }
@@ -88,7 +89,7 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups }: Gro
                     {groups.map((group) => (
                       <div key={group.id} className="flex">
                         {group.columns.map((column) => {
-                          const count = getEmotionCount(row, column);
+                          const count = getEmotionCount(row, column, papers);
                           const maxCount = maximums.get(column)!;
                           return (
                             <div
