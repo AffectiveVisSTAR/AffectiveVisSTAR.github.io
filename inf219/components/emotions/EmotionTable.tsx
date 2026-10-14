@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { loadEmotions } from "@/lib/emotion-data";
-import type { EmotionRow } from "@/lib/types";
+import type { EmotionRow, Paper } from "@/lib/types";
+import { loadPapers } from "@/lib/data";
 import EmotionColumn from "./EmotionColumn";
 import EmotionGroupPanel from "./EmotionGroupPanel";
 import { SUPER_GROUPS } from "@/lib/columns";
@@ -10,7 +11,12 @@ import { getVisibleEmotionGroups } from "@/lib/emotion-layout";
 
 // Loads the emotion data and places its panels in one scroll container.
 export default function EmotionTable() {
-  const [emotions, setEmotions] = useState<EmotionRow[]>([]);
+  // Keep both datasets together; papers will be used for unique article counts.
+  const [tableData, setTableData] = useState<{
+    emotions: EmotionRow[];
+    papers: Paper[];
+  }>({ emotions: [], papers: [] });
+  const emotions = tableData.emotions;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,9 +34,11 @@ export default function EmotionTable() {
   useEffect(() => {
     let active = true;
 
-    loadEmotions()
-      .then((rows) => {
-        if (active) setEmotions(rows);
+    Promise.all([loadEmotions(), loadPapers()])
+      .then(([emotionRows, paperRows]) => {
+        if (active) {
+          setTableData({ emotions: emotionRows, papers: paperRows });
+        }
       })
       .catch((err: unknown) => {
         if (active) {
