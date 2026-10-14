@@ -1,4 +1,4 @@
-import type { EmotionRow } from "./types";
+import type { EmotionRow, Paper } from "./types";
 
 const CATEGORY_ORDER = ["Negative", "Positive", "Neutral", "Main"];
 
@@ -87,11 +87,19 @@ export function getVisibleEmotionGroups(emotions: EmotionRow[], collapsed: Set<s
 
 export type EmotionDisplayGroup = ReturnType<typeof getVisibleEmotionGroups>[number];
 
-// Group rows sum the counts of their child emotions, as in the original table.
-// These are emotion counts; a paper present in several emotions can contribute more than once.
-export function getEmotionCount(row: DisplayRow, column: string): number {
-  return row.members.reduce((sum, member) => {
-    const value = member[column];
-    return sum + (typeof value === "number" ? value : 0);
-  }, 0);
+// Count each AuthorYear once, even when several emotions match the same paper.
+export function getEmotionCount(row: DisplayRow, column: string, papers: Paper[]): number {
+  const emotionNames = new Set(row.members.map((member) => member.name));
+  const matchingArticles = new Set<string>();
+
+  for (const paper of papers) {
+    if (paper[column] !== "X") continue;
+    const specific = typeof paper.SpecificEmotionsCleaned === "string"
+      ? paper.SpecificEmotionsCleaned.split(",").map((emotion) => emotion.trim())
+      : [];
+    if (specific.some((emotion) => emotionNames.has(emotion))) {
+      matchingArticles.add(paper.AuthorYear);
+    }
+  }
+  return matchingArticles.size;
 }
