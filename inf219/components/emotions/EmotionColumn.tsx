@@ -1,0 +1,115 @@
+"use client";
+
+import { groupKey, type EmotionDisplayGroup } from "@/lib/emotion-layout";
+import { LABEL_HEIGHT, ROW_HEIGHT, SUBGROUP_HEIGHT, TITLE_HEIGHT } from "../corpus/layout";
+
+type EmotionColumnProps = {
+  groups: EmotionDisplayGroup[];
+  collapsedGroups: Set<string>;
+  onToggleGroup: (key: string) => void;
+};
+
+const CATEGORY_WIDTH = 44;
+const EMOTION_COLUMNS = [
+  { key: "name", label: "Affect", width: 200 },
+  { key: "Basic Emotion", label: "Basic Emotion", width: 140 },
+] as const;
+export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup }: EmotionColumnProps) {
+  return (
+    <section className="sticky left-0 z-20 shrink-0 self-start border-r-2 border-slate-500 bg-white">
+      <table className="border-separate border-spacing-0 text-xs text-neutral-800">
+        <caption className="sr-only">Emotions grouped by valence category</caption>
+        <colgroup>
+          <col style={{ width: CATEGORY_WIDTH }} />
+          {EMOTION_COLUMNS.map((column) => (
+            <col key={column.key} style={{ width: column.width }} />
+          ))}
+        </colgroup>
+        <thead className="sticky top-0 z-10 bg-slate-50">
+          <tr>
+            <th rowSpan={3} scope="col" className="border-r-2 border-slate-500 p-0 align-bottom">
+              <div className="flex items-end justify-center pb-3" style={{ width: CATEGORY_WIDTH }}>
+                <span style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+                  Valence Category
+                </span>
+              </div>
+            </th>
+            <th colSpan={2} className="p-0 text-center text-xs font-semibold uppercase" style={{ backgroundColor: "#f6f0f0" }}>
+              <div className="flex items-center justify-center" style={{ height: TITLE_HEIGHT }}>
+                Emotions
+              </div>
+            </th>
+          </tr>
+          <tr>
+            <th colSpan={2} className="p-0 text-center text-xs font-semibold uppercase" style={{ backgroundColor: "#f6f0f0" }}>
+              <div className="flex items-center justify-center" style={{ height: SUBGROUP_HEIGHT }}>
+                Emotions
+              </div>
+            </th>
+          </tr>
+          <tr>
+            {EMOTION_COLUMNS.map((column) => (
+              <th key={column.key} scope="col" className="border-b border-slate-200 p-0">
+                <div
+                  className="flex items-end justify-center pb-3"
+                  style={{ height: LABEL_HEIGHT, width: column.width }}
+                >
+                  <span style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+                    {column.label}
+                  </span>
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        {groups.map(({ category, rows }) => (
+          <tbody key={category}>
+            {rows.map((emotion, index) => (
+              <tr key={emotion.id}>
+                {index === 0 && (
+                  <th rowSpan={rows.length} scope="rowgroup" className="border-r-2 border-t border-slate-300 bg-slate-50 p-0 align-middle">
+                    <div className="flex items-center justify-center" style={{ width: CATEGORY_WIDTH }}>
+                      <span className="uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+                        {category === "Main" ? "General" : category}
+                      </span>
+                    </div>
+                  </th>
+                )}
+                <th scope="row" className={index === 0 ? "border-t border-slate-300 p-0 text-left" : "p-0 text-left"}>
+                  <div
+                    title={emotion.name}
+                    className={emotion.isChild ? "truncate pl-6 pr-2 font-normal" : "truncate px-2 font-semibold"}
+                    style={{ height: ROW_HEIGHT, lineHeight: `${ROW_HEIGHT}px`, width: EMOTION_COLUMNS[0].width }}
+                  >
+                    {emotion.isGroup ? (
+                      <button
+                        type="button"
+                        className="flex h-full w-full items-center gap-1 text-left font-semibold hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-blue-600"
+                        aria-expanded={!collapsedGroups.has(groupKey(category, emotion.groupId!))}
+                        onClick={() => onToggleGroup(groupKey(category, emotion.groupId!))}
+                      >
+                        <span aria-hidden="true">
+                          {collapsedGroups.has(groupKey(category, emotion.groupId!)) ? "▸" : "▾"}
+                        </span>
+                        <span className="truncate">{emotion.name}</span>
+                      </button>
+                    ) : emotion.name}
+                  </div>
+                </th>
+                <td className={index === 0 ? "border-t border-slate-300 p-0" : "p-0"}>
+                  <div
+                    title={emotion.basicEmotion}
+                    className={emotion.isGroup ? "truncate px-2 font-semibold" : "truncate px-2"}
+                    style={{ height: ROW_HEIGHT, lineHeight: `${ROW_HEIGHT}px`, width: EMOTION_COLUMNS[1].width }}
+                  >
+                    {emotion.basicEmotion}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        ))}
+      </table>
+    </section>
+  );
+}

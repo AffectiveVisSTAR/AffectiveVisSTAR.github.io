@@ -37,3 +37,13 @@ export type SortState = {
   key: string;
   direction: SortDirection;
 } | null;
+
+// One row in emotions_by_everything.json.
+export type EmotionRow = {
+  name: string;
+  "Basic Emotion": string;
+  "Valence Category": string;
+  publications: string[];
+  isAggregate?: string;
+  [column: string]: string | number | string[] | undefined;
+};
