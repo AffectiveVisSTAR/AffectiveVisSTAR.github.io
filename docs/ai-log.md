@@ -19,6 +19,17 @@ Copy this block and fill it in:
 
 ---
 
+## 2026-10-08 – Add corpus table with grouped classification panels
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** 
+  Show all papers in a table with colored panels for each classification group,based on our sketch of the page.
+- **What the AI did:** 
+  Wrote the code for the table: loading the data, grouping the columns into panels, and drawing one row per paper with colored squares. It also removed our first test table, and explained each file to us.
+- **What we did / verified:** 
+  We gave the AI our plan and sketch, read through the explanation of each file, checked that the table looked right in the browser, and made the commit ourselves.
+- **Link:** [04326a8](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/04326a886ae85d00eca9d201fffb9844bf0c498b)
+
 ## 2026-10-01 – Set up new project
 - **Who:** Aimee Hong
 - **Tool:** ChatGPT
