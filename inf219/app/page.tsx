@@ -2,7 +2,7 @@ import CorpusTable from "@/components/corpus/CorpusTable";
 
 export default function Page() {
   return (
-    <main className="h-screen">
+    <main className="min-h-0 flex-1">
       <CorpusTable />
     </main>
   );

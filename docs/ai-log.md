@@ -85,3 +85,11 @@ Copy this block and fill it in:
   We ran the commands ourselves, chose the  project
   settings, removed the example content from the start page, and checked that the site opened in the browser. No code written by the AI was added to the project.
 - **Link:** [d28ad39](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/d28ad399d0071c990d54678a19a2a1efdec47dff)
+
+## 2026-10-14 – Adding navigation bar
+- **Who:** Jenny
+- **Tool:** Copilot
+- **Purpose:** Create a navigation bar at the top of the website, and that is clickable so it can change between the corpus table and the emotions table
+- **What the AI did:** Implemented a shared navigation bar in `NavigationBar.tsx`, and added this in `layout.tsx` so that it is visible on all websites with clickable links to the Corpus Classification Table and Emotions by Everything. AI also adjusted the height of the site such that the navigation bar is placed over the table. At the end AI ran a lint and build to controll that the changes worked.  
+- **What we did / verified:** I reviewed the changes, and checked if the links where clickable and that the design looked well-organized. I added an underline effect when you hover over the tabs as well. I also went in and changed the names for the tabs so it made more sense to what it actually showed. Lastly, I approved the plan and checked that the project still built on our machine. 
+- **Link:** <PR / commit>
