@@ -87,19 +87,35 @@ export function getVisibleEmotionGroups(emotions: EmotionRow[], collapsed: Set<s
 
 export type EmotionDisplayGroup = ReturnType<typeof getVisibleEmotionGroups>[number];
 
-// Count each AuthorYear once, even when several emotions match the same paper.
-export function getEmotionCount(row: DisplayRow, column: string, papers: Paper[]): number {
+// Return each AuthorYear once, even when several emotions match the same paper.
+export function getEmotionPapers(
+  row: DisplayRow,
+  column: string,
+  papers: Paper[],
+): string[] {
   const emotionNames = new Set(row.members.map((member) => member.name));
   const matchingArticles = new Set<string>();
 
   for (const paper of papers) {
     if (paper[column] !== "X") continue;
+
     const specific = typeof paper.SpecificEmotionsCleaned === "string"
       ? paper.SpecificEmotionsCleaned.split(",").map((emotion) => emotion.trim())
       : [];
+
     if (specific.some((emotion) => emotionNames.has(emotion))) {
       matchingArticles.add(paper.AuthorYear);
     }
   }
-  return matchingArticles.size;
+
+  return [...matchingArticles].sort();
+}
+
+// Use the same matching logic when only the count is needed.
+export function getEmotionCount(
+  row: DisplayRow,
+  column: string,
+  papers: Paper[],
+): number {
+  return getEmotionPapers(row, column, papers).length;
 }
