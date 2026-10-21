@@ -19,6 +19,30 @@ Copy this block and fill it in:
 
 ---
 
+## 2026-10-21 – Show matching articles on hover
+- **Who:** Elise
+- **Tool:** ChatGPT
+- **Purpose:** Show which articles contribute to each square in the emotions table.
+- **What the AI did:** Suggested code changes in `inf219/lib/emotion-layout.ts` and `inf219/components/emotions/EmotionGroupPanel.tsx` to return an alphabetical list of unique articles and display it below the count in the hover tooltip. Explained the changes step by step.
+- **What we did / verified:** I added the changes locally, reviewed the explanations, and checked the tooltips in the browser. I verified that Anger/Engagement showed eight distinct articles matching the original page.
+- **Link:** [PR #29](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/29)
+
+## 2026-10-21 – Use a fixed emotion colour scale
+- **Who:** Elise
+- **Tool:** ChatGPT
+- **Purpose:** Apply the paper-count colour intervals specified in issue #18 consistently across the emotions table.
+- **What the AI did:** Suggested code changes in `inf219/components/emotions/EmotionGroupPanel.tsx` to replace the relative scale with fixed intervals, make zero-count squares white, and darken the colour for 11 or more papers. Kept the opaque colour calculation used for the Safari fix and explained the code.
+- **What we did / verified:** I implemented the changes locally, reviewed the code with step-by-step explanations, and compared the table visually with the original page and the requested scale.
+- **Link:** [PR #27](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/27)
+
+## 2026-10-14 – Reduce Safari scrolling lag
+- **Who:** Elise
+- **Tool:** ChatGPT
+- **Purpose:** Reduce severe scrolling lag on the emotions page in Safari.
+- **What the AI did:** Changed `inf219/components/emotions/EmotionGroupPanel.tsx` on a test branch to calculate colours blended with white instead of applying CSS opacity to each square. Explained the change and how to copy the commit to an issue branch.
+- **What we did / verified:** I tested the updated version locally in Safari and observed that scrolling no longer lagged. The old version still caused severe lag. I then copied the fix to the branch for issue #23. The fix was later merged on 21 October.
+- **Link:** [PR #26](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/26)
+
 ## 2026-10-14 – Deploy inf219 app to GitHub Pages
 - **Who:** Aimee Hong
 - **Tool:** Claude Code (Opus 5.5)
@@ -29,6 +53,14 @@ Copy this block and fill it in:
 - **What we did / verified:** 
   We approved the plan and checked that the project still built on our machine. 
 - **Link:** [202ddad](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/202ddad5f49d60a97878e0cfd65d51cf9f7dddae)
+
+## 2026-10-13 – Build the emotions table
+- **Who:** Elise
+- **Tool:** ChatGPT
+- **Purpose:** Build an emotions table using the corpus table layout and the original emotions page as references.
+- **What the AI did:** Helped write and revise the emotion types, data loader, page and table components in `inf219/lib/types.ts`, `inf219/lib/emotion-data.ts`, `inf219/lib/emotion-layout.ts`, `inf219/app/emotions/page.tsx` and `inf219/components/emotions/`. Suggested collapsible emotion groups and counting unique articles instead of summing counts that could include duplicates. Explained the code and Git workflow step by step.
+- **What we did / verified:** I contributed local changes, reviewed the explanations of the files and functions, and checked the layout and collapse behaviour in the browser. I compared Anger/Engagement with the original page and verified that the count was eight unique articles.
+- **Link:** [PR #20](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/20)
 
 ## 2026-10-08 – Add corpus table with grouped classification panels
 - **Who:** Aimee Hong
