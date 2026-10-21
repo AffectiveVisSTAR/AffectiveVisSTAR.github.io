@@ -1,5 +1,5 @@
-import { getEmotionCount, type EmotionDisplayGroup } from "@/lib/emotion-layout";
 import type { Paper, SuperGroup } from "@/lib/types";
+import { getEmotionPapers, type EmotionDisplayGroup } from "@/lib/emotion-layout";
 
 import {
   CELL_SIZE,
@@ -106,7 +106,8 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
                     {groups.map((group) => (
                       <div key={group.id} className="flex">
                         {group.columns.map((column) => {
-                          const count = getEmotionCount(row, column, papers);
+                          const articles = getEmotionPapers(row, column, papers);
+                          const count = articles.length;
                           return (
                             <div
                               key={column}
@@ -114,7 +115,7 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
                               style={{ width: COLUMN_WIDTH, height: ROW_HEIGHT }}
                               role="img"
                               aria-label={`${category}, ${row.name}, ${column}: ${count}`}
-                              title={`${row.name} / ${column}: ${count}`}
+                              title={[`${count}:`, ...articles].join("\n")}
                             >
                               <span
                                 className="rounded-[2px]"
