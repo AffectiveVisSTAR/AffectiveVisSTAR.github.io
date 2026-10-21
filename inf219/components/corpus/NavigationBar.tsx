@@ -14,12 +14,12 @@ export default function NavigationBar() {
       </Link>
 
       <div className="flex items-center gap-6 text-sm">
-        <Link href="/" className="text-neutral-700 transition hover:text-neutral-950">
+        <Link href="/" className="text-neutral-700 transition hover:text-neutral-950 underline-offset-3 hover:underline">
           Corpus Classification Table
         </Link>
         <Link
           href="/emotions"
-          className="text-neutral-700 transition hover:text-neutral-950"
+          className="text-neutral-700 transition hover:text-neutral-950 underline-offset-3 hover:underline"
         >
           Emotions by Everything
         </Link>
