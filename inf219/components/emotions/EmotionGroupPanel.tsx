@@ -18,6 +18,15 @@ type GroupPanelProps = {
   papers: Paper[];
 };
 
+// Blend against the white panel once instead of applying opacity to each element.
+function heatmapColor(hex: string, strength: number): string {
+  const channels = [1, 3, 5].map((offset) => {
+    const channel = parseInt(hex.slice(offset, offset + 2), 16);
+    return Math.round(255 + (channel - 255) * strength);
+  });
+  return `rgb(${channels.join(", ")})`;
+}
+
 // Corpus-style headers with numeric emotion counts shown as heatmap squares.
 export default function EmotionGroupPanel({ superGroup, groups: rowGroups, papers }: GroupPanelProps) {
   const { label, color, groups } = superGroup;
@@ -105,8 +114,10 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
                                 style={{
                                   width: CELL_SIZE,
                                   height: CELL_SIZE,
-                                  backgroundColor: group.color,
-                                  opacity: count === 0 ? 0.08 : 0.2 + 0.8 * count / maxCount,
+                                  backgroundColor: heatmapColor(
+                                    group.color,
+                                    count === 0 ? 0.08 : 0.2 + 0.8 * count / maxCount,
+                                  ),
                                 }}
                               />
                             </div>
