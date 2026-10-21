@@ -1,5 +1,5 @@
-import { getEmotionCount, type EmotionDisplayGroup } from "@/lib/emotion-layout";
 import type { Paper, SuperGroup } from "@/lib/types";
+import { getEmotionPapers, type EmotionDisplayGroup } from "@/lib/emotion-layout";
 
 import {
   CELL_SIZE,
@@ -18,17 +18,34 @@ type GroupPanelProps = {
   papers: Paper[];
 };
 
+// Fixed colour strength based on the number of unique papers.
+function getColorStrength(count: number): number {
+  if (count <= 0) return 0;
+  if (count <= 2) return 0.1;
+  if (count <= 4) return 0.25;
+  if (count <= 6) return 0.5;
+  if (count <= 8) return 0.75;
+  return 1;
+}
+
+// Calculate an opaque colour to keep scrolling smooth in Safari.
+function heatmapColor(hex: string, count: number): string {
+  const strength = getColorStrength(count);
+  const brightness = count >= 11 ? 0.95 : 1;
+
+  const channels = [1, 3, 5].map((offset) => {
+    const channel = parseInt(hex.slice(offset, offset + 2), 16);
+    const darkenedChannel = channel * brightness;
+
+    return Math.round(255 + (darkenedChannel - 255) * strength);
+  });
+
+  return `rgb(${channels.join(", ")})`;
+}
+
 // Corpus-style headers with numeric emotion counts shown as heatmap squares.
 export default function EmotionGroupPanel({ superGroup, groups: rowGroups, papers }: GroupPanelProps) {
   const { label, color, groups } = superGroup;
-  const maximums = new Map<string, number>();
-  for (const group of groups) {
-    for (const column of group.columns) {
-      maximums.set(column, Math.max(1, ...rowGroups.flatMap((section) =>
-        section.rows.map((row) => getEmotionCount(row, column, papers)),
-      )));
-    }
-  }
 
   return (
     <section className="shrink-0 rounded-md border border-neutral-300 bg-white">
@@ -89,8 +106,8 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
                     {groups.map((group) => (
                       <div key={group.id} className="flex">
                         {group.columns.map((column) => {
-                          const count = getEmotionCount(row, column, papers);
-                          const maxCount = maximums.get(column)!;
+                          const articles = getEmotionPapers(row, column, papers);
+                          const count = articles.length;
                           return (
                             <div
                               key={column}
@@ -98,15 +115,14 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
                               style={{ width: COLUMN_WIDTH, height: ROW_HEIGHT }}
                               role="img"
                               aria-label={`${category}, ${row.name}, ${column}: ${count}`}
-                              title={`${row.name} / ${column}: ${count}`}
+                              title={[`${count}:`, ...articles].join("\n")}
                             >
                               <span
                                 className="rounded-[2px]"
                                 style={{
                                   width: CELL_SIZE,
                                   height: CELL_SIZE,
-                                  backgroundColor: group.color,
-                                  opacity: count === 0 ? 0.08 : 0.2 + 0.8 * count / maxCount,
+                                  backgroundColor: heatmapColor(group.color, count),
                                 }}
                               />
                             </div>
