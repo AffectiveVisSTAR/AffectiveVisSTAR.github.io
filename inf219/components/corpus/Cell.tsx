@@ -17,7 +17,7 @@ export default function Cell({ marked, color }: CellProps) {
         style={{
           width: CELL_SIZE,
           height: CELL_SIZE,
-          backgroundColor: marked ? color : tint(color, "1a"),
+          backgroundColor: marked ? color : "transparent",
         }}
       />
     </div>

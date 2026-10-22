@@ -101,3 +101,11 @@ Copy this block and fill it in:
 - **What the AI did:** I used ChatGPT to help me explain the code in `GroupPanel.tsx`, and Copilot helped to make an implementation of code in the file. At the end Copilot ran a lint and build to controll that the changes made worked. 
 - **What we did / verified:** I reviewed the changes made, Copilot added the numbers on the top in the column, so I changed it to the bottom. I approved the plan and checked that the project still built on our machine. 
 - **Link:** [PR #33 / e4a5872](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/e4a5872ae5ba89aec37a66d615e8a20268b26c7e)  
+
+## 2026-10-22 – Remove color on boxes without any articles
+- **Who:** Jenny
+- **Tool:** ChatGPT
+- **Purpose:** Remove the tinted color on the cells that doesn't have any articles
+- **What the AI did:** I used GhatGPT to help me understand `GroupPanel.tsx` at first, then this explanation helped me to understand `Cell.tsx` so that I could make the change.
+- **What we did / verified:** I changed a line in `Cell.tsx`from `tint(color, "1a")` to just `transparent`, this way the cells is transparent. At the end I checked that the project still built on my machine, and that the changes looked okay. 
+- **Link:** [PR #34 / 16462ae](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/16462aeef3a23ffbb716fd80301462ee4872415b)
