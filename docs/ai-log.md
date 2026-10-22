@@ -93,3 +93,11 @@ Copy this block and fill it in:
 - **What the AI did:** Implemented a shared navigation bar in `NavigationBar.tsx`, and added this in `layout.tsx` so that it is visible on all websites with clickable links to the Corpus Classification Table and Emotions by Everything. AI also adjusted the height of the site such that the navigation bar is placed over the table. At the end AI ran a lint and build to controll that the changes worked.  
 - **What we did / verified:** I reviewed the changes, and checked if the links where clickable and that the design looked well-organized. I added an underline effect when you hover over the tabs as well. I also went in and changed the names for the tabs so it made more sense to what it actually showed. Lastly, I approved the plan and checked that the project still built on our machine. 
 - **Link:** [PR #32 / be11687](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/32)
+
+## 2026-10-22 – Added number of articles in each column to the corpus
+- **Who:** Jenny
+- **Tool:** Copilot, ChatGPT
+- **Purpose:** Add the number of articles for each column in the corpus
+- **What the AI did:** I used ChatGPT to help me explain the code in `GroupPanel.tsx`, and Copilot helped to make an implementation of code in the file. At the end Copilot ran a lint and build to controll that the changes made worked. 
+- **What we did / verified:** I reviewed the changes made, Copilot added the numbers on the top in the column, so I changed it to the bottom. I approved the plan and checked that the project still built on our machine. 
+- **Link:** [PR #33 / e4a5872](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/e4a5872ae5ba89aec37a66d615e8a20268b26c7e)  
