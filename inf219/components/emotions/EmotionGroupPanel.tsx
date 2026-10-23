@@ -1,5 +1,6 @@
+import { useMemo } from "react";
 import type { Paper, SuperGroup } from "@/lib/types";
-import { getEmotionPapers, type EmotionDisplayGroup } from "@/lib/emotion-layout";
+import { groupKey, getEmotionPapers, type EmotionDisplayGroup } from "@/lib/emotion-layout";
 
 import {
   CELL_SIZE,
@@ -16,6 +17,8 @@ type GroupPanelProps = {
   superGroup: SuperGroup;
   groups: EmotionDisplayGroup[];
   papers: Paper[];
+  hoveredRowId: string | null;
+  onHoverRow: (rowId: string | null) => void;
 };
 
 // Fixed colour strength based on the number of unique papers.
@@ -44,8 +47,25 @@ function heatmapColor(hex: string, count: number): string {
 }
 
 // Corpus-style headers with numeric emotion counts shown as heatmap squares.
-export default function EmotionGroupPanel({ superGroup, groups: rowGroups, papers }: GroupPanelProps) {
+export default function EmotionGroupPanel({ superGroup, groups: rowGroups, papers, hoveredRowId, onHoverRow }: GroupPanelProps) {
   const { label, color, groups } = superGroup;
+
+  // Hovering changes the highlight, so reuse the existing article lists.
+  const articlesByRow = useMemo(() => {
+    const result = new Map<string, Map<string, string[]>>();
+    for (const { category, rows } of rowGroups) {
+      for (const row of rows) {
+        const columns = new Map<string, string[]>();
+        for (const group of groups) {
+          for (const column of group.columns) {
+            columns.set(column, getEmotionPapers(row, column, papers));
+          }
+        }
+        result.set(groupKey(category, row.id), columns);
+      }
+    }
+    return result;
+  }, [rowGroups, groups, papers]);
 
   return (
     <section className="shrink-0 rounded-md border border-neutral-300 bg-white">
@@ -100,13 +120,18 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
         {rowGroups.map(({ category, rows }) => (
           <tbody key={category}>
             {rows.map((row, index) => (
-              <tr key={row.id}>
+              <tr
+                key={row.id}
+                className={hoveredRowId === groupKey(category, row.id) ? "bg-slate-200" : undefined}
+                onMouseEnter={() => onHoverRow(groupKey(category, row.id))}
+                onMouseLeave={() => onHoverRow(null)}
+              >
                 <td className={index === 0 ? "border-t border-slate-300 p-0" : "p-0"}>
                   <div className="flex px-1" style={{ gap: GROUP_GAP, height: ROW_HEIGHT }}>
                     {groups.map((group) => (
                       <div key={group.id} className="flex">
                         {group.columns.map((column) => {
-                          const articles = getEmotionPapers(row, column, papers);
+                          const articles = articlesByRow.get(groupKey(category, row.id))!.get(column)!;
                           const count = articles.length;
                           return (
                             <div

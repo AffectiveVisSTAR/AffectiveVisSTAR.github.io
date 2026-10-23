@@ -19,6 +19,14 @@ Copy this block and fill it in:
 
 ---
 
+## 2026-10-23 – Highlight emotion rows on hover
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Make it easier to follow an emotion row across all table panels.
+- **What the AI did:** Added shared hover state in `EmotionTable.tsx` and matching row backgrounds in `EmotionColumn.tsx` and `EmotionGroupPanel.tsx`. Memoised visible groups and matching article lists so hovering does not repeat paper matching. Preserved square colours and article tooltips.
+- **What we did / verified:** The AI checked the production build, TypeScript and lint. Browser interaction and Safari scrolling still need to be checked locally.
+- **Link:** [Issue #30](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/30)
+
 ## 2026-10-23 – Use consistent colours within emotion panels
 - **Who:** Elise
 - **Tool:** ChatGPT
