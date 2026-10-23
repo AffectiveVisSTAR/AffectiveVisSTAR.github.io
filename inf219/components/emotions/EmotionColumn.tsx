@@ -89,6 +89,9 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
                       height: ROW_HEIGHT,
                       lineHeight: `${ROW_HEIGHT}px`,
                       width: EMOTION_COLUMNS[0].width,
+                      boxShadow: hoveredRowId === groupKey(category, emotion.id)
+                        ? "inset 0 1px 0 #94a3b8, inset 0 -1px 0 #94a3b8"
+                        : undefined,
                       opacity: hoveredRowId !== null && hoveredRowId !== groupKey(category, emotion.id) ? 0.4 : 1,
                     }}
                   >
@@ -115,6 +118,9 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
                       height: ROW_HEIGHT,
                       lineHeight: `${ROW_HEIGHT}px`,
                       width: EMOTION_COLUMNS[1].width,
+                      boxShadow: hoveredRowId === groupKey(category, emotion.id)
+                        ? "inset 0 1px 0 #94a3b8, inset 0 -1px 0 #94a3b8"
+                        : undefined,
                       opacity: hoveredRowId !== null && hoveredRowId !== groupKey(category, emotion.id) ? 0.4 : 1,
                     }}
                   >
