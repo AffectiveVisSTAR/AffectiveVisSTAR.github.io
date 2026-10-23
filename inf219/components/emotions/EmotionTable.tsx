@@ -22,12 +22,14 @@ export default function EmotionTable() {
 
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => new Set());
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
+  const [hoveredColumnId, setHoveredColumnId] = useState<string | null>(null);
   const groups = useMemo(
     () => getVisibleEmotionGroups(emotions, collapsedGroups),
     [emotions, collapsedGroups],
   );
   function toggleGroup(key: string) {
     setHoveredRowId(null);
+    setHoveredColumnId(null);
     setCollapsedGroups((previous) => {
       const next = new Set(previous);
       if (next.has(key)) next.delete(key);
@@ -77,7 +79,7 @@ export default function EmotionTable() {
           <>
             <EmotionColumn groups={groups} collapsedGroups={collapsedGroups} onToggleGroup={toggleGroup} hoveredRowId={hoveredRowId} onHoverRow={setHoveredRowId} />
             {SUPER_GROUPS.map((superGroup) => (
-              <EmotionGroupPanel key={superGroup.id} superGroup={superGroup} groups={groups} papers={tableData.papers} hoveredRowId={hoveredRowId} onHoverRow={setHoveredRowId} />
+              <EmotionGroupPanel key={superGroup.id} superGroup={superGroup} groups={groups} papers={tableData.papers} hoveredColumnId={hoveredColumnId} onHoverColumn={setHoveredColumnId} onHoverRow={setHoveredRowId} />
             ))}
           </>
         )}
