@@ -132,9 +132,6 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
                   <div className="flex px-1" style={{
                       gap: GROUP_GAP,
                       height: ROW_HEIGHT,
-                      backgroundColor: hoveredRowId === groupKey(category, row.id)
-                        ? "#f3f4f6"
-                        : undefined,
                     }}>
                     {groups.map((group) => (
                       <div key={group.id} className="flex">
