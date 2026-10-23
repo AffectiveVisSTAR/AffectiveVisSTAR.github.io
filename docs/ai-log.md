@@ -19,6 +19,14 @@ Copy this block and fill it in:
 
 ---
 
+## 2026-10-23 – Use consistent colours within emotion panels
+- **Who:** Elise
+- **Tool:** ChatGPT
+- **Purpose:** Fix misleading colour differences between subgroups in the emotions table.
+- **What the AI did:** Identified that Data and Vis used different base colours. Explained two possible solutions and suggested changing group.color to color in inf219/components/emotions/EmotionGroupPanel.tsx, so squares use their main panel’s colour.
+- **What we did / verified:** I reviewed the colour definitions and explanation, chose to use the main panel’s colour, and made the code change locally.
+- **Link:** [PR #36](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/36)
+
 ## 2026-10-21 – Show matching articles on hover
 - **Who:** Elise
 - **Tool:** ChatGPT
