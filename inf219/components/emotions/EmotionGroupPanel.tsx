@@ -122,11 +122,13 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
             {rows.map((row, index) => (
               <tr
                 key={row.id}
-                className={hoveredRowId === groupKey(category, row.id) ? "bg-slate-200" : undefined}
                 onMouseEnter={() => onHoverRow(groupKey(category, row.id))}
                 onMouseLeave={() => onHoverRow(null)}
               >
-                <td className={index === 0 ? "border-t border-slate-300 p-0" : "p-0"}>
+                <td
+                  className={index === 0 ? "border-t border-slate-300 p-0" : "p-0"}
+                  style={{ opacity: hoveredRowId !== null && hoveredRowId !== groupKey(category, row.id) ? 0.4 : 1 }}
+                >
                   <div className="flex px-1" style={{ gap: GROUP_GAP, height: ROW_HEIGHT }}>
                     {groups.map((group) => (
                       <div key={group.id} className="flex">

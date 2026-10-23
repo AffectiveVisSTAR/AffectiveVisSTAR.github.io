@@ -23,7 +23,7 @@ Copy this block and fill it in:
 - **Who:** Elise
 - **Tool:** ChatGPT (Codex)
 - **Purpose:** Make it easier to follow an emotion row across all table panels.
-- **What the AI did:** Added shared hover state in `EmotionTable.tsx` and matching row backgrounds in `EmotionColumn.tsx` and `EmotionGroupPanel.tsx`. Memoised visible groups and matching article lists so hovering does not repeat paper matching. Preserved square colours and article tooltips.
+- **What the AI did:** Added shared hover state in `EmotionTable.tsx` and synchronised row emphasis in `EmotionColumn.tsx` and `EmotionGroupPanel.tsx`. Memoised visible groups and matching article lists so hovering does not repeat paper matching. Used the original corpus table’s 40% opacity for other rows, leaving the hovered row at normal visibility. Applied fading to row content rather than individual squares. Preserved square colours and article tooltips.
 - **What we did / verified:** The AI checked the production build, TypeScript and lint. Browser interaction and Safari scrolling still need to be checked locally.
 - **Link:** [Issue #30](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/30)
 

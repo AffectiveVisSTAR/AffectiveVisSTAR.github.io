@@ -69,7 +69,6 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
             {rows.map((emotion, index) => (
               <tr
                 key={emotion.id}
-                className={hoveredRowId === groupKey(category, emotion.id) ? "bg-slate-200" : undefined}
                 onMouseEnter={() => onHoverRow(groupKey(category, emotion.id))}
                 onMouseLeave={() => onHoverRow(null)}
               >
@@ -86,7 +85,12 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
                   <div
                     title={emotion.name}
                     className={emotion.isChild ? "truncate pl-6 pr-2 font-normal" : "truncate px-2 font-semibold"}
-                    style={{ height: ROW_HEIGHT, lineHeight: `${ROW_HEIGHT}px`, width: EMOTION_COLUMNS[0].width }}
+                    style={{
+                      height: ROW_HEIGHT,
+                      lineHeight: `${ROW_HEIGHT}px`,
+                      width: EMOTION_COLUMNS[0].width,
+                      opacity: hoveredRowId !== null && hoveredRowId !== groupKey(category, emotion.id) ? 0.4 : 1,
+                    }}
                   >
                     {emotion.isGroup ? (
                       <button
@@ -107,7 +111,12 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
                   <div
                     title={emotion.basicEmotion}
                     className={emotion.isGroup ? "truncate px-2 font-semibold" : "truncate px-2"}
-                    style={{ height: ROW_HEIGHT, lineHeight: `${ROW_HEIGHT}px`, width: EMOTION_COLUMNS[1].width }}
+                    style={{
+                      height: ROW_HEIGHT,
+                      lineHeight: `${ROW_HEIGHT}px`,
+                      width: EMOTION_COLUMNS[1].width,
+                      opacity: hoveredRowId !== null && hoveredRowId !== groupKey(category, emotion.id) ? 0.4 : 1,
+                    }}
                   >
                     {emotion.basicEmotion}
                   </div>
