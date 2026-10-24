@@ -60,6 +60,17 @@ Copy this block and fill it in:
   I gave the AI a sketch of the panel and chose to have it fixed on the right side, only showing after a click with a close button, and to add the filters in a separate commit. I read through the plan before approving it, and read through the code changes to quality-check them. I made each commit myself. I ran the site locally myself and checked that the panel and the filters work.
 - **Link:** [Issue #7](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/7)
 
+## 2026-10-24 – Sort papers by author, year and paper
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** 
+  Let users sort the corpus table by clicking the Author, Year and Paper column names, like on the old site.
+- **What the AI did:** 
+  Described common ways to design sorting on websites and suggested several options. Made the column names in `inf219/components/corpus/PaperColumn.tsx` clickable with a ⇅ / ▲ / ▼ icon, connected the existing `sortPapers` and `nextSort` functions in `CorpusTable.tsx`, and made the Year column wider in `layout.ts` so the icon fits. Reviewed the change afterwards to check that no code was unnecessary.
+- **What we did / verified:** 
+  I chose the design, asked for black, slightly bolder icons and the simplest possible solution, and rejected a first, larger version. I read through the plan before approving it, and read through the code changes to quality-check them. I ran the site locally myself and checked that the sorting works.
+- **Link:** [Issue #17](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/17)
+
 ## 2026-10-23 – Use consistent colours within emotion panels
 - **Who:** Elise
 - **Tool:** ChatGPT
