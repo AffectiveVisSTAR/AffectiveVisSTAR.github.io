@@ -38,7 +38,14 @@ export default function CorpusTable() {
       <div className="flex w-max items-start gap-3 p-3">
         <PaperColumn papers={sortedPapers} sort={sort} onSort={(key) => setSort(nextSort(sort, key))} />
         {SUPER_GROUPS.map((superGroup) => (
-          <GroupPanel key={superGroup.id} superGroup={superGroup} papers={sortedPapers} />
+          <GroupPanel
+            key={superGroup.id}
+            superGroup={superGroup}
+            papers={sortedPapers}
+            sort={sort}
+            // Classification columns only toggle between "marked papers first" and no sorting.
+            onSort={(key) => setSort(sort?.key === key ? null : { key, direction: "asc" })}
+          />
         ))}
       </div>
     </div>

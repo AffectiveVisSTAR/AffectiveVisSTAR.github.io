@@ -1,4 +1,5 @@
 import { METADATA_COLUMNS } from "@/lib/columns";
+import { isFaded } from "@/lib/data";
 import type { MetadataKey, Paper, SortState } from "@/lib/types";
 import { LABEL_HEIGHT, PAPER_COLUMN_WIDTHS, ROW_HEIGHT, SUBGROUP_HEIGHT, TITLE_HEIGHT } from "./layout";
 
@@ -50,7 +51,7 @@ export default function PaperColumn({ papers, sort, onSort }: PaperColumnProps) 
         {papers.map((paper) => (
           <div
             key={paper.AuthorYear + paper["Paper Nickname"]}
-            className="flex items-center text-xs text-neutral-800"
+            className={`flex items-center text-xs text-neutral-800 ${isFaded(paper, sort) ? "opacity-40" : ""}`}
             style={{ height: ROW_HEIGHT }}
           >
             {METADATA_COLUMNS.map(({ key }) => (

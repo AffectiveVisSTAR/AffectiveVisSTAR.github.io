@@ -1,5 +1,5 @@
-import { countMarked, isMarked } from "@/lib/data";
-import type { Paper, SuperGroup } from "@/lib/types";
+import { countMarked, isFaded, isMarked } from "@/lib/data";
+import type { Paper, SortState, SuperGroup } from "@/lib/types";
 import Cell from "./Cell";
 import {
   COLUMN_WIDTH,
@@ -14,11 +14,14 @@ import {
 type GroupPanelProps = {
   superGroup: SuperGroup;
   papers: Paper[];
+  sort: SortState;
+  onSort: (key: string) => void;
 };
 
 // One colored panel: a header with panel name, subgroups and rotated column names,
 // and below it one row of squares per paper.
-export default function GroupPanel({ superGroup, papers }: GroupPanelProps) {
+// Clicking a column name puts the papers marked in that column at the top.
+export default function GroupPanel({ superGroup, papers, sort, onSort }: GroupPanelProps) {
   const { label, color, groups } = superGroup;
 
   return (
@@ -53,11 +56,20 @@ export default function GroupPanel({ superGroup, papers }: GroupPanelProps) {
                 const articleCount = countMarked(papers, column);
 
                 return (
-                  <div
+                  <button
                     key={column}
-                    className="relative flex h-full shrink-0 items-end justify-center py-1"
+                    type="button"
+                    onClick={() => onSort(column)}
+                    className={`relative flex h-full shrink-0 cursor-pointer items-end justify-center py-1 ${
+                      sort?.key === column ? "bg-neutral-200" : ""
+                    }`}
                     style={{ width: COLUMN_WIDTH }}
                   >
+                    {sort?.key === column && (
+                      <span className="absolute top-1 text-sm font-bold text-black">
+                        ▼
+                      </span>
+                    )}
                     <span
                       title={`${articleCount} articles`}
                       aria-label={`${column}: ${articleCount} articles`}
@@ -68,11 +80,11 @@ export default function GroupPanel({ superGroup, papers }: GroupPanelProps) {
                     <span
                       title={column}
                       className="absolute bottom-5 overflow-hidden text-ellipsis whitespace-nowrap text-[11px] text-neutral-800 [writing-mode:vertical-rl] rotate-180"
-                      style={{ maxHeight: LABEL_HEIGHT - 26 }}
+                      style={{ maxHeight: LABEL_HEIGHT - 44 }}
                     >
                       {column}
                     </span>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -84,7 +96,7 @@ export default function GroupPanel({ superGroup, papers }: GroupPanelProps) {
         {papers.map((paper) => (
           <div
             key={paper.AuthorYear + paper["Paper Nickname"]}
-            className="flex"
+            className={isFaded(paper, sort) ? "flex opacity-40" : "flex"}
             style={{ gap: GROUP_GAP, height: ROW_HEIGHT }}
           >
             {groups.map((group) => (
