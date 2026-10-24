@@ -54,6 +54,9 @@ export default function CorpusTable() {
             onHoverRow={setHoveredRowId}
             hoveredColumnId={hoveredColumnId}
             onHoverColumn={setHoveredColumnId}
+            sort={sort}
+            // Classification columns only toggle between "marked papers first" and no sorting.
+            onSort={(key) => setSort(sort?.key === key ? null : { key, direction: "asc" })}
           />
         ))}
       </div>

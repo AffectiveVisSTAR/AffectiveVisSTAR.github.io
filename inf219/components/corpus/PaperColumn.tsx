@@ -1,4 +1,5 @@
 import { METADATA_COLUMNS } from "@/lib/columns";
+import { isFaded } from "@/lib/data";
 import type { MetadataKey, Paper, SortState } from "@/lib/types";
 import { LABEL_HEIGHT, PAPER_COLUMN_WIDTHS, ROW_HEIGHT, SUBGROUP_HEIGHT, TITLE_HEIGHT } from "./layout";
 
@@ -58,7 +59,10 @@ export default function PaperColumn({ papers, hoveredRowId, onHoverRow, sort, on
             style={{
               height: ROW_HEIGHT,
               fontWeight: hoveredRowId === paper.AuthorYear + paper["Paper Nickname"] ? 700 : undefined,
-              opacity: hoveredRowId !== null && hoveredRowId !== paper.AuthorYear + paper["Paper Nickname"] ? 0.6 : 1,
+              // Papers not marked in the sorted column stay faded; other rows fade while hovering.
+              opacity: isFaded(paper, sort)
+                ? 0.4
+                : hoveredRowId !== null && hoveredRowId !== paper.AuthorYear + paper["Paper Nickname"] ? 0.6 : 1,
             }}
           >
             {METADATA_COLUMNS.map(({ key }) => (
