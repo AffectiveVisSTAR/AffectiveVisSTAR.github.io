@@ -19,6 +19,28 @@ Copy this block and fill it in:
 
 ---
 
+## 2026-10-24 – Sort papers by classification column
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** 
+  Let users click a classification column (e.g. "Public Health") to put the papers marked in that column at the top, like on the old site.
+- **What the AI did:** 
+  Made the column names in `inf219/components/corpus/GroupPanel.tsx` clickable, reusing the existing sorting in `CorpusTable.tsx`. The active column shows a ▼ icon and a grey background. Added `isFaded` in `inf219/lib/data.ts` so papers that are not marked in the sorted column are faded in all panels, using the same opacity as the old site.
+- **What we did / verified:** 
+  I compared the result with the old site and asked for the arrow to point down, for the fading to stay on while the column is sorted (not only on hover), and for the columns to only switch between "marked first" and no sorting. I chose to show the icon only on the active column. I read through the plan before approving it, and read through the code changes to quality-check them. I ran the site locally myself and checked that the sorting works.
+- **Link:** <PR / commit>
+
+## 2026-10-24 – Sort papers by author, year and paper
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** 
+  Let users sort the corpus table by clicking the Author, Year and Paper column names, like on the old site.
+- **What the AI did:** 
+  Described common ways to design sorting on websites and suggested several options. Made the column names in `inf219/components/corpus/PaperColumn.tsx` clickable with a ⇅ / ▲ / ▼ icon, connected the existing `sortPapers` and `nextSort` functions in `CorpusTable.tsx`, and made the Year column wider in `layout.ts` so the icon fits. Reviewed the change afterwards to check that no code was unnecessary.
+- **What we did / verified:** 
+  I chose the design, asked for black, slightly bolder icons and the simplest possible solution, and rejected a first, larger version. I read through the plan before approving it, and read through the code changes to quality-check them. I ran the site locally myself and checked that the sorting works.
+- **Link:** [442e0e7](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/442e0e726cede5214128f876205438293df3ed72)
+
 ## 2026-10-23 – Use consistent colours within emotion panels
 - **Who:** Elise
 - **Tool:** ChatGPT

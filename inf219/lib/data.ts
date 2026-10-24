@@ -42,6 +42,15 @@ export function isMarked(paper: Paper, key: string): boolean {
   return paper[key] === "X";
 }
 
+// True if the table is sorted by a classification column that the paper is not marked in.
+export function isFaded(paper: Paper, sort: SortState): boolean {
+  return (
+    sort !== null &&
+    !METADATA_COLUMNS.some(({ key }) => key === sort.key) &&
+    !isMarked(paper, sort.key)
+  );
+}
+
 // Number of papers marked in a column.
 export function countMarked(papers: Paper[], key: string): number {
   return papers.filter((paper) => isMarked(paper, key)).length;
