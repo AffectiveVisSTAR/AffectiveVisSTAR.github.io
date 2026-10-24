@@ -15,7 +15,7 @@ export const HEADER_HEIGHT = TITLE_HEIGHT + SUBGROUP_HEIGHT + LABEL_HEIGHT;
 // Column widths in the paper panel on the left.
 export const PAPER_COLUMN_WIDTHS = {
   AuthorYear: 150,
-  Year: 44,
+  Year: 64,
   "Paper Nickname": 200,
 } as const;
 
