@@ -60,6 +60,17 @@ Copy this block and fill it in:
   I gave the AI a sketch of the panel and chose to have it fixed on the right side, only showing after a click with a close button, and to add the filters in a separate commit. I read through the plan before approving it, and read through the code changes to quality-check them. I made each commit myself. I ran the site locally myself and checked that the panel and the filters work.
 - **Link:** [Issue #7](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/7)
 
+## 2026-10-24 – Sort papers by classification column
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** 
+  Let users click a classification column (e.g. "Public Health") to put the papers marked in that column at the top, like on the old site.
+- **What the AI did:** 
+  Made the column names in `inf219/components/corpus/GroupPanel.tsx` clickable, reusing the existing sorting in `CorpusTable.tsx`. The active column shows a ▼ icon and a grey background. Added `isFaded` in `inf219/lib/data.ts` so papers that are not marked in the sorted column are faded in all panels, using the same opacity as the old site.
+- **What we did / verified:** 
+  I compared the result with the old site and asked for the arrow to point down, for the fading to stay on while the column is sorted (not only on hover), and for the columns to only switch between "marked first" and no sorting. I chose to show the icon only on the active column. I read through the plan before approving it, and read through the code changes to quality-check them. I ran the site locally myself and checked that the sorting works.
+- **Link:** [Issue #17](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/17)
+
 ## 2026-10-24 – Sort papers by author, year and paper
 - **Who:** Aimee Hong
 - **Tool:** Claude Code (Opus 5.5)
