@@ -122,7 +122,7 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
                                 style={{
                                   width: CELL_SIZE,
                                   height: CELL_SIZE,
-                                  backgroundColor: heatmapColor(color, count),
+                                  backgroundColor: heatmapColor(group.color, count),
                                 }}
                               />
                             </div>
