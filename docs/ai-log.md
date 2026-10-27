@@ -19,6 +19,14 @@ Copy this block and fill it in:
 
 ---
 
+## 2026-10-27 – Highlight corpus rows on hover
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Make it easier to follow an article across the corpus table, using the same row dimming as the emotions table.
+- **What the AI did:** Prepared changes in `inf219/components/corpus/CorpusTable.tsx`, `PaperColumn.tsx` and `GroupPanel.tsx`. Added shared row hover state so hovering over article details or squares keeps the active row fully visible and dims other rows to 40% across all panels. Memoised column article counts so hovering does not repeat the counting. Left column headings unchanged and explained the roles of the three components, the opacity condition and memoisation.
+- **What we did / verified:** I applied the patch locally, tested the hover effect and confirmed the result matched what I wanted. I reviewed the changes with step-by-step explanations. The AI checked that the patch applied and ran a successful TypeScript check on the affected corpus components and their dependencies. No production build or Safari performance check was recorded in this session.
+- **Link:** [Issue #21](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/21)
+
 ## 2026-10-27 – Show papers in a side panel on the emotions page
 - **Who:** Aimee Hong
 - **Tool:** Claude Code (Opus 5.5)
