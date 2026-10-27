@@ -19,6 +19,17 @@ Copy this block and fill it in:
 
 ---
 
+## 2026-10-27 – Show papers in a side panel on the emotions page
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** 
+  Let users click a square in the emotions table to see the papers behind it in a side panel to the right of the table, instead of in a panel below the table like on the old site.
+- **What the AI did:** 
+  Made a plan split into one commit per step and asked me about the placement, when the panel should show, the filters and this log. Copied `classtable_metadata.json` into `inf219/public/` and added `loadPaperMetadata()` in `inf219/lib/data.ts`. Made the squares with papers clickable in `inf219/components/emotions/EmotionGroupPanel.tsx`, and added the side panel in `PaperPanel.tsx` with title, journal, country, domain, abstract and DOI for each paper. Added journal, country and domain filters to the panel. Also explained how to move my first commit to the right branch, and resolved a merge conflict with the new square colours from main.
+- **What we did / verified:** 
+  I gave the AI a sketch of the panel and chose to have it fixed on the right side, only showing after a click with a close button, and to add the filters in a separate commit. I read through the plan before approving it, and read through the code changes to quality-check them. I made each commit myself. I ran the site locally myself and checked that the panel and the filters work.
+- **Link:** [Issue #7](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/7)
+
 ## 2026-10-23 – Use consistent colours within emotion panels
 - **Who:** Elise
 - **Tool:** ChatGPT

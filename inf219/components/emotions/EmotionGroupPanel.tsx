@@ -1,5 +1,6 @@
 import type { Paper, SuperGroup } from "@/lib/types";
 import { getEmotionPapers, type EmotionDisplayGroup } from "@/lib/emotion-layout";
+import type { SelectedCell } from "./PaperPanel";
 
 import {
   CELL_SIZE,
@@ -16,6 +17,8 @@ type GroupPanelProps = {
   superGroup: SuperGroup;
   groups: EmotionDisplayGroup[];
   papers: Paper[];
+  selectedKey: string | null;
+  onSelectCell: (cell: SelectedCell) => void;
 };
 
 // Fixed colour strength based on the number of unique papers.
@@ -44,7 +47,13 @@ function heatmapColor(hex: string, count: number): string {
 }
 
 // Corpus-style headers with numeric emotion counts shown as heatmap squares.
-export default function EmotionGroupPanel({ superGroup, groups: rowGroups, papers }: GroupPanelProps) {
+export default function EmotionGroupPanel({
+  superGroup,
+  groups: rowGroups,
+  papers,
+  selectedKey,
+  onSelectCell,
+}: GroupPanelProps) {
   const { label, color, groups } = superGroup;
 
   return (
@@ -108,24 +117,50 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
                         {group.columns.map((column) => {
                           const articles = getEmotionPapers(row, column, papers);
                           const count = articles.length;
+                          const cellKey = JSON.stringify([category, row.id, column]);
+                          const square = (
+                            <span
+                              className={cellKey === selectedKey ? "rounded-[2px] ring-2 ring-neutral-900 ring-offset-1" : "rounded-[2px]"}
+                              style={{
+                                width: CELL_SIZE,
+                                height: CELL_SIZE,
+                                backgroundColor: heatmapColor(group.color, count),
+                              }}
+                            />
+                          );
+                          const label = `${category}, ${row.name}, ${column}: ${count}`;
+
+                          // Only squares with papers open the side panel.
+                          if (count === 0) {
+                            return (
+                              <div
+                                key={column}
+                                className="flex items-center justify-center"
+                                style={{ width: COLUMN_WIDTH, height: ROW_HEIGHT }}
+                                role="img"
+                                aria-label={label}
+                                title={`${count}:`}
+                              >
+                                {square}
+                              </div>
+                            );
+                          }
+
                           return (
-                            <div
+                            <button
                               key={column}
-                              className="flex items-center justify-center"
+                              type="button"
+                              className="flex cursor-pointer items-center justify-center focus-visible:outline-2 focus-visible:outline-blue-600"
                               style={{ width: COLUMN_WIDTH, height: ROW_HEIGHT }}
-                              role="img"
-                              aria-label={`${category}, ${row.name}, ${column}: ${count}`}
+                              aria-label={label}
+                              aria-pressed={cellKey === selectedKey}
                               title={[`${count}:`, ...articles].join("\n")}
+                              onClick={() =>
+                                onSelectCell({ key: cellKey, title: `${row.name} / ${column}`, authorYears: articles })
+                              }
                             >
-                              <span
-                                className="rounded-[2px]"
-                                style={{
-                                  width: CELL_SIZE,
-                                  height: CELL_SIZE,
-                                  backgroundColor: heatmapColor(group.color, count),
-                                }}
-                              />
-                            </div>
+                              {square}
+                            </button>
                           );
                         })}
                       </div>
