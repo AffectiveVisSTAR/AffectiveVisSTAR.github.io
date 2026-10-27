@@ -19,12 +19,12 @@ Copy this block and fill it in:
 
 ---
 
-## 2026-10-23 – Highlight emotion rows on hover
+## 2026-10-27 – Highlight emotion rows on hover
 - **Who:** Elise
 - **Tool:** ChatGPT (Codex)
-- **Purpose:** Make it easier to follow an emotion row across all table panels.
-- **What the AI did:** Added shared hover state in `EmotionTable.tsx` and synchronised row emphasis in `EmotionColumn.tsx` and `EmotionGroupPanel.tsx`. Memoised visible groups and matching article lists so hovering does not repeat paper matching. Used the original corpus table’s 40% opacity for other rows, leaving the hovered row at normal visibility. Applied fading to row content rather than individual squares. Kept all heatmap squares at their normal colours. Hovering a square emphasises its emotion labels on the left and column label above, while other labels fade to 40%. Added shared column hover state and bold text for both the active emotion labels and column, without row backgrounds or guide lines. Preserved square colours and article tooltips.
-- **What we did / verified:** The AI checked the production build, TypeScript and lint. Browser interaction and Safari scrolling still need to be checked locally.
+- **Purpose:** Make it easier to follow an emotion row across all table panels, similar to the original website.
+- **What the AI did:** Prepared patches for `inf219/components/emotions/EmotionTable.tsx`, `EmotionColumn.tsx` and `EmotionGroupPanel.tsx`. Used shared hover state to keep the active row at full visibility and dim other rows to 40%. Kept the active emotion labels and column heading bold, without a row background. Preserved article tooltips and the heatmap colour calculation. Explained the shared state and each component's role.
+- **What we did / verified:** I tried the changes locally, clarified that other rows should dim instead of adding a grey background, and requested that the active column heading remain bold. The AI checked patch formatting and consistency. TypeScript checking did not finish; no completed build, lint or Safari performance check was recorded in this session.
 - **Link:** [Issue #30](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/30)
 
 ## 2026-10-23 – Use consistent colours within emotion panels

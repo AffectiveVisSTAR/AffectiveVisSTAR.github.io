@@ -79,7 +79,7 @@ export default function EmotionTable() {
           <>
             <EmotionColumn groups={groups} collapsedGroups={collapsedGroups} onToggleGroup={toggleGroup} hoveredRowId={hoveredRowId} onHoverRow={setHoveredRowId} />
             {SUPER_GROUPS.map((superGroup) => (
-              <EmotionGroupPanel key={superGroup.id} superGroup={superGroup} groups={groups} papers={tableData.papers} hoveredColumnId={hoveredColumnId} onHoverColumn={setHoveredColumnId} onHoverRow={setHoveredRowId} />
+              <EmotionGroupPanel key={superGroup.id} superGroup={superGroup} groups={groups} papers={tableData.papers} hoveredColumnId={hoveredColumnId} onHoverColumn={setHoveredColumnId} hoveredRowId={hoveredRowId} onHoverRow={setHoveredRowId} />
             ))}
           </>
         )}

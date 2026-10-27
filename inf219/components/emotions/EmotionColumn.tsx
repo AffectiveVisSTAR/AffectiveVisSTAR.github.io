@@ -69,6 +69,7 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
             {rows.map((emotion, index) => (
               <tr
                 key={emotion.id}
+                style={{ opacity: hoveredRowId !== null && hoveredRowId !== groupKey(category, emotion.id) ? 0.4 : 1 }}
                 onMouseEnter={() => onHoverRow(groupKey(category, emotion.id))}
                 onMouseLeave={() => onHoverRow(null)}
               >
@@ -90,7 +91,6 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
                       lineHeight: `${ROW_HEIGHT}px`,
                       width: EMOTION_COLUMNS[0].width,
                       fontWeight: hoveredRowId === groupKey(category, emotion.id) ? 700 : undefined,
-                      opacity: hoveredRowId !== null && hoveredRowId !== groupKey(category, emotion.id) ? 0.4 : 1,
                     }}
                   >
                     {emotion.isGroup ? (
@@ -117,7 +117,6 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
                       lineHeight: `${ROW_HEIGHT}px`,
                       width: EMOTION_COLUMNS[1].width,
                       fontWeight: hoveredRowId === groupKey(category, emotion.id) ? 700 : undefined,
-                      opacity: hoveredRowId !== null && hoveredRowId !== groupKey(category, emotion.id) ? 0.4 : 1,
                     }}
                   >
                     {emotion.basicEmotion}

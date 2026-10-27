@@ -19,6 +19,7 @@ type GroupPanelProps = {
   papers: Paper[];
   hoveredColumnId: string | null;
   onHoverColumn: (columnId: string | null) => void;
+  hoveredRowId: string | null;
   onHoverRow: (rowId: string | null) => void;
 };
 
@@ -48,7 +49,7 @@ function heatmapColor(hex: string, count: number): string {
 }
 
 // Corpus-style headers with numeric emotion counts shown as heatmap squares.
-export default function EmotionGroupPanel({ superGroup, groups: rowGroups, papers, hoveredColumnId, onHoverColumn, onHoverRow }: GroupPanelProps) {
+export default function EmotionGroupPanel({ superGroup, groups: rowGroups, papers, hoveredRowId, hoveredColumnId, onHoverColumn, onHoverRow }: GroupPanelProps) {
   const { label, color, groups } = superGroup;
 
   // Hovering changes the highlight, so reuse the existing article lists.
@@ -107,7 +108,6 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
                     className="overflow-hidden text-ellipsis whitespace-nowrap text-[11px] text-neutral-800 [writing-mode:vertical-rl] rotate-180"
                     style={{
                       maxHeight: LABEL_HEIGHT - 8,
-                      opacity: hoveredColumnId !== null && hoveredColumnId !== groupKey(superGroup.id, column) ? 0.4 : 1,
                       fontWeight: hoveredColumnId === groupKey(superGroup.id, column) ? 700 : undefined,
                     }}
                   >
@@ -127,11 +127,9 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
             {rows.map((row, index) => (
               <tr
                 key={row.id}
+                style={{ opacity: hoveredRowId !== null && hoveredRowId !== groupKey(category, row.id) ? 0.4 : 1 }}
                 onMouseEnter={() => onHoverRow(groupKey(category, row.id))}
-                onMouseLeave={() => {
-                  onHoverRow(null);
-                  onHoverColumn(null);
-                }}
+                onMouseLeave={() => onHoverRow(null)}
               >
                 <td
                   className={index === 0 ? "border-t border-slate-300 p-0" : "p-0"}
