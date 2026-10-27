@@ -92,7 +92,7 @@ export default function EmotionTable() {
         </div>
       </div>
       {selectedCell && (
-        <PaperPanel cell={selectedCell} metadata={tableData.metadata} onClose={() => setSelectedCell(null)} />
+        <PaperPanel key={selectedCell.key} cell={selectedCell} metadata={tableData.metadata} onClose={() => setSelectedCell(null)} />
       )}
     </div>
   );
