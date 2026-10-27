@@ -1,7 +1,8 @@
 import { FEATURE_COLUMNS, METADATA_COLUMNS } from "./columns";
-import type { Paper, SortState } from "./types";
+import type { Paper, PaperMetadata, SortState } from "./types";
 
 export const PAPERS_URL = "/classtable.json";
+export const PAPER_METADATA_URL = "/classtable_metadata.json";
 
 // Fetches the papers from public/classtable.json.
 // Rows without AuthorYear (empty lines from the spreadsheet) are skipped.
@@ -23,6 +24,25 @@ export async function loadPapers(url: string = PAPERS_URL): Promise<Paper[]> {
 
   warnAboutMissingColumns(papers);
   return papers;
+}
+
+// Fetches title, journal, country, abstract, domain and DOI from public/classtable_metadata.json.
+// Rows without AuthorYear are skipped.
+export async function loadPaperMetadata(url: string = PAPER_METADATA_URL): Promise<PaperMetadata[]> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Could not load ${url} (${response.status})`);
+  }
+
+  const data: unknown = await response.json();
+  if (!Array.isArray(data)) {
+    throw new Error(`${url} does not contain a list of papers`);
+  }
+
+  return data.filter(
+    (row): row is PaperMetadata =>
+      typeof row === "object" && row !== null && typeof row.AuthorYear === "string",
+  );
 }
 
 // Warns in the console if columns.ts lists columns that are missing from the data,

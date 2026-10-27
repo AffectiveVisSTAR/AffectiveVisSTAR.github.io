@@ -11,6 +11,18 @@ export type Paper = {
   [column: string]: string | number | null | undefined;
 };
 
+// Bibliographic details for one paper (one row in classtable_metadata.json).
+// Matched to Paper by AuthorYear.
+export type PaperMetadata = {
+  AuthorYear: string;
+  Title: string;
+  Journal: string;
+  Country: string;
+  Abstract: string;
+  DomainApp: string;
+  DOI: string;
+};
+
 // Keys of the metadata fields shown in the left panel.
 export type MetadataKey = "AuthorYear" | "Year" | "Paper Nickname";
 
