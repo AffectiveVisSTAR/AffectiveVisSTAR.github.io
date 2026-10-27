@@ -11,6 +11,7 @@ import PaperColumn from "./PaperColumn";
 // in one scroll container, so all panels scroll together.
 export default function CorpusTable() {
   const [papers, setPapers] = useState<Paper[]>([]);
+  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,9 +33,9 @@ export default function CorpusTable() {
   return (
     <div className="size-full overflow-auto bg-neutral-100">
       <div className="flex w-max items-start gap-3 p-3">
-        <PaperColumn papers={papers} />
+        <PaperColumn papers={papers} hoveredRowId={hoveredRowId} onHoverRow={setHoveredRowId} />
         {SUPER_GROUPS.map((superGroup) => (
-          <GroupPanel key={superGroup.id} superGroup={superGroup} papers={papers} />
+          <GroupPanel key={superGroup.id} superGroup={superGroup} papers={papers} hoveredRowId={hoveredRowId} onHoverRow={setHoveredRowId} />
         ))}
       </div>
     </div>

@@ -4,10 +4,12 @@ import { LABEL_HEIGHT, PAPER_COLUMN_WIDTHS, ROW_HEIGHT, SUBGROUP_HEIGHT, TITLE_H
 
 type PaperColumnProps = {
   papers: Paper[];
+  hoveredRowId: string | null;
+  onHoverRow: (rowId: string | null) => void;
 };
 
 // Left panel with author, year and nickname. It stays in place when scrolling sideways.
-export default function PaperColumn({ papers }: PaperColumnProps) {
+export default function PaperColumn({ papers, hoveredRowId, onHoverRow }: PaperColumnProps) {
   return (
     <section className="sticky left-0 z-20 shrink-0 rounded-md border border-neutral-300 bg-white">
       <header className="sticky top-0 z-10 rounded-t-md bg-white">
@@ -43,7 +45,12 @@ export default function PaperColumn({ papers }: PaperColumnProps) {
           <div
             key={paper.AuthorYear + paper["Paper Nickname"]}
             className="flex items-center text-xs text-neutral-800"
-            style={{ height: ROW_HEIGHT }}
+            onMouseEnter={() => onHoverRow(paper.AuthorYear + paper["Paper Nickname"])}
+            onMouseLeave={() => onHoverRow(null)}
+            style={{
+              height: ROW_HEIGHT,
+              opacity: hoveredRowId !== null && hoveredRowId !== paper.AuthorYear + paper["Paper Nickname"] ? 0.4 : 1,
+            }}
           >
             {METADATA_COLUMNS.map(({ key }) => (
               <div

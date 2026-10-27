@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { countMarked, isMarked } from "@/lib/data";
 import type { Paper, SuperGroup } from "@/lib/types";
 import Cell from "./Cell";
@@ -14,12 +15,18 @@ import {
 type GroupPanelProps = {
   superGroup: SuperGroup;
   papers: Paper[];
+  hoveredRowId: string | null;
+  onHoverRow: (rowId: string | null) => void;
 };
 
 // One colored panel: a header with panel name, subgroups and rotated column names,
 // and below it one row of squares per paper.
-export default function GroupPanel({ superGroup, papers }: GroupPanelProps) {
+export default function GroupPanel({ superGroup, papers, hoveredRowId, onHoverRow }: GroupPanelProps) {
   const { label, color, groups } = superGroup;
+  // Keep column totals cached while the hovered row changes.
+  const articleCounts = useMemo(() => new Map(
+    groups.flatMap((group) => group.columns.map((column) => [column, countMarked(papers, column)] as const)),
+  ), [groups, papers]);
 
   return (
     <section className="shrink-0 rounded-md border border-neutral-300 bg-white">
@@ -50,7 +57,7 @@ export default function GroupPanel({ superGroup, papers }: GroupPanelProps) {
           {groups.map((group) => (
             <div key={group.id} className="flex">
               {group.columns.map((column) => {
-                const articleCount = countMarked(papers, column);
+                const articleCount = articleCounts.get(column)!;
 
                 return (
                   <div
@@ -85,7 +92,13 @@ export default function GroupPanel({ superGroup, papers }: GroupPanelProps) {
           <div
             key={paper.AuthorYear + paper["Paper Nickname"]}
             className="flex"
-            style={{ gap: GROUP_GAP, height: ROW_HEIGHT }}
+            onMouseEnter={() => onHoverRow(paper.AuthorYear + paper["Paper Nickname"])}
+            onMouseLeave={() => onHoverRow(null)}
+            style={{
+              gap: GROUP_GAP,
+              height: ROW_HEIGHT,
+              opacity: hoveredRowId !== null && hoveredRowId !== paper.AuthorYear + paper["Paper Nickname"] ? 0.4 : 1,
+            }}
           >
             {groups.map((group) => (
               <div key={group.id} className="flex">
