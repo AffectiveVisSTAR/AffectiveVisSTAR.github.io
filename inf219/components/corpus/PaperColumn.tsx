@@ -49,7 +49,8 @@ export default function PaperColumn({ papers, hoveredRowId, onHoverRow }: PaperC
             onMouseLeave={() => onHoverRow(null)}
             style={{
               height: ROW_HEIGHT,
-              opacity: hoveredRowId !== null && hoveredRowId !== paper.AuthorYear + paper["Paper Nickname"] ? 0.4 : 1,
+              fontWeight: hoveredRowId === paper.AuthorYear + paper["Paper Nickname"] ? 700 : undefined,
+              opacity: hoveredRowId !== null && hoveredRowId !== paper.AuthorYear + paper["Paper Nickname"] ? 0.6 : 1,
             }}
           >
             {METADATA_COLUMNS.map(({ key }) => (

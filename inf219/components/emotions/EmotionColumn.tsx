@@ -7,6 +7,8 @@ type EmotionColumnProps = {
   groups: EmotionDisplayGroup[];
   collapsedGroups: Set<string>;
   onToggleGroup: (key: string) => void;
+  hoveredRowId: string | null;
+  onHoverRow: (rowId: string | null) => void;
 };
 
 const CATEGORY_WIDTH = 44;
@@ -14,7 +16,7 @@ const EMOTION_COLUMNS = [
   { key: "name", label: "Affect", width: 200 },
   { key: "Basic Emotion", label: "Basic Emotion", width: 140 },
 ] as const;
-export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup }: EmotionColumnProps) {
+export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, hoveredRowId, onHoverRow }: EmotionColumnProps) {
   return (
     <section className="sticky left-0 z-20 shrink-0 self-start border-r-2 border-slate-500 bg-white">
       <table className="border-separate border-spacing-0 text-xs text-neutral-800">
@@ -65,7 +67,12 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup }
         {groups.map(({ category, rows }) => (
           <tbody key={category}>
             {rows.map((emotion, index) => (
-              <tr key={emotion.id}>
+              <tr
+                key={emotion.id}
+                style={{ opacity: hoveredRowId !== null && hoveredRowId !== groupKey(category, emotion.id) ? 0.6 : 1 }}
+                onMouseEnter={() => onHoverRow(groupKey(category, emotion.id))}
+                onMouseLeave={() => onHoverRow(null)}
+              >
                 {index === 0 && (
                   <th rowSpan={rows.length} scope="rowgroup" className="border-r-2 border-t border-slate-300 bg-slate-50 p-0 align-middle">
                     <div className="flex items-center justify-center" style={{ width: CATEGORY_WIDTH }}>
@@ -79,7 +86,12 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup }
                   <div
                     title={emotion.name}
                     className={emotion.isChild ? "truncate pl-6 pr-2 font-normal" : "truncate px-2 font-semibold"}
-                    style={{ height: ROW_HEIGHT, lineHeight: `${ROW_HEIGHT}px`, width: EMOTION_COLUMNS[0].width }}
+                    style={{
+                      height: ROW_HEIGHT,
+                      lineHeight: `${ROW_HEIGHT}px`,
+                      width: EMOTION_COLUMNS[0].width,
+                      fontWeight: hoveredRowId === groupKey(category, emotion.id) ? 700 : undefined,
+                    }}
                   >
                     {emotion.isGroup ? (
                       <button
@@ -100,7 +112,12 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup }
                   <div
                     title={emotion.basicEmotion}
                     className={emotion.isGroup ? "truncate px-2 font-semibold" : "truncate px-2"}
-                    style={{ height: ROW_HEIGHT, lineHeight: `${ROW_HEIGHT}px`, width: EMOTION_COLUMNS[1].width }}
+                    style={{
+                      height: ROW_HEIGHT,
+                      lineHeight: `${ROW_HEIGHT}px`,
+                      width: EMOTION_COLUMNS[1].width,
+                      fontWeight: hoveredRowId === groupKey(category, emotion.id) ? 700 : undefined,
+                    }}
                   >
                     {emotion.basicEmotion}
                   </div>

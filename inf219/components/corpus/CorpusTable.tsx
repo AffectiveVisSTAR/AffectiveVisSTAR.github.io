@@ -12,6 +12,7 @@ import PaperColumn from "./PaperColumn";
 export default function CorpusTable() {
   const [papers, setPapers] = useState<Paper[]>([]);
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
+  const [hoveredColumnId, setHoveredColumnId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,7 +36,7 @@ export default function CorpusTable() {
       <div className="flex w-max items-start gap-3 p-3">
         <PaperColumn papers={papers} hoveredRowId={hoveredRowId} onHoverRow={setHoveredRowId} />
         {SUPER_GROUPS.map((superGroup) => (
-          <GroupPanel key={superGroup.id} superGroup={superGroup} papers={papers} hoveredRowId={hoveredRowId} onHoverRow={setHoveredRowId} />
+          <GroupPanel hoveredColumnId={hoveredColumnId} onHoverColumn={setHoveredColumnId} key={superGroup.id} superGroup={superGroup} papers={papers} hoveredRowId={hoveredRowId} onHoverRow={setHoveredRowId} />
         ))}
       </div>
     </div>
