@@ -18,8 +18,8 @@ export const SUPER_GROUPS: SuperGroup[] = [
     color: "#ffcc15",
     groups: [
       {
-        id: "why-study-emotion",
-        label: "Why Study Emotion",
+        id: "emotion-linked-to",
+        label: "Emotion linked to",
         color: "#ffcc15",
         columns: [
           "Information Receptivity",
