@@ -26,7 +26,7 @@ export type PaperMetadata = {
 // Keys of the metadata fields shown in the left panel.
 export type MetadataKey = "AuthorYear" | "Year" | "Paper Nickname";
 
-// A subgroup of columns, e.g. "Why Study Emotion".
+// A subgroup of columns, e.g. "Emotion linked to".
 export type ColumnGroup = {
   id: string;
   label: string;
