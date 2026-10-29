@@ -177,3 +177,38 @@ export const SUPER_GROUPS: SuperGroup[] = [
 export const FEATURE_COLUMNS: string[] = SUPER_GROUPS.flatMap((superGroup) =>
   superGroup.groups.flatMap((group) => group.columns),
 );
+
+export const COLUMN_DESCRIPTIONS: Record<string, string> = {
+  "Information Receptivity":
+    "The degree to which a reader is open to taking in information presented in a visualization.",
+
+  Engagement:
+    "Capturing attention and spending more time exploring/interacting with a visualization.",
+
+  Enjoyment:
+    "Promoting a pleasurable and enjoyable experience when interacting with a visualization.",
+
+  Comprehension:
+    "Promoting understanding about the information or main message presented in a visualization.",
+
+  "Sense-Making":
+    "The process through which a reader makes connections to better understand the information or main message of a visualization.",
+
+  Interpretation:
+    "How a reader processes information in a visualization, and the conclusions drawn about that visualization.",
+
+  Recall:
+    "The ability to remember a visualization's design features or content/main message.",
+
+  Trust:
+    "The confidence or reassurance a reader has about a visualization that it is reliable and trustworthy, based on design, content/sources, and individual factors.",
+
+  Empathy:
+    "The capacity of a reader to identify with another person/entity's emotional experience.",
+
+  Persuasion:
+    "The degree to which a reader's short-term attitudes, longer-term values, and/or behaviours may be altered as a result of viewing/interacting with a visualization.",
+    
+  "Decision-Making":
+    "The process of taking action based on a visualization, including the information presented and the design/other elements.",
+};
