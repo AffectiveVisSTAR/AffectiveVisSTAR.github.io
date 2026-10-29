@@ -38,7 +38,7 @@ export const SUPER_GROUPS: SuperGroup[] = [
       {
         id: "emotional-valence",
         label: "Emotional Valence",
-        color: "#ffd92f",
+        color: "#ffcc15",
         columns: ["Negative", "Neutral", "Positive"],
       },
     ],
@@ -83,7 +83,7 @@ export const SUPER_GROUPS: SuperGroup[] = [
       {
         id: "vis",
         label: "Vis",
-        color: "#8ae7db",
+        color: "#5fc9bb",
         columns: ["Vis Source In-the-Wild", "Vis Source Custom"],
       },
     ],
@@ -118,7 +118,7 @@ export const SUPER_GROUPS: SuperGroup[] = [
       {
         id: "element-studied",
         label: "Element Studied",
-        color: "#aae274",
+        color: "#70d384",
         columns: [
           "Topic",
           "Vis Type",
@@ -149,7 +149,7 @@ export const SUPER_GROUPS: SuperGroup[] = [
       {
         id: "study-instruments",
         label: "Study Instruments",
-        color: "#ffa55f",
+        color: "#fb8150",
         columns: [
           "Custom Questionnaire",
           "Adapted Questionnaire",
