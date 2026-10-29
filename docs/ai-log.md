@@ -18,6 +18,13 @@ Copy this block and fill it in:
 ```
 
 ---
+## 2026-10-28 – Add number of articles to Emotions
+- **Who:** Jenny
+- **Tool:** Copilot
+- **Purpose:** Add the number of articles for each column to the emotions table
+- **What the AI did:** AI helped implement the changes in `EmotionGroupPanel.tsx` based on the changes already made in `GroupPanel.tsx` for the Corups. Lastly, Copilot ran a lint and built the project to controll that the changes that were made worked. 
+- **What we did / verified:** I made some small changes in `EmotionGroupPanel.tsx` to make sure the design looked clean and viewable. I changed from `top-1` in the `classname` for the articles to `bottom-1` so that the numbers appear underneath the text. At the end I ran the site locally to check that the numbers appeared where I wanted them to.
+- **Link:** [Issue #37, commit ab8a104](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/ab8a104fbc74adcbff8735b2530981664e7e68cf)
 
 ## 2026-10-27 – Highlight corpus rows on hover
 - **Who:** Elise
@@ -53,6 +60,22 @@ Copy this block and fill it in:
 - **What we did / verified:** I reviewed the colour definitions and explanation, chose to use the main panel’s colour, and made the code change locally.
 - **Link:** [PR #36](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/36)
 
+## 2026-10-22 – Added number of articles in each column to the corpus
+- **Who:** Jenny
+- **Tool:** Copilot, ChatGPT
+- **Purpose:** Add the number of articles for each column in the corpus
+- **What the AI did:** I used ChatGPT to help me explain the code in `GroupPanel.tsx`, and Copilot helped to make an implementation of code in the file. At the end Copilot ran a lint and build to controll that the changes made worked. 
+- **What we did / verified:** I reviewed the changes made, Copilot added the numbers on the top in the column, so I changed it to the bottom. I approved the plan and checked that the project still built on our machine. 
+- **Link:** [PR #33 / e4a5872](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/e4a5872ae5ba89aec37a66d615e8a20268b26c7e)  
+
+## 2026-10-22 – Remove color on boxes without any articles
+- **Who:** Jenny
+- **Tool:** ChatGPT
+- **Purpose:** Remove the tinted color on the cells that doesn't have any articles
+- **What the AI did:** I used GhatGPT to help me understand `GroupPanel.tsx` at first, then this explanation helped me to understand `Cell.tsx` so that I could make the change.
+- **What we did / verified:** I changed a line in `Cell.tsx`from `tint(color, "1a")` to just `transparent`, this way the cells is transparent. At the end I checked that the project still built on my machine, and that the changes looked okay. 
+- **Link:** [PR #34 / 16462ae](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/16462aeef3a23ffbb716fd80301462ee4872415b)
+
 ## 2026-10-21 – Show matching articles on hover
 - **Who:** Elise
 - **Tool:** ChatGPT
@@ -68,6 +91,15 @@ Copy this block and fill it in:
 - **What the AI did:** Suggested code changes in `inf219/components/emotions/EmotionGroupPanel.tsx` to replace the relative scale with fixed intervals, make zero-count squares white, and darken the colour for 11 or more papers. Kept the opaque colour calculation used for the Safari fix and explained the code.
 - **What we did / verified:** I implemented the changes locally, reviewed the code with step-by-step explanations, and compared the table visually with the original page and the requested scale.
 - **Link:** [PR #27](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/27)
+
+## 2026-10-14 – Adding navigation bar
+- **Who:** Jenny
+- **Tool:** Copilot
+- **Purpose:** Create a navigation bar at the top of the website, and that is clickable so it can change between the corpus table and the emotions table
+- **What the AI did:** Implemented a shared navigation bar in `NavigationBar.tsx`, and added this in `layout.tsx` so that it is visible on all websites with clickable links to the Corpus Classification Table and Emotions by Everything. AI also adjusted the height of the site such that the navigation bar is placed over the table. At the end AI ran a lint and build to controll that the changes worked.  
+- **What we did / verified:** I reviewed the changes, and checked if the links where clickable and that the design looked well-organized. I added an underline effect when you hover over the tabs as well. I also went in and changed the names for the tabs so it made more sense to what it actually showed. Lastly, I approved the plan and checked that the project still built on our machine. 
+- **Link:** [PR #32 / be11687](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/32)
+
 
 ## 2026-10-14 – Reduce Safari scrolling lag
 - **Who:** Elise
@@ -119,27 +151,3 @@ Copy this block and fill it in:
   We ran the commands ourselves, chose the  project
   settings, removed the example content from the start page, and checked that the site opened in the browser. No code written by the AI was added to the project.
 - **Link:** [d28ad39](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/d28ad399d0071c990d54678a19a2a1efdec47dff)
-
-## 2026-10-14 – Adding navigation bar
-- **Who:** Jenny
-- **Tool:** Copilot
-- **Purpose:** Create a navigation bar at the top of the website, and that is clickable so it can change between the corpus table and the emotions table
-- **What the AI did:** Implemented a shared navigation bar in `NavigationBar.tsx`, and added this in `layout.tsx` so that it is visible on all websites with clickable links to the Corpus Classification Table and Emotions by Everything. AI also adjusted the height of the site such that the navigation bar is placed over the table. At the end AI ran a lint and build to controll that the changes worked.  
-- **What we did / verified:** I reviewed the changes, and checked if the links where clickable and that the design looked well-organized. I added an underline effect when you hover over the tabs as well. I also went in and changed the names for the tabs so it made more sense to what it actually showed. Lastly, I approved the plan and checked that the project still built on our machine. 
-- **Link:** [PR #32 / be11687](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/32)
-
-## 2026-10-22 – Added number of articles in each column to the corpus
-- **Who:** Jenny
-- **Tool:** Copilot, ChatGPT
-- **Purpose:** Add the number of articles for each column in the corpus
-- **What the AI did:** I used ChatGPT to help me explain the code in `GroupPanel.tsx`, and Copilot helped to make an implementation of code in the file. At the end Copilot ran a lint and build to controll that the changes made worked. 
-- **What we did / verified:** I reviewed the changes made, Copilot added the numbers on the top in the column, so I changed it to the bottom. I approved the plan and checked that the project still built on our machine. 
-- **Link:** [PR #33 / e4a5872](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/e4a5872ae5ba89aec37a66d615e8a20268b26c7e)  
-
-## 2026-10-22 – Remove color on boxes without any articles
-- **Who:** Jenny
-- **Tool:** ChatGPT
-- **Purpose:** Remove the tinted color on the cells that doesn't have any articles
-- **What the AI did:** I used GhatGPT to help me understand `GroupPanel.tsx` at first, then this explanation helped me to understand `Cell.tsx` so that I could make the change.
-- **What we did / verified:** I changed a line in `Cell.tsx`from `tint(color, "1a")` to just `transparent`, this way the cells is transparent. At the end I checked that the project still built on my machine, and that the changes looked okay. 
-- **Link:** [PR #34 / 16462ae](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/16462aeef3a23ffbb716fd80301462ee4872415b)

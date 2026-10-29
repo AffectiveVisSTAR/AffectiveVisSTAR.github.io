@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import type { Paper, SuperGroup } from "@/lib/types";
+import { countMarked } from "@/lib/data";
 import { groupKey, getEmotionPapers, type EmotionDisplayGroup } from "@/lib/emotion-layout";
 import type { SelectedCell } from "./PaperPanel";
 
@@ -111,25 +112,32 @@ export default function EmotionGroupPanel({
         >
           {groups.map((group) => (
             <div key={group.id} className="flex">
-              {group.columns.map((column) => (
-                <div
-                  key={column}
-                  className="flex h-full shrink-0 items-end justify-center py-1"
-                  style={{ width: COLUMN_WIDTH }}
-                >
-                  <span
-                    title={column}
-                    className="overflow-hidden text-ellipsis whitespace-nowrap text-[11px] text-neutral-800 [writing-mode:vertical-rl] rotate-180"
-                    style={{
-                      maxHeight: LABEL_HEIGHT - 8,
-                      opacity: hoveredColumnId !== null && hoveredColumnId !== groupKey(superGroup.id, column) ? 0.6 : 1,
-                      fontWeight: hoveredColumnId === groupKey(superGroup.id, column) ? 700 : undefined,
-                    }}
+              {group.columns.map((column) => {
+                const articleCount = countMarked(papers, column);
+
+                return (
+                  <div
+                    key={column}
+                    className="relative flex h-full shrink-0 items-end justify-center py-1"
+                    style={{ width: COLUMN_WIDTH }}
                   >
-                    {column}
-                  </span>
-                </div>
-              ))}
+                    <span
+                      title={`${articleCount} articles`}
+                      aria-label={`${column}: ${articleCount} articles`}
+                      className="absolute inset-x-0 bottom-1 text-center text-[9px] font-medium tabular-nums text-neutral-600"
+                    >
+                      {articleCount}
+                    </span>
+                    <span
+                      title={column}
+                      className="absolute bottom-5 overflow-hidden text-ellipsis whitespace-nowrap text-[11px] text-neutral-800 [writing-mode:vertical-rl] rotate-180"
+                      style={{ maxHeight: LABEL_HEIGHT - 26 }}
+                    >
+                      {column}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>
