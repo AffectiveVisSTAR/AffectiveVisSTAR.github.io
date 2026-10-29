@@ -34,8 +34,8 @@ function getColorStrength(count: number): number {
 }
 
 // Calculate an opaque colour to keep scrolling smooth in Safari.
-function heatmapColor(hex: string, count: number): string {
-  const strength = getColorStrength(count);
+function heatmapColor(hex: string, count: number, dimmed: boolean): string {
+  const strength = getColorStrength(count) * (dimmed ? 0.4 : 1);
   const brightness = count >= 11 ? 0.95 : 1;
 
   const channels = [1, 3, 5].map((offset) => {
@@ -108,6 +108,7 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
                     className="overflow-hidden text-ellipsis whitespace-nowrap text-[11px] text-neutral-800 [writing-mode:vertical-rl] rotate-180"
                     style={{
                       maxHeight: LABEL_HEIGHT - 8,
+                      opacity: hoveredColumnId !== null && hoveredColumnId !== groupKey(superGroup.id, column) ? 0.6 : 1,
                       fontWeight: hoveredColumnId === groupKey(superGroup.id, column) ? 700 : undefined,
                     }}
                   >
@@ -127,7 +128,6 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
             {rows.map((row, index) => (
               <tr
                 key={row.id}
-                style={{ opacity: hoveredRowId !== null && hoveredRowId !== groupKey(category, row.id) ? 0.4 : 1 }}
                 onMouseEnter={() => onHoverRow(groupKey(category, row.id))}
                 onMouseLeave={() => onHoverRow(null)}
               >
@@ -143,6 +143,11 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
                         {group.columns.map((column) => {
                           const articles = articlesByRow.get(groupKey(category, row.id))!.get(column)!;
                           const count = articles.length;
+                          // Keep both arms of the hovered row/column cross at full strength.
+                          const hasHover = hoveredRowId !== null || hoveredColumnId !== null;
+                          const isActiveRow = hoveredRowId === groupKey(category, row.id);
+                          const isActiveColumn = hoveredColumnId === groupKey(superGroup.id, column);
+                          const dimmed = hasHover && !isActiveRow && !isActiveColumn;
                           return (
                             <div
                               key={column}
@@ -159,7 +164,7 @@ export default function EmotionGroupPanel({ superGroup, groups: rowGroups, paper
                                 style={{
                                   width: CELL_SIZE,
                                   height: CELL_SIZE,
-                                  backgroundColor: heatmapColor(color, count),
+                                  backgroundColor: heatmapColor(color, count, dimmed),
                                 }}
                               />
                             </div>

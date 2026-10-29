@@ -69,7 +69,7 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
             {rows.map((emotion, index) => (
               <tr
                 key={emotion.id}
-                style={{ opacity: hoveredRowId !== null && hoveredRowId !== groupKey(category, emotion.id) ? 0.4 : 1 }}
+                style={{ opacity: hoveredRowId !== null && hoveredRowId !== groupKey(category, emotion.id) ? 0.6 : 1 }}
                 onMouseEnter={() => onHoverRow(groupKey(category, emotion.id))}
                 onMouseLeave={() => onHoverRow(null)}
               >
