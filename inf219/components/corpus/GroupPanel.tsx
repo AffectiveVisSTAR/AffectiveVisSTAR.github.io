@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { countMarked, isMarked } from "@/lib/data";
 import type { Paper, SuperGroup } from "@/lib/types";
 import Cell from "./Cell";
@@ -14,12 +15,20 @@ import {
 type GroupPanelProps = {
   superGroup: SuperGroup;
   papers: Paper[];
+  hoveredColumnId: string | null;
+  onHoverColumn: (columnId: string | null) => void;
+  hoveredRowId: string | null;
+  onHoverRow: (rowId: string | null) => void;
 };
 
 // One colored panel: a header with panel name, subgroups and rotated column names,
 // and below it one row of squares per paper.
-export default function GroupPanel({ superGroup, papers }: GroupPanelProps) {
+export default function GroupPanel({ superGroup, papers, hoveredRowId, onHoverRow, hoveredColumnId, onHoverColumn }: GroupPanelProps) {
   const { label, color, groups } = superGroup;
+  // Keep column totals cached while the hovered row changes.
+  const articleCounts = useMemo(() => new Map(
+    groups.flatMap((group) => group.columns.map((column) => [column, countMarked(papers, column)] as const)),
+  ), [groups, papers]);
 
   return (
     <section className="shrink-0 rounded-md border border-neutral-300 bg-white">
@@ -50,7 +59,7 @@ export default function GroupPanel({ superGroup, papers }: GroupPanelProps) {
           {groups.map((group) => (
             <div key={group.id} className="flex">
               {group.columns.map((column) => {
-                const articleCount = countMarked(papers, column);
+                const articleCount = articleCounts.get(column)!;
 
                 return (
                   <div
@@ -59,6 +68,7 @@ export default function GroupPanel({ superGroup, papers }: GroupPanelProps) {
                     style={{ width: COLUMN_WIDTH }}
                   >
                     <span
+                      style={{ fontWeight: hoveredColumnId === JSON.stringify([superGroup.id, column]) ? 700 : undefined }}
                       title={`${articleCount} articles`}
                       aria-label={`${column}: ${articleCount} articles`}
                       className="absolute inset-x-0 bottom-1 text-center text-[9px] font-medium tabular-nums text-neutral-600"
@@ -68,7 +78,11 @@ export default function GroupPanel({ superGroup, papers }: GroupPanelProps) {
                     <span
                       title={column}
                       className="absolute bottom-5 overflow-hidden text-ellipsis whitespace-nowrap text-[11px] text-neutral-800 [writing-mode:vertical-rl] rotate-180"
-                      style={{ maxHeight: LABEL_HEIGHT - 26 }}
+                      style={{
+                        maxHeight: LABEL_HEIGHT - 26,
+                        opacity: hoveredColumnId !== null && hoveredColumnId !== JSON.stringify([superGroup.id, column]) ? 0.6 : 1,
+                        fontWeight: hoveredColumnId === JSON.stringify([superGroup.id, column]) ? 700 : undefined,
+                      }}
                     >
                       {column}
                     </span>
@@ -85,12 +99,26 @@ export default function GroupPanel({ superGroup, papers }: GroupPanelProps) {
           <div
             key={paper.AuthorYear + paper["Paper Nickname"]}
             className="flex"
-            style={{ gap: GROUP_GAP, height: ROW_HEIGHT }}
+            onMouseEnter={() => onHoverRow(paper.AuthorYear + paper["Paper Nickname"])}
+            onMouseLeave={() => onHoverRow(null)}
+            style={{
+              gap: GROUP_GAP,
+              height: ROW_HEIGHT,
+            }}
           >
             {groups.map((group) => (
               <div key={group.id} className="flex">
                 {group.columns.map((column) => (
-                  <Cell key={column} marked={isMarked(paper, column)} color={group.color} />
+                  <Cell
+                    key={column}
+                    marked={isMarked(paper, column)}
+                    color={group.color}
+                    dimmed={(hoveredRowId !== null || hoveredColumnId !== null)
+                      && hoveredRowId !== paper.AuthorYear + paper["Paper Nickname"]
+                      && hoveredColumnId !== JSON.stringify([superGroup.id, column])}
+                    onMouseEnter={() => onHoverColumn(JSON.stringify([superGroup.id, column]))}
+                    onMouseLeave={() => onHoverColumn(null)}
+                  />
                 ))}
               </div>
             ))}

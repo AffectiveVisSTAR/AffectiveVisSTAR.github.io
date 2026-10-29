@@ -24,7 +24,22 @@ Copy this block and fill it in:
 - **Purpose:** Add the number of articles for each column to the emotions table
 - **What the AI did:** AI helped implement the changes in `EmotionGroupPanel.tsx` based on the changes already made in `GroupPanel.tsx` for the Corups. Lastly, Copilot ran a lint and built the project to controll that the changes that were made worked. 
 - **What we did / verified:** I made some small changes in `EmotionGroupPanel.tsx` to make sure the design looked clean and viewable. I changed from `top-1` in the `classname` for the articles to `bottom-1` so that the numbers appear underneath the text. At the end I ran the site locally to check that the numbers appeared where I wanted them to.
-- **Link:** <PR / commit>
+- **Link:** [Issue #37, commit ab8a104](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/ab8a104fbc74adcbff8735b2530981664e7e68cf)
+
+## 2026-10-27 – Highlight corpus rows on hover
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Make it easier to follow an article across the corpus table, using the same row dimming as the emotions table.
+- **What the AI did:** Prepared changes in `inf219/components/corpus/CorpusTable.tsx`, `PaperColumn.tsx` and `GroupPanel.tsx`. Added shared row hover state so hovering over article details or squares keeps the active row fully visible and dims other rows to 40% across all panels. Memoised column article counts so hovering does not repeat the counting. Left column headings unchanged and explained the roles of the three components, the opacity condition and memoisation.
+- **What we did / verified:** I applied the patch locally, tested the hover effect and confirmed the result matched what I wanted. I reviewed the changes with step-by-step explanations. The AI checked that the patch applied and ran a successful TypeScript check on the affected corpus components and their dependencies. No production build or Safari performance check was recorded in this session.
+- **Link:** [Issue #21](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/21)
+## 2026-10-27 – Highlight emotion rows on hover
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Make it easier to follow an emotion row across all table panels, similar to the original website.
+- **What the AI did:** Prepared patches for `inf219/components/emotions/EmotionTable.tsx`, `EmotionColumn.tsx` and `EmotionGroupPanel.tsx`. Used shared hover state to keep the active row at full visibility and dim other rows to 40%. Kept the active emotion labels and column heading bold, without a row background. Preserved article tooltips and the heatmap colour calculation. Explained the shared state and each component's role.
+- **What we did / verified:** I tried the changes locally, clarified that other rows should dim instead of adding a grey background, and requested that the active column heading remain bold. The AI checked patch formatting and consistency. TypeScript checking did not finish; no completed build, lint or Safari performance check was recorded in this session.
+- **Link:** [Issue #30](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/30)
 
 ## 2026-10-27 – Show papers in a side panel on the emotions page
 - **Who:** Aimee Hong

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { loadEmotions } from "@/lib/emotion-data";
 import type { EmotionRow, Paper, PaperMetadata } from "@/lib/types";
 import { loadPaperMetadata, loadPapers } from "@/lib/data";
@@ -24,8 +24,15 @@ export default function EmotionTable() {
   const [selectedCell, setSelectedCell] = useState<SelectedCell | null>(null);
 
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => new Set());
-  const groups = getVisibleEmotionGroups(emotions, collapsedGroups);
+  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
+  const [hoveredColumnId, setHoveredColumnId] = useState<string | null>(null);
+  const groups = useMemo(
+    () => getVisibleEmotionGroups(emotions, collapsedGroups),
+    [emotions, collapsedGroups],
+  );
   function toggleGroup(key: string) {
+    setHoveredRowId(null);
+    setHoveredColumnId(null);
     setCollapsedGroups((previous) => {
       const next = new Set(previous);
       if (next.has(key)) next.delete(key);
@@ -76,13 +83,17 @@ export default function EmotionTable() {
             <p className="p-4 text-sm text-neutral-600">No emotions found.</p>
           ) : (
             <>
-              <EmotionColumn groups={groups} collapsedGroups={collapsedGroups} onToggleGroup={toggleGroup} />
+              <EmotionColumn groups={groups} collapsedGroups={collapsedGroups} onToggleGroup={toggleGroup} hoveredRowId={hoveredRowId} onHoverRow={setHoveredRowId} />
               {SUPER_GROUPS.map((superGroup) => (
                 <EmotionGroupPanel
                   key={superGroup.id}
                   superGroup={superGroup}
                   groups={groups}
                   papers={tableData.papers}
+                  hoveredRowId={hoveredRowId}
+                  onHoverRow={setHoveredRowId}
+                  hoveredColumnId={hoveredColumnId}
+                  onHoverColumn={setHoveredColumnId}
                   selectedKey={selectedCell?.key ?? null}
                   onSelectCell={setSelectedCell}
                 />
