@@ -19,6 +19,14 @@ Copy this block and fill it in:
 
 ---
 
+## 2026-10-27 – Highlight emotion rows on hover
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Make it easier to follow an emotion row across all table panels, similar to the original website.
+- **What the AI did:** Prepared patches for `inf219/components/emotions/EmotionTable.tsx`, `EmotionColumn.tsx` and `EmotionGroupPanel.tsx`. Used shared hover state to keep the active row at full visibility and dim other rows to 40%. Kept the active emotion labels and column heading bold, without a row background. Preserved article tooltips and the heatmap colour calculation. Explained the shared state and each component's role.
+- **What we did / verified:** I tried the changes locally, clarified that other rows should dim instead of adding a grey background, and requested that the active column heading remain bold. The AI checked patch formatting and consistency. TypeScript checking did not finish; no completed build, lint or Safari performance check was recorded in this session.
+- **Link:** [Issue #30](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/30)
+
 ## 2026-10-27 – Show papers in a side panel on the emotions page
 - **Who:** Aimee Hong
 - **Tool:** Claude Code (Opus 5.5)
