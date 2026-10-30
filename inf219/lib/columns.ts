@@ -206,7 +206,7 @@ export const COLUMN_DESCRIPTIONS: Record<string, string> = {
   Empathy:
     "The capacity of a reader to identify with another person/entity's emotional experience.",
 
-  Persuasion:
+  "Persuasion (Attitude or Behaviour Change, Nudging)":
     "The degree to which a reader's short-term attitudes, longer-term values, and/or behaviours may be altered as a result of viewing/interacting with a visualization.",
     
   "Decision-Making":
