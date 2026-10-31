@@ -1,7 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState, type MouseEvent as ReactMouseEvent } from "react";
+import { COLUMN_DESCRIPTIONS } from "@/lib/columns";
 import { countMarked, isMarked } from "@/lib/data";
 import type { Paper, SuperGroup } from "@/lib/types";
 import Cell from "./Cell";
+import ColumnDescriptionTooltip from "./ColumnDescriptionTooltip";
 import {
   COLUMN_WIDTH,
   GROUP_GAP,
@@ -29,10 +31,17 @@ export default function GroupPanel({ superGroup, papers, hoveredRowId, onHoverRo
   const articleCounts = useMemo(() => new Map(
     groups.flatMap((group) => group.columns.map((column) => [column, countMarked(papers, column)] as const)),
   ), [groups, papers]);
+  const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
+
+  function handleTooltipPointer(event: ReactMouseEvent<HTMLDivElement>, description: string | undefined) {
+    if (!description) return;
+    setTooltip({ description, x: event.clientX, y: event.clientY });
+  }
 
   return (
+    <>
     <section className="shrink-0 rounded-md border border-neutral-300 bg-white">
-      <header className="sticky top-0 z-10 rounded-t-md bg-white">
+      <header className="sticky top-0 z-10 rounded-t-md bg-white hover:z-30">
         <div
           className="flex items-center justify-center rounded-t-md px-3 text-sm font-semibold text-neutral-900"
           style={{ height: TITLE_HEIGHT, backgroundColor: color }}
@@ -60,12 +69,18 @@ export default function GroupPanel({ superGroup, papers, hoveredRowId, onHoverRo
             <div key={group.id} className="flex">
               {group.columns.map((column) => {
                 const articleCount = articleCounts.get(column)!;
+                const description = group.id === "emotion-linked-to" ? COLUMN_DESCRIPTIONS[column] : undefined;
 
                 return (
                   <div
                     key={column}
-                    className="relative flex h-full shrink-0 items-end justify-center py-1"
+                    className="group relative flex h-full shrink-0 items-end justify-center py-1 hover:z-20"
                     style={{ width: COLUMN_WIDTH }}
+                    onMouseEnter={(event) => handleTooltipPointer(event, description)}
+                    // onMouseMove={(event) => handleTooltipPointer(event, description)}
+                    onMouseLeave={() => {
+                      if (description) setTooltip(null);
+                    }}
                   >
                     <span
                       style={{ fontWeight: hoveredColumnId === JSON.stringify([superGroup.id, column]) ? 700 : undefined }}
@@ -76,7 +91,7 @@ export default function GroupPanel({ superGroup, papers, hoveredRowId, onHoverRo
                       {articleCount}
                     </span>
                     <span
-                      title={column}
+                      title={description ? undefined : column}
                       className="absolute bottom-5 overflow-hidden text-ellipsis whitespace-nowrap text-[11px] text-neutral-800 [writing-mode:vertical-rl] rotate-180"
                       style={{
                         maxHeight: LABEL_HEIGHT - 26,
@@ -126,5 +141,7 @@ export default function GroupPanel({ superGroup, papers, hoveredRowId, onHoverRo
         ))}
       </div>
     </section>
+    {tooltip && <ColumnDescriptionTooltip {...tooltip} />}
+    </>
   );
 }

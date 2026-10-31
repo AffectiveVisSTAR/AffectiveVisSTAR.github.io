@@ -1,8 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState, type MouseEvent as ReactMouseEvent } from "react";
+import { COLUMN_DESCRIPTIONS } from "@/lib/columns";
 import type { Paper, SuperGroup } from "@/lib/types";
 import { countMarked } from "@/lib/data";
 import { groupKey, getEmotionPapers, type EmotionDisplayGroup } from "@/lib/emotion-layout";
 import type { SelectedCell } from "./PaperPanel";
+import ColumnDescriptionTooltip from "../corpus/ColumnDescriptionTooltip";
 
 import {
   CELL_SIZE,
@@ -65,6 +67,12 @@ export default function EmotionGroupPanel({
   onSelectCell,
 }: GroupPanelProps) {
   const { label, color, groups } = superGroup;
+  const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
+
+  function handleTooltipPointer(event: ReactMouseEvent<HTMLDivElement>, description: string | undefined) {
+    if (!description) return;
+    setTooltip({ description, x: event.clientX, y: event.clientY });
+  }
 
   // Hovering changes the highlight, so reuse the existing article lists.
   const articlesByRow = useMemo(() => {
@@ -85,8 +93,9 @@ export default function EmotionGroupPanel({
 
 
   return (
+    <>
     <section className="shrink-0 rounded-md border border-neutral-300 bg-white">
-      <header className="sticky top-0 z-10 rounded-t-md bg-white">
+      <header className="sticky top-0 z-10 rounded-t-md bg-white hover:z-30">
         <div
           className="flex items-center justify-center rounded-t-md px-3 text-sm font-semibold text-neutral-900"
           style={{ height: TITLE_HEIGHT, backgroundColor: color }}
@@ -114,12 +123,18 @@ export default function EmotionGroupPanel({
             <div key={group.id} className="flex">
               {group.columns.map((column) => {
                 const articleCount = countMarked(papers, column);
+                const description = group.id === "emotion-linked-to" ? COLUMN_DESCRIPTIONS[column] : undefined;
 
                 return (
                   <div
                     key={column}
-                    className="relative flex h-full shrink-0 items-end justify-center py-1"
+                    className="group relative flex h-full shrink-0 items-end justify-center py-1 hover:z-20"
                     style={{ width: COLUMN_WIDTH }}
+                    onMouseEnter={(event) => handleTooltipPointer(event, description)}
+                    // onMouseMove={(event) => handleTooltipPointer(event, description)}
+                    onMouseLeave={() => {
+                      if (description) setTooltip(null);
+                    }}
                   >
                     <span
                       title={`${articleCount} articles`}
@@ -129,7 +144,7 @@ export default function EmotionGroupPanel({
                       {articleCount}
                     </span>
                     <span
-                      title={column}
+                      title={description ? undefined : column}
                       className="absolute bottom-5 overflow-hidden text-ellipsis whitespace-nowrap text-[11px] text-neutral-800 [writing-mode:vertical-rl] rotate-180"
                       style={{ maxHeight: LABEL_HEIGHT - 26 }}
                     >
@@ -222,5 +237,7 @@ export default function EmotionGroupPanel({
         ))}
       </table>
     </section>
+    {tooltip && <ColumnDescriptionTooltip {...tooltip} />}
+    </>
   );
 }

@@ -18,6 +18,14 @@ Copy this block and fill it in:
 ```
 
 ---
+## 2026-10-31 – Add 'hover over' descriptions for 'Emotion linked to' categories
+- **Who:** Jenny
+- **Tool:** Copilot, ChatGPT
+- **Purpose:** Add a hover over for the descriptions linked to 'Emotion linked to' categories under Conceptual Underpinning
+- **What the AI did:** ChatGPT helped to explain different parts of the code, and being my sparring partner on how I would like to implement the 'hover over' effect. Copilot helped to create a new file, `ColumnDescriptionTooltip.tsx`, which can be used in both `GroupPanel.tsx` and `EmotionGroupPanel.tsx` to add a reusable tooltip-component. ChatGPT also gave me a template on how I could implement the column descriptions to `colums.ts` as a lookup table. 
+- **What we did / verified:** I reviewed the changes made by Copilot, and did adjustments based on how I would like it to appear. I also changed the name from 'Why study emotion' to 'Emotion linked to' in all files. I added the column descriptions to `columns.ts` with the name and descriptions from the sheet. Lastly, I ran the project locally to check that the hover over effect where visible and appeared how I wanted it to. 
+- **Link:** [Issue #16](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/16)
+
 ## 2026-10-28 – Add number of articles to Emotions
 - **Who:** Jenny
 - **Tool:** Copilot
