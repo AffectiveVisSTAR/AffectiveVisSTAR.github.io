@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { SUPER_GROUPS } from "@/lib/columns";
-import { loadPapers } from "@/lib/data";
-import type { Paper } from "@/lib/types";
+import { loadPapers, nextSort, sortPapers } from "@/lib/data";
+import type { Paper, SortState } from "@/lib/types";
 import GroupPanel from "./GroupPanel";
 import PaperColumn from "./PaperColumn";
 
@@ -15,6 +15,7 @@ export default function CorpusTable() {
   const [hoveredColumnId, setHoveredColumnId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sort, setSort] = useState<SortState>(null);
 
   useEffect(() => {
     loadPapers()
@@ -31,12 +32,32 @@ export default function CorpusTable() {
     return <p className="p-4 text-sm text-red-700">{error}</p>;
   }
 
+  // Every panel gets the same sorted list, so the rows stay lined up.
+  const sortedPapers = sortPapers(papers, sort);
+
   return (
     <div className="size-full overflow-auto bg-neutral-100">
       <div className="flex w-max items-start gap-3 p-3">
-        <PaperColumn papers={papers} hoveredRowId={hoveredRowId} onHoverRow={setHoveredRowId} />
+        <PaperColumn
+          papers={sortedPapers}
+          hoveredRowId={hoveredRowId}
+          onHoverRow={setHoveredRowId}
+          sort={sort}
+          onSort={(key) => setSort(nextSort(sort, key))}
+        />
         {SUPER_GROUPS.map((superGroup) => (
-          <GroupPanel hoveredColumnId={hoveredColumnId} onHoverColumn={setHoveredColumnId} key={superGroup.id} superGroup={superGroup} papers={papers} hoveredRowId={hoveredRowId} onHoverRow={setHoveredRowId} />
+          <GroupPanel
+            key={superGroup.id}
+            superGroup={superGroup}
+            papers={sortedPapers}
+            hoveredRowId={hoveredRowId}
+            onHoverRow={setHoveredRowId}
+            hoveredColumnId={hoveredColumnId}
+            onHoverColumn={setHoveredColumnId}
+            sort={sort}
+            // Classification columns only toggle between "marked papers first" and no sorting.
+            onSort={(key) => setSort(sort?.key === key ? null : { key, direction: "asc" })}
+          />
         ))}
       </div>
     </div>

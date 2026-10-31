@@ -1,7 +1,7 @@
 import { useMemo, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { COLUMN_DESCRIPTIONS } from "@/lib/columns";
-import { countMarked, isMarked } from "@/lib/data";
-import type { Paper, SuperGroup } from "@/lib/types";
+import { countMarked, isFaded, isMarked } from "@/lib/data";
+import type { Paper, SortState, SuperGroup } from "@/lib/types";
 import Cell from "./Cell";
 import ColumnDescriptionTooltip from "./ColumnDescriptionTooltip";
 import {
@@ -21,11 +21,23 @@ type GroupPanelProps = {
   onHoverColumn: (columnId: string | null) => void;
   hoveredRowId: string | null;
   onHoverRow: (rowId: string | null) => void;
+  sort: SortState;
+  onSort: (key: string) => void;
 };
 
 // One colored panel: a header with panel name, subgroups and rotated column names,
 // and below it one row of squares per paper.
-export default function GroupPanel({ superGroup, papers, hoveredRowId, onHoverRow, hoveredColumnId, onHoverColumn }: GroupPanelProps) {
+// Clicking a column name puts the papers marked in that column at the top.
+export default function GroupPanel({
+  superGroup,
+  papers,
+  hoveredRowId,
+  onHoverRow,
+  hoveredColumnId,
+  onHoverColumn,
+  sort,
+  onSort,
+}: GroupPanelProps) {
   const { label, color, groups } = superGroup;
   // Keep column totals cached while the hovered row changes.
   const articleCounts = useMemo(() => new Map(
@@ -33,7 +45,7 @@ export default function GroupPanel({ superGroup, papers, hoveredRowId, onHoverRo
   ), [groups, papers]);
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
 
-  function handleTooltipPointer(event: ReactMouseEvent<HTMLDivElement>, description: string | undefined) {
+  function handleTooltipPointer(event: ReactMouseEvent<HTMLElement>, description: string | undefined) {
     if (!description) return;
     setTooltip({ description, x: event.clientX, y: event.clientY });
   }
@@ -72,9 +84,13 @@ export default function GroupPanel({ superGroup, papers, hoveredRowId, onHoverRo
                 const description = group.id === "emotion-linked-to" ? COLUMN_DESCRIPTIONS[column] : undefined;
 
                 return (
-                  <div
+                  <button
                     key={column}
-                    className="group relative flex h-full shrink-0 items-end justify-center py-1 hover:z-20"
+                    type="button"
+                    onClick={() => onSort(column)}
+                    className={`group relative flex h-full shrink-0 cursor-pointer items-end justify-center py-1 hover:z-20 ${
+                      sort?.key === column ? "bg-neutral-200" : ""
+                    }`}
                     style={{ width: COLUMN_WIDTH }}
                     onMouseEnter={(event) => handleTooltipPointer(event, description)}
                     // onMouseMove={(event) => handleTooltipPointer(event, description)}
@@ -82,6 +98,11 @@ export default function GroupPanel({ superGroup, papers, hoveredRowId, onHoverRo
                       if (description) setTooltip(null);
                     }}
                   >
+                    {sort?.key === column && (
+                      <span className="absolute top-1 text-sm font-bold text-black">
+                        ▼
+                      </span>
+                    )}
                     <span
                       style={{ fontWeight: hoveredColumnId === JSON.stringify([superGroup.id, column]) ? 700 : undefined }}
                       title={`${articleCount} articles`}
@@ -94,14 +115,14 @@ export default function GroupPanel({ superGroup, papers, hoveredRowId, onHoverRo
                       title={description ? undefined : column}
                       className="absolute bottom-5 overflow-hidden text-ellipsis whitespace-nowrap text-[11px] text-neutral-800 [writing-mode:vertical-rl] rotate-180"
                       style={{
-                        maxHeight: LABEL_HEIGHT - 26,
+                        maxHeight: LABEL_HEIGHT - 44,
                         opacity: hoveredColumnId !== null && hoveredColumnId !== JSON.stringify([superGroup.id, column]) ? 0.6 : 1,
                         fontWeight: hoveredColumnId === JSON.stringify([superGroup.id, column]) ? 700 : undefined,
                       }}
                     >
                       {column}
                     </span>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -113,7 +134,7 @@ export default function GroupPanel({ superGroup, papers, hoveredRowId, onHoverRo
         {papers.map((paper) => (
           <div
             key={paper.AuthorYear + paper["Paper Nickname"]}
-            className="flex"
+            className={isFaded(paper, sort) ? "flex opacity-40" : "flex"}
             onMouseEnter={() => onHoverRow(paper.AuthorYear + paper["Paper Nickname"])}
             onMouseLeave={() => onHoverRow(null)}
             style={{
