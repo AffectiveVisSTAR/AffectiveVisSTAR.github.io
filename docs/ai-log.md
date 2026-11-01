@@ -18,6 +18,15 @@ Copy this block and fill it in:
 ```
 
 ---
+
+## 2026-11-01 – Fix column highlighting over empty emotion cells
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Make column hover highlighting work for empty emotion cells and match the bold headings in the corpus table.
+- **What the AI did:** Prepared a patch for `inf219/components/emotions/EmotionGroupPanel.tsx`. Added column mouse-enter and mouse-leave handlers to empty cells. Applied font weight 700 to the active column heading and article count, and dimmed other column headings to 60% opacity. Explained that row labels retain 60% opacity while dimmed squares retain 40% of their original colour strength; these existing values were not changed.
+- **What we did / verified:** I applied the patch, tested the page locally and confirmed that the result looked correct. The AI compared the styling with the corpus table, checked that the patch applied and successfully type-checked the modified component and its dependencies. No production build or browser automation was run.
+- **Link:** [Issue #46](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/46)
+
 ## 2026-10-31 – Add 'hover over' descriptions for 'Emotion linked to' categories
 - **Who:** Jenny
 - **Tool:** Copilot, ChatGPT
