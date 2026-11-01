@@ -41,7 +41,7 @@ function getColorStrength(count: number): number {
 
 // Calculate an opaque colour to keep scrolling smooth in Safari.
 function heatmapColor(hex: string, count: number, dimmed: boolean): string {
-  const strength = getColorStrength(count) * (dimmed ? 0.4 : 1);
+  const strength = getColorStrength(count) * (dimmed ? 0.6 : 1);
   const brightness = count >= 11 ? 0.95 : 1;
 
   const channels = [1, 3, 5].map((offset) => {
@@ -137,6 +137,7 @@ export default function EmotionGroupPanel({
                     }}
                   >
                     <span
+                      style={{ fontWeight: hoveredColumnId === groupKey(superGroup.id, column) ? 700 : undefined }}
                       title={`${articleCount} articles`}
                       aria-label={`${column}: ${articleCount} articles`}
                       className="absolute inset-x-0 bottom-1 text-center text-[9px] font-medium tabular-nums text-neutral-600"
@@ -146,7 +147,11 @@ export default function EmotionGroupPanel({
                     <span
                       title={description ? undefined : column}
                       className="absolute bottom-5 overflow-hidden text-ellipsis whitespace-nowrap text-[11px] text-neutral-800 [writing-mode:vertical-rl] rotate-180"
-                      style={{ maxHeight: LABEL_HEIGHT - 26 }}
+                      style={{
+                        maxHeight: LABEL_HEIGHT - 26,
+                        opacity: hoveredColumnId !== null && hoveredColumnId !== groupKey(superGroup.id, column) ? 0.6 : 1,
+                        fontWeight: hoveredColumnId === groupKey(superGroup.id, column) ? 700 : undefined,
+                      }}
                     >
                       {column}
                     </span>
@@ -199,6 +204,8 @@ export default function EmotionGroupPanel({
                                 key={column}
                                 className="flex items-center justify-center"
                                 style={{ width: COLUMN_WIDTH, height: ROW_HEIGHT }}
+                                onMouseEnter={() => onHoverColumn(groupKey(superGroup.id, column))}
+                                onMouseLeave={() => onHoverColumn(null)}
                                 role="img"
                                 aria-label={label}
                                 title={`${count}:`}
