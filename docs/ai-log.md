@@ -18,6 +18,13 @@ Copy this block and fill it in:
 ```
 
 ---
+## 2026-11-01 – Added a clickable information icon
+- **Who:** Jenny
+- **Tool:** Copilot
+- **Purpose:** Implement a clickable information icon that opens a pop-up window with information (information isn't updated yet.)
+- **What the AI did:** Copilot implemented a clickable information icon in the navigation bar `NavigationBar.tsx`. When you click on the icon a pop-up window appears, and information about the website can be added. To close the pop-up window you can click on the `x` at the pop-up window, press `escape` or just click anywhere outside of the pop-up window. Ran a lint and build.
+- **What we did / verified:** I explained how I wanted it to look from a user experience point of view. I decided to position the icon on the right side, next to the Corpus- and Emotions-tab link. I removed Copilot's information about the project, so that we can add it later with the correct information. At the end I ran the project locally to see that everything was working as it should. 
+- **Link:** [Issue #19](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/19)
 
 ## 2026-11-01 – Fix column highlighting over empty emotion cells
 - **Who:** Elise
