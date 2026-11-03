@@ -7,6 +7,10 @@ type EmotionColumnProps = {
   groups: EmotionDisplayGroup[];
   collapsedGroups: Set<string>;
   onToggleGroup: (key: string) => void;
+  onCollapseAll: () => void;
+  onExpandAll: () => void;
+  canCollapseAll: boolean;
+  canExpandAll: boolean;
   hoveredRowId: string | null;
   onHoverRow: (rowId: string | null) => void;
 };
@@ -16,7 +20,7 @@ const EMOTION_COLUMNS = [
   { key: "name", label: "Affect", width: 200 },
   { key: "Basic Emotion", label: "Basic Emotion", width: 140 },
 ] as const;
-export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, hoveredRowId, onHoverRow }: EmotionColumnProps) {
+export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, onCollapseAll, onExpandAll, canCollapseAll, canExpandAll, hoveredRowId, onHoverRow }: EmotionColumnProps) {
   return (
     <section className="sticky left-0 z-20 shrink-0 self-start border-r-2 border-slate-500 bg-white">
       <table className="border-separate border-spacing-0 text-xs text-neutral-800">
@@ -44,18 +48,27 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
           </tr>
           <tr>
             <th colSpan={2} className="p-0 text-center text-xs font-semibold uppercase" style={{ backgroundColor: "#f6f0f0" }}>
-              <div className="flex items-center justify-center" style={{ height: SUBGROUP_HEIGHT }}>
-                Emotions
-              </div>
+              <div style={{ height: SUBGROUP_HEIGHT }} />
             </th>
           </tr>
           <tr>
             {EMOTION_COLUMNS.map((column) => (
               <th key={column.key} scope="col" className="border-b border-slate-200 p-0">
                 <div
-                  className="flex items-end justify-center pb-3"
+                  className="relative flex items-end justify-center pb-3"
                   style={{ height: LABEL_HEIGHT, width: column.width }}
                 >
+                  {column.key === "name" && (
+                    <button
+                      type="button"
+                      onClick={canCollapseAll ? onCollapseAll : onExpandAll}
+                      disabled={!canCollapseAll && !canExpandAll}
+                      className="absolute bottom-0 left-1.5 inline-flex h-6 w-20 items-center justify-center gap-1 cursor-pointer rounded-sm text-[10px] font-medium whitespace-nowrap text-slate-700 underline-offset-4 hover:text-slate-900 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-default disabled:opacity-40"
+                    >
+                      <span aria-hidden="true">{canCollapseAll ? "▾" : "▸"}</span>
+                      <span>{canCollapseAll ? "Collapse all" : "Expand all"}</span>
+                    </button>
+                  )}
                   <span style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
                     {column.label}
                   </span>
