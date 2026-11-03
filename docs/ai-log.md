@@ -18,6 +18,15 @@ Copy this block and fill it in:
 ```
 
 ---
+
+## 2026-11-03 – Export sheet data directly to the app public directory
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Update the JSON files used by the website directly when running the Google Sheets exporter, without manually copying files.
+- **What the AI did:** Prepared a patch for `scripts/corpus260130_to_json.py` so all four default output paths use `inf219/public/`, resolved from the script location rather than the terminal working directory. Added the already-used `certifi` dependency to `scripts/requirements.txt` and documented the update process in `inf219/README.md`. Explained the data flow, virtual environment and changes. Read the sheet through CSV export and compared its current columns with the exporter and website. Helped draft the commit message and PR description.
+- **What we did / verified:** I applied the patch, installed the dependencies in a virtual environment and ran the exporter. It reached Google Sheets but stopped because required columns no longer matched the sheet; no JSON files were updated. The AI checked Python syntax, all four default paths from three working directories, explicit output override behaviour and patch applicability. We decided to push the changes and wait to merge until the group agrees how the updated categories should appear on the website. A successful full export and website check with refreshed data are still pending.
+- **Link:** [Issue #14](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/14)
+
 ## 2026-11-01 – Added a clickable information icon
 - **Who:** Jenny
 - **Tool:** Copilot
