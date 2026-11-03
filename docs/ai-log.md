@@ -18,6 +18,15 @@ Copy this block and fill it in:
 ```
 
 ---
+
+## 2026-11-03 – Collapse and expand all emotion groups
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Let users collapse or expand all emotion groups at once instead of toggling each group separately.
+- **What the AI did:** Prepared patches for `inf219/components/emotions/EmotionTable.tsx` and `EmotionColumn.tsx`. Reused the existing collapsed-group state and visible-row logic to close or open all groups across the table, clearing hover state when doing so. Added one control that switches between “Collapse all” and “Expand all” based on the groups' current state, while preserving individual group toggles. Adjusted its placement and styling following my feedback, keeping a native button with keyboard focus styling but presenting it as text with a small arrow. Explained the state, conditions, click handling and layout changes.
+- **What we did / verified:** I applied the patches, tried the control locally and reviewed screenshots while choosing the design. I requested a single toggle to the left of “Affect”, a smaller text appearance and placement closer to the separator, and changed `bottom-3` to `bottom-0` myself. The AI successfully ran scoped TypeScript checks and checked with the existing data that all 11 groups collapse, group headings and ungrouped rows remain, and all rows expand again. No production build or automated browser test was run. We plan to push the work for review and wait to merge until the group has discussed the design.
+- **Link:** [Issue #39](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/39)
+
 ## 2026-11-01 – Added a clickable information icon
 - **Who:** Jenny
 - **Tool:** Copilot
