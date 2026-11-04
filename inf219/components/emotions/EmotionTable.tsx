@@ -8,7 +8,7 @@ import EmotionColumn from "./EmotionColumn";
 import EmotionGroupPanel from "./EmotionGroupPanel";
 import PaperPanel, { type SelectedCell } from "./PaperPanel";
 import { SUPER_GROUPS } from "@/lib/columns";
-import { getVisibleEmotionGroups } from "@/lib/emotion-layout";
+import { groupKey, getVisibleEmotionGroups } from "@/lib/emotion-layout";
 
 // Loads the emotion data and places its panels in one scroll container.
 export default function EmotionTable() {
@@ -30,6 +30,18 @@ export default function EmotionTable() {
     () => getVisibleEmotionGroups(emotions, collapsedGroups),
     [emotions, collapsedGroups],
   );
+  const collapsibleGroupKeys = groups.flatMap(({ category, rows }) =>
+    rows.filter((row) => row.isGroup).map((row) => groupKey(category, row.groupId!)),
+  );
+  const canCollapseAll = collapsibleGroupKeys.some((key) => !collapsedGroups.has(key));
+  const canExpandAll = collapsibleGroupKeys.some((key) => collapsedGroups.has(key));
+
+  function setAllGroupsCollapsed(collapsed: boolean) {
+    setHoveredRowId(null);
+    setHoveredColumnId(null);
+    setCollapsedGroups(collapsed ? new Set(collapsibleGroupKeys) : new Set());
+  }
+
   function toggleGroup(key: string) {
     setHoveredRowId(null);
     setHoveredColumnId(null);
@@ -83,7 +95,17 @@ export default function EmotionTable() {
             <p className="p-4 text-sm text-neutral-600">No emotions found.</p>
           ) : (
             <>
-              <EmotionColumn groups={groups} collapsedGroups={collapsedGroups} onToggleGroup={toggleGroup} hoveredRowId={hoveredRowId} onHoverRow={setHoveredRowId} />
+              <EmotionColumn
+                groups={groups}
+                collapsedGroups={collapsedGroups}
+                onToggleGroup={toggleGroup}
+                onCollapseAll={() => setAllGroupsCollapsed(true)}
+                onExpandAll={() => setAllGroupsCollapsed(false)}
+                canCollapseAll={canCollapseAll}
+                canExpandAll={canExpandAll}
+                hoveredRowId={hoveredRowId}
+                onHoverRow={setHoveredRowId}
+              />
               {SUPER_GROUPS.map((superGroup) => (
                 <EmotionGroupPanel
                   key={superGroup.id}

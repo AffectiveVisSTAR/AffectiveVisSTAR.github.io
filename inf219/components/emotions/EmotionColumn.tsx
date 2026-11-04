@@ -7,6 +7,10 @@ type EmotionColumnProps = {
   groups: EmotionDisplayGroup[];
   collapsedGroups: Set<string>;
   onToggleGroup: (key: string) => void;
+  onCollapseAll: () => void;
+  onExpandAll: () => void;
+  canCollapseAll: boolean;
+  canExpandAll: boolean;
   hoveredRowId: string | null;
   onHoverRow: (rowId: string | null) => void;
 };
@@ -16,7 +20,7 @@ const EMOTION_COLUMNS = [
   { key: "name", label: "Affect", width: 200 },
   { key: "Basic Emotion", label: "Basic Emotion", width: 140 },
 ] as const;
-export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, hoveredRowId, onHoverRow }: EmotionColumnProps) {
+export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, onCollapseAll, onExpandAll, canCollapseAll, canExpandAll, hoveredRowId, onHoverRow }: EmotionColumnProps) {
   return (
     <section className="sticky left-0 z-20 shrink-0 self-start border-r-2 border-slate-500 bg-white">
       <table className="border-separate border-spacing-0 text-xs text-neutral-800">
@@ -29,8 +33,8 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
         </colgroup>
         <thead className="sticky top-0 z-10 bg-slate-50">
           <tr>
-            <th rowSpan={3} scope="col" className="border-r-2 border-slate-500 p-0 align-bottom">
-              <div className="flex items-end justify-center pb-3" style={{ width: CATEGORY_WIDTH }}>
+            <th rowSpan={4} scope="col" className="border-r-2 border-slate-500 p-0 align-bottom">
+              <div className="flex items-end justify-center pb-11" style={{ width: CATEGORY_WIDTH }}>
                 <span style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
                   Valence Category
                 </span>
@@ -44,24 +48,36 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
           </tr>
           <tr>
             <th colSpan={2} className="p-0 text-center text-xs font-semibold uppercase" style={{ backgroundColor: "#f6f0f0" }}>
-              <div className="flex items-center justify-center" style={{ height: SUBGROUP_HEIGHT }}>
-                Emotions
-              </div>
+              <div style={{ height: SUBGROUP_HEIGHT }} />
             </th>
           </tr>
           <tr>
             {EMOTION_COLUMNS.map((column) => (
-              <th key={column.key} scope="col" className="border-b border-slate-200 p-0">
+              <th key={column.key} scope="col" className="border-b border-slate-300 p-0">
                 <div
-                  className="flex items-end justify-center pb-3"
-                  style={{ height: LABEL_HEIGHT, width: column.width }}
+                  className="flex items-end justify-start gap-1 px-2 pb-3"
+                  style={{ height: LABEL_HEIGHT - 32, width: column.width }}
                 >
-                  <span style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-                    {column.label}
-                  </span>
+                  <span>{column.label}</span>
                 </div>
               </th>
             ))}
+          </tr>
+          <tr>
+            <td colSpan={2} className="border-b border-slate-200 bg-neutral-100 p-0 text-left">
+              <div className="flex items-center px-2" style={{ height: 32 }}>
+                <button
+                  type="button"
+                  onClick={canCollapseAll ? onCollapseAll : onExpandAll}
+                  disabled={!canCollapseAll && !canExpandAll}
+                  aria-label={canCollapseAll ? "Collapse all groups" : "Expand all groups"}
+                  className="inline-flex h-7 items-center gap-1 rounded-sm px-1 text-[11px] font-medium text-slate-700 cursor-pointer hover:bg-slate-200 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-blue-600 disabled:cursor-default disabled:opacity-40"
+                >
+                  <span aria-hidden="true">{canCollapseAll ? "▾" : "▸"}</span>
+                  <span>{canCollapseAll ? "Collapse all" : "Expand all"}</span>
+                </button>
+              </div>
+            </td>
           </tr>
         </thead>
         {groups.map(({ category, rows }) => (
@@ -74,7 +90,7 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
                 onMouseLeave={() => onHoverRow(null)}
               >
                 {index === 0 && (
-                  <th rowSpan={rows.length} scope="rowgroup" className="border-r-2 border-t border-slate-300 bg-slate-50 p-0 align-middle">
+                  <th rowSpan={rows.length} scope="rowgroup" className={`border-r-2 border-slate-300 bg-slate-50 p-0 align-middle ${category !== groups[0]?.category ? "border-t" : ""}`}>
                     <div className="flex items-center justify-center" style={{ width: CATEGORY_WIDTH }}>
                       <span className="uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
                         {category === "Main" ? "General" : category}
@@ -82,7 +98,7 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
                     </div>
                   </th>
                 )}
-                <th scope="row" className={index === 0 ? "border-t border-slate-300 p-0 text-left" : "p-0 text-left"}>
+                <th scope="row" className={index === 0 && category !== groups[0]?.category ? "border-t border-slate-300 p-0 text-left" : "p-0 text-left"}>
                   <div
                     title={emotion.name}
                     className={emotion.isChild ? "truncate pl-6 pr-2 font-normal" : "truncate px-2 font-semibold"}
@@ -108,7 +124,7 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
                     ) : emotion.name}
                   </div>
                 </th>
-                <td className={index === 0 ? "border-t border-slate-300 p-0" : "p-0"}>
+                <td className={index === 0 && category !== groups[0]?.category ? "border-t border-slate-300 p-0" : "p-0"}>
                   <div
                     title={emotion.basicEmotion}
                     className={emotion.isGroup ? "truncate px-2 font-semibold" : "truncate px-2"}

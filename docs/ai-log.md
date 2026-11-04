@@ -19,6 +19,14 @@ Copy this block and fill it in:
 
 ---
 
+## 2026-11-04 – Horizontal emotion headers and clearer collapse control
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Make Affect and Basic Emotion easier to read and improve the placement of the collapse/expand all control for issue #52.
+- **What the AI did:** Prepared patches for `inf219/components/emotions/EmotionColumn.tsx` to display the two headers horizontally and try different control placements. Following group feedback, replaced the icon beside Affect with a labelled Collapse all / Expand all control in a separate light-grey row below the headers, using space within the existing header area. Explained the changes, the existing collapse logic and the responsibilities of the emotion files, and guided resolution of a stash conflict after merging main.
+- **What we did / verified:** I applied the patches locally, compared the designs in the browser in expanded and collapsed states, and shared screenshots and group feedback to refine the placement. I went through the code explanations to understand the changes. The AI checked that the patches applied; no automated browser test was run for this layout change.
+- **Link:** [Issue #52](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/52)
+
 ## 2026-11-03 – Export sheet data directly to the app public directory
 - **Who:** Elise
 - **Tool:** ChatGPT (Codex)
@@ -26,6 +34,14 @@ Copy this block and fill it in:
 - **What the AI did:** Prepared a patch for `scripts/corpus260130_to_json.py` so all four default output paths use `inf219/public/`, resolved from the script location rather than the terminal working directory. Added the already-used `certifi` dependency to `scripts/requirements.txt` and documented the update process in `inf219/README.md`. Explained the data flow, virtual environment and changes. Read the sheet through CSV export and compared its current columns with the exporter and website. Helped draft the commit message and PR description.
 - **What we did / verified:** I applied the patch, installed the dependencies in a virtual environment and ran the exporter. It reached Google Sheets but stopped because required columns no longer matched the sheet; no JSON files were updated. The AI checked Python syntax, all four default paths from three working directories, explicit output override behaviour and patch applicability. We decided to push the changes and wait to merge until the group agrees how the updated categories should appear on the website. A successful full export and website check with refreshed data are still pending.
 - **Link:** [Issue #14](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/14)
+
+## 2026-11-03 – Collapse and expand all emotion groups
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Let users collapse or expand all emotion groups at once instead of toggling each group separately.
+- **What the AI did:** Prepared patches for `inf219/components/emotions/EmotionTable.tsx` and `EmotionColumn.tsx`. Reused the existing collapsed-group state and visible-row logic to close or open all groups across the table, clearing hover state when doing so. Added one control that switches between “Collapse all” and “Expand all” based on the groups' current state, while preserving individual group toggles. Adjusted its placement and styling following my feedback, keeping a native button with keyboard focus styling but presenting it as text with a small arrow. Explained the state, conditions, click handling and layout changes.
+- **What we did / verified:** I applied the patches, tried the control locally and reviewed screenshots while choosing the design. I requested a single toggle to the left of “Affect”, a smaller text appearance and placement closer to the separator, and changed `bottom-3` to `bottom-0` myself. The AI successfully ran scoped TypeScript checks and checked with the existing data that all 11 groups collapse, group headings and ungrouped rows remain, and all rows expand again. No production build or automated browser test was run. We plan to push the work for review and wait to merge until the group has discussed the design.
+- **Link:** [Issue #39](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/39)
 
 ## 2026-11-01 – Added a clickable information icon
 - **Who:** Jenny
@@ -66,6 +82,7 @@ Copy this block and fill it in:
 - **What the AI did:** Prepared changes in `inf219/components/corpus/CorpusTable.tsx`, `PaperColumn.tsx` and `GroupPanel.tsx`. Added shared row hover state so hovering over article details or squares keeps the active row fully visible and dims other rows to 40% across all panels. Memoised column article counts so hovering does not repeat the counting. Left column headings unchanged and explained the roles of the three components, the opacity condition and memoisation.
 - **What we did / verified:** I applied the patch locally, tested the hover effect and confirmed the result matched what I wanted. I reviewed the changes with step-by-step explanations. The AI checked that the patch applied and ran a successful TypeScript check on the affected corpus components and their dependencies. No production build or Safari performance check was recorded in this session.
 - **Link:** [Issue #21](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/21)
+
 ## 2026-10-27 – Highlight emotion rows on hover
 - **Who:** Elise
 - **Tool:** ChatGPT (Codex)
