@@ -1,3 +1,33 @@
+## Updating table data
+
+The app reads JSON files from `inf219/public/`. To refresh them from the main
+Google Sheet, install the Python dependencies in a virtual environment and run
+the exporter from the repository root:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r scripts/requirements.txt
+python3 scripts/corpus260130_to_json.py
+```
+
+If your terminal is inside `inf219/`, run `python3 ../scripts/corpus260130_to_json.py`
+instead (with the virtual environment activated).
+
+The exporter reads the `classificationtable` and `emotionmapping` tabs and writes
+`classtable.json`, `emotions_by_everything.json`, `classtable_metadata.json` and
+`classtable_column_mapping.json` directly to `inf219/public/`. Default output
+paths are based on the script location, so no manual copying is needed regardless
+of the terminal's working directory. Explicit `--output*` arguments still override
+these defaults; relative overrides are relative to the terminal's working directory.
+
+The sheet must be readable without signing in. Use `--input-url` to select a
+different Google Sheet, and `--help` to see all options.
+
+Review the generated changes and test Corpus and Emotions locally before committing
+the updated data. Push and deploy the changes to update the published site.
+Editing the sheet alone does not automatically refresh the site.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

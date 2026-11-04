@@ -16,6 +16,8 @@ import certifi
 import urllib.request
 
 
+APP_PUBLIC_DIR = Path(__file__).resolve().parents[1] / "inf219" / "public"
+
 def normalize_col_name(name: object) -> str:
     if name is None:
         return ""
@@ -261,7 +263,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Read a Google Sheet tab and export selected columns as JSON records "
-            "into the data folder."
+            "into the inf219 app public folder."
         )
     )
     parser.add_argument(
@@ -282,16 +284,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("public/classtable.json"),
-        help="Output JSON file path (default: public/classtable.json).",
+        default=APP_PUBLIC_DIR / "classtable.json",
+        help="Output JSON file path (default: inf219/public/classtable.json, relative to the repository).",
     )
     parser.add_argument(
         "--output-column-mapping",
         type=Path,
-        default=Path("public/classtable_column_mapping.json"),
+        default=APP_PUBLIC_DIR / "classtable_column_mapping.json",
         help=(
             "Output JSON file path for generated table group mappings "
-            "(default: public/classtable_column_mapping.json)."
+            "(default: inf219/public/classtable_column_mapping.json, relative to the repository)."
         ),
     )
     parser.add_argument(
@@ -303,19 +305,19 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--output-emotions-by-everything",
         type=Path,
-        default=Path("public/emotions_by_everything.json"),
+        default=APP_PUBLIC_DIR / "emotions_by_everything.json",
         help=(
             "Output JSON file path for grouped emotion counts "
-            "(default: public/emotions_by_everything.json)."
+            "(default: inf219/public/emotions_by_everything.json, relative to the repository)."
         ),
     )
     parser.add_argument(
         "--output-metadata",
         type=Path,
-        default=Path("public/classtable_metadata.json"),
+        default=APP_PUBLIC_DIR / "classtable_metadata.json",
         help=(
             "Output JSON file path for publication metadata records "
-            "(default: public/classtable_metadata.json)."
+            "(default: inf219/public/classtable_metadata.json, relative to the repository)."
         ),
     )
     args = parser.parse_args(argv)
