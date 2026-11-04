@@ -55,23 +55,24 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
             {EMOTION_COLUMNS.map((column) => (
               <th key={column.key} scope="col" className="border-b border-slate-200 p-0">
                 <div
-                  className="relative flex items-end justify-center pb-3"
+                  className="relative flex items-end justify-center pb-10"
                   style={{ height: LABEL_HEIGHT, width: column.width }}
                 >
+
+                  <span style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+                    {column.label}
+                  </span>
                   {column.key === "name" && (
                     <button
                       type="button"
                       onClick={canCollapseAll ? onCollapseAll : onExpandAll}
                       disabled={!canCollapseAll && !canExpandAll}
-                      className="absolute bottom-0 left-1.5 inline-flex h-6 w-20 items-center justify-center gap-1 cursor-pointer rounded-sm text-[10px] font-medium whitespace-nowrap text-slate-700 underline-offset-4 hover:text-slate-900 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-default disabled:opacity-40"
+                      className="absolute bottom-0 left-2 inline-flex h-7 items-center gap-1 px-1 cursor-pointer rounded-sm text-[11px] font-medium whitespace-nowrap text-slate-700 underline-offset-4 hover:text-slate-900 hover:underline focus-visible:outline-2 focus-visible:outline-blue-600 disabled:cursor-default disabled:opacity-40"
                     >
                       <span aria-hidden="true">{canCollapseAll ? "▾" : "▸"}</span>
                       <span>{canCollapseAll ? "Collapse all" : "Expand all"}</span>
                     </button>
                   )}
-                  <span style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-                    {column.label}
-                  </span>
                 </div>
               </th>
             ))}
