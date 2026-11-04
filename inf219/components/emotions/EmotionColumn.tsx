@@ -33,8 +33,8 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
         </colgroup>
         <thead className="sticky top-0 z-10 bg-slate-50">
           <tr>
-            <th rowSpan={3} scope="col" className="border-r-2 border-slate-500 p-0 align-bottom">
-              <div className="flex items-end justify-center pb-3" style={{ width: CATEGORY_WIDTH }}>
+            <th rowSpan={4} scope="col" className="border-r-2 border-slate-500 p-0 align-bottom">
+              <div className="flex items-end justify-center pb-11" style={{ width: CATEGORY_WIDTH }}>
                 <span style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
                   Valence Category
                 </span>
@@ -56,24 +56,28 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
               <th key={column.key} scope="col" className="border-b border-slate-300 p-0">
                 <div
                   className="flex items-end justify-start gap-1 px-2 pb-3"
-                  style={{ height: LABEL_HEIGHT, width: column.width }}
+                  style={{ height: LABEL_HEIGHT - 32, width: column.width }}
                 >
                   <span>{column.label}</span>
-                  {column.key === "name" && (
-                    <button
-                      type="button"
-                      onClick={canCollapseAll ? onCollapseAll : onExpandAll}
-                      disabled={!canCollapseAll && !canExpandAll}
-                      title={canCollapseAll ? "Collapse all groups" : "Expand all groups"}
-                      aria-label={canCollapseAll ? "Collapse all groups" : "Expand all groups"}
-                      className="inline-flex h-4 w-5 shrink-0 items-center justify-center self-end cursor-pointer rounded-sm text-sm font-normal text-slate-700 hover:bg-slate-200 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-blue-600 disabled:cursor-default disabled:opacity-40"
-                    >
-                      <span aria-hidden="true">{canCollapseAll ? "▾" : "▸"}</span>
-                    </button>
-                  )}
                 </div>
               </th>
             ))}
+          </tr>
+          <tr>
+            <td colSpan={2} className="border-b border-slate-200 bg-neutral-100 p-0 text-left">
+              <div className="flex items-center px-2" style={{ height: 32 }}>
+                <button
+                  type="button"
+                  onClick={canCollapseAll ? onCollapseAll : onExpandAll}
+                  disabled={!canCollapseAll && !canExpandAll}
+                  aria-label={canCollapseAll ? "Collapse all groups" : "Expand all groups"}
+                  className="inline-flex h-7 items-center gap-1 rounded-sm px-1 text-[11px] font-medium text-slate-700 cursor-pointer hover:bg-slate-200 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-blue-600 disabled:cursor-default disabled:opacity-40"
+                >
+                  <span aria-hidden="true">{canCollapseAll ? "▾" : "▸"}</span>
+                  <span>{canCollapseAll ? "Collapse all" : "Expand all"}</span>
+                </button>
+              </div>
+            </td>
           </tr>
         </thead>
         {groups.map(({ category, rows }) => (
