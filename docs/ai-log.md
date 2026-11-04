@@ -19,6 +19,14 @@ Copy this block and fill it in:
 
 ---
 
+## 2026-11-04 – Horizontal emotion headers and clearer collapse control
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Make Affect and Basic Emotion easier to read and improve the placement of the collapse/expand all control for issue #52.
+- **What the AI did:** Prepared patches for `inf219/components/emotions/EmotionColumn.tsx` to display the two headers horizontally and try different control placements. Following group feedback, replaced the icon beside Affect with a labelled Collapse all / Expand all control in a separate light-grey row below the headers, using space within the existing header area. Explained the changes, the existing collapse logic and the responsibilities of the emotion files, and guided resolution of a stash conflict after merging main.
+- **What we did / verified:** I applied the patches locally, compared the designs in the browser in expanded and collapsed states, and shared screenshots and group feedback to refine the placement. I went through the code explanations to understand the changes. The AI checked that the patches applied; no automated browser test was run for this layout change.
+- **Link:** [Issue #52](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/52)
+
 ## 2026-11-03 – Collapse and expand all emotion groups
 - **Who:** Elise
 - **Tool:** ChatGPT (Codex)
@@ -66,6 +74,7 @@ Copy this block and fill it in:
 - **What the AI did:** Prepared changes in `inf219/components/corpus/CorpusTable.tsx`, `PaperColumn.tsx` and `GroupPanel.tsx`. Added shared row hover state so hovering over article details or squares keeps the active row fully visible and dims other rows to 40% across all panels. Memoised column article counts so hovering does not repeat the counting. Left column headings unchanged and explained the roles of the three components, the opacity condition and memoisation.
 - **What we did / verified:** I applied the patch locally, tested the hover effect and confirmed the result matched what I wanted. I reviewed the changes with step-by-step explanations. The AI checked that the patch applied and ran a successful TypeScript check on the affected corpus components and their dependencies. No production build or Safari performance check was recorded in this session.
 - **Link:** [Issue #21](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/21)
+
 ## 2026-10-27 – Highlight emotion rows on hover
 - **Who:** Elise
 - **Tool:** ChatGPT (Codex)
