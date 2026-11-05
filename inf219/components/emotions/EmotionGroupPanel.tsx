@@ -76,10 +76,10 @@ export default function EmotionGroupPanel({
 
   // Hovering changes the highlight, so reuse the existing article lists.
   const articlesByRow = useMemo(() => {
-    const result = new Map<string, Map<string, string[]>>();
+    const result = new Map<string, Map<string, Paper[]>>();
     for (const { category, rows } of rowGroups) {
       for (const row of rows) {
-        const columns = new Map<string, string[]>();
+        const columns = new Map<string, Paper[]>();
         for (const group of groups) {
           for (const column of group.columns) {
             columns.set(column, getEmotionPapers(row, column, papers));
@@ -225,9 +225,9 @@ export default function EmotionGroupPanel({
                               onMouseLeave={() => onHoverColumn(null)}
                               aria-label={label}
                               aria-pressed={cellKey === selectedKey}
-                              title={[`${count}:`, ...articles].join("\n")}
+                              title={[`${count}:`, ...articles.map((article) => article.AuthorYear)].join("\n")}
                               onClick={() =>
-                                onSelectCell({ key: cellKey, title: `${row.name} / ${column}`, authorYears: articles })
+                                onSelectCell({ key: cellKey, title: `${row.name} / ${column}`, papers: articles })
                               }
                             >
                               {square}

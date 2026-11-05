@@ -14,6 +14,8 @@ type PaperColumnProps = {
   papers: Paper[];
   hoveredRowId: string | null;
   onHoverRow: (rowId: string | null) => void;
+  selectedRowId: string | null;
+  onSelectPaper: (paper: Paper) => void;
   sort: SortState;
   onSort: (key: MetadataKey) => void;
   query: string;
@@ -23,10 +25,13 @@ type PaperColumnProps = {
 // Left panel with author, year and nickname. It stays in place when scrolling sideways.
 // Clicking a column name sorts the table by that column.
 // The search field below the column names filters the papers on author, year and nickname.
+// Clicking a row opens that paper in the side panel.
 export default function PaperColumn({
   papers,
   hoveredRowId,
   onHoverRow,
+  selectedRowId,
+  onSelectPaper,
   sort,
   onSort,
   query,
@@ -92,9 +97,13 @@ export default function PaperColumn({
           </div>
         )}
         {papers.map((paper) => (
-          <div
+          <button
             key={paper.AuthorYear + paper["Paper Nickname"]}
-            className="flex items-center text-xs text-neutral-800"
+            type="button"
+            className={`flex cursor-pointer items-center text-left text-xs text-neutral-800 focus-visible:outline-2 focus-visible:outline-blue-600 ${
+              selectedRowId === paper.AuthorYear + paper["Paper Nickname"] ? "bg-neutral-200" : ""
+            }`}
+            onClick={() => onSelectPaper(paper)}
             onMouseEnter={() => onHoverRow(paper.AuthorYear + paper["Paper Nickname"])}
             onMouseLeave={() => onHoverRow(null)}
             style={{
@@ -107,16 +116,16 @@ export default function PaperColumn({
             }}
           >
             {METADATA_COLUMNS.map(({ key }) => (
-              <div
+              <span
                 key={key}
                 title={String(paper[key] ?? "")}
                 className="truncate px-2"
                 style={{ width: PAPER_COLUMN_WIDTHS[key] }}
               >
                 {paper[key]}
-              </div>
+              </span>
             ))}
-          </div>
+          </button>
         ))}
       </div>
     </section>
