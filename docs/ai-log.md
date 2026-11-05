@@ -34,6 +34,14 @@ Copy this block and fill it in:
 - **What we did / verified:** I applied the patches locally, compared the designs in the browser in expanded and collapsed states, and shared screenshots and group feedback to refine the placement. I went through the code explanations to understand the changes. The AI checked that the patches applied; no automated browser test was run for this layout change.
 - **Link:** [Issue #52](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/52)
 
+## 2026-11-04 – Add search field to the corpus table
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** Add a search field under the Author/Year/Paper column names in the corpus table, so you can find papers quickly.
+- **What the AI did:** Added the search field at the bottom of the Papers panel header in `PaperColumn.tsx`, inside the existing label band, so the rows still line up with the other panels. Used the existing `filterPapers()` in `CorpusTable.tsx` so rows that don't match are hidden, and the paper count and column counts follow the filter. Added `SEARCH_HEIGHT` to `layout.ts`. Ran lint and typecheck.
+- **What we did / verified:** I gave the AI my sketch and answered its questions about how the search should work (hide rows that don't match, search in author, year and papers). I reviewed the code and tested the search in the browser: matching rows are shown, the counts update, the rows still line up with the other panels, sorting still works, and all rows come back when the field is cleared.
+- **Link:** [Issue #3](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/3)
+
 ## 2026-11-03 – Export sheet data directly to the app public directory
 - **Who:** Elise
 - **Tool:** ChatGPT (Codex)

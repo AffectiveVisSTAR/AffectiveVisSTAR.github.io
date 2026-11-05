@@ -10,6 +10,7 @@ export const GROUP_GAP = 8; // space between subgroups in the same panel
 export const TITLE_HEIGHT = 36; // panel name, e.g. "Sources"
 export const SUBGROUP_HEIGHT = 40; // subgroups, e.g. "Data" and "Vis"
 export const LABEL_HEIGHT = 170; // rotated column names
+export const SEARCH_HEIGHT = 28; // search field at the bottom of the label band in the paper panel
 export const HEADER_HEIGHT = TITLE_HEIGHT + SUBGROUP_HEIGHT + LABEL_HEIGHT;
 
 // Column widths in the paper panel on the left.
