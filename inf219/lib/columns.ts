@@ -89,15 +89,15 @@ export const SUPER_GROUPS: SuperGroup[] = [
     ],
   },
   {
-    id: "design",
-    label: "Design Aspect",
-    short: "DS",
-    color: "#70d384",
+    id: "visualization-technique",
+    label: "Visualization Technique",
+    short: "VT",
+    color: "#f4a259", // temporary color, final colors are decided later
     groups: [
       {
-        id: "visual-idiom",
-        label: "Visual Idiom",
-        color: "#70d384",
+        id: "visualization-technique",
+        label: "Visualization Technique",
+        color: "#f4a259",
         columns: [
           "Chart",
           "Graph",
@@ -115,21 +115,67 @@ export const SUPER_GROUPS: SuperGroup[] = [
           "Interactivity",
         ],
       },
+    ],
+  },
+  {
+    id: "design",
+    label: "Design Space",
+    short: "DS",
+    color: "#70d384",
+    groups: [
       {
-        id: "element-studied",
-        label: "Element Studied",
+        id: "topic-provenance",
+        label: "Topic & Data/Vis Provenance",
+        color: "#70d384",
+        columns: ["Topic & Data/Vis Provenance"],
+      },
+      {
+        id: "vis-technique",
+        label: "Visualization Technique",
+        color: "#70d384",
+        columns: ["Visualization Technique"],
+      },
+      {
+        id: "core-design-element",
+        label: "Core Design Element",
         color: "#70d384",
         columns: [
-          "Topic",
-          "Vis Type",
-          "Design Element",
-          "Visual Style/Embellishment",
-          "Narrative Element",
-          "Interaction",
-          "Animation",
-          "Presentation Format",
-          "In-the-Wild Examples",
-          "Affective Priming/Elicitation",
+          "Core Design Element: Colour",
+          "Core Design Element: Line, Shape, Pictograph",
+          "Core Design Element: Visual Abstraction",
+          "Core Design Element: Typography",
+        ],
+      },
+      {
+        id: "high-level-design-element",
+        label: "High-Level Design Element",
+        color: "#70d384",
+        columns: [
+          "High-Level Design Element: Presentation Format",
+          "High-Level Design Element: Composition",
+          "High-Level Design Element: Overall Design",
+          "High-Level Design Element: Interactivity",
+        ],
+      },
+      {
+        id: "storytelling-technique",
+        label: "Storytelling Technique",
+        color: "#70d384",
+        columns: [
+          "Storytelling Technique: Plot & Temporality",
+          "Storytelling Technique: Animation",
+          "Storytelling Technique: Character & POV",
+        ],
+      },
+      {
+        id: "rhetorical-technique",
+        label: "Rhetorical Technique",
+        color: "#70d384",
+        columns: [
+          "Rhetorical Technique: Message Framing",
+          "Rhetorical Technique: Nudging",
+          "Rhetorical Technique: Elicitation",
+          "Rhetorical Technique: Personalization",
         ],
       },
     ],
@@ -177,6 +223,13 @@ export const SUPER_GROUPS: SuperGroup[] = [
 export const FEATURE_COLUMNS: string[] = SUPER_GROUPS.flatMap((superGroup) =>
   superGroup.groups.flatMap((group) => group.columns),
 );
+
+// Name shown in the column header. Design Space columns are stored as
+// "Subcategory: Name" in the sheet; the subcategory is already shown above, so drop it.
+export function columnLabel(column: string): string {
+  const separator = column.indexOf(": ");
+  return separator === -1 ? column : column.slice(separator + 2);
+}
 
 export const COLUMN_DESCRIPTIONS: Record<string, string> = {
   "Information Receptivity":

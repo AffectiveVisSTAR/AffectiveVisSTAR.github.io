@@ -1,5 +1,5 @@
 import { useMemo, useState, type MouseEvent as ReactMouseEvent } from "react";
-import { COLUMN_DESCRIPTIONS } from "@/lib/columns";
+import { COLUMN_DESCRIPTIONS, columnLabel } from "@/lib/columns";
 import { countMarked, isFaded, isMarked } from "@/lib/data";
 import type { Paper, SortState, SuperGroup } from "@/lib/types";
 import Cell from "./Cell";
@@ -11,6 +11,7 @@ import {
   ROW_HEIGHT,
   SUBGROUP_HEIGHT,
   TITLE_HEIGHT,
+  groupWidth,
   tint,
 } from "./layout";
 
@@ -66,7 +67,7 @@ export default function GroupPanel({
             <div
               key={group.id}
               className="flex items-center justify-center text-center text-xs leading-tight text-neutral-800"
-              style={{ width: group.columns.length * COLUMN_WIDTH, height: SUBGROUP_HEIGHT }}
+              style={{ width: groupWidth(group), height: SUBGROUP_HEIGHT }}
             >
               {group.label}
             </div>
@@ -78,7 +79,7 @@ export default function GroupPanel({
           style={{ gap: GROUP_GAP, height: LABEL_HEIGHT }}
         >
           {groups.map((group) => (
-            <div key={group.id} className="flex">
+            <div key={group.id} className="flex justify-center" style={{ width: groupWidth(group) }}>
               {group.columns.map((column) => {
                 const articleCount = articleCounts.get(column)!;
                 const description = group.id === "emotion-linked-to" ? COLUMN_DESCRIPTIONS[column] : undefined;
@@ -120,7 +121,7 @@ export default function GroupPanel({
                         fontWeight: hoveredColumnId === JSON.stringify([superGroup.id, column]) ? 700 : undefined,
                       }}
                     >
-                      {column}
+                      {columnLabel(column)}
                     </span>
                   </button>
                 );
@@ -143,7 +144,7 @@ export default function GroupPanel({
             }}
           >
             {groups.map((group) => (
-              <div key={group.id} className="flex">
+              <div key={group.id} className="flex justify-center" style={{ width: groupWidth(group) }}>
                 {group.columns.map((column) => (
                   <Cell
                     key={column}
