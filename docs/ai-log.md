@@ -18,6 +18,14 @@ Copy this block and fill it in:
 ```
 
 ---
+## 2026-11-05 – Side panel for one paper in the corpus table
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** Open a simple side panel with the details of one paper when clicking a row in the corpus table, and show Domain before Country in the emotions panel text as well.
+- **What the AI did:** Wrote `inf219/components/corpus/PaperDetailPanel.tsx` and `findPaperMetadata` in `inf219/lib/data.ts`, connected the panel in `CorpusTable.tsx`, `GroupPanel.tsx` and `PaperColumn.tsx`, and changed the order of the text in `inf219/components/emotions/PaperPanel.tsx`. Also found that "Lan et al. 2021" is two different papers with the same AuthorYear, and changed `inf219/lib/emotion-layout.ts`, `EmotionGroupPanel.tsx`, `EmotionTable.tsx` and `PaperPanel.tsx` so the emotions page keeps them apart in the side panel and in the counts. Also explained the changes and ran lint and build.
+- **What we did / verified:** I described the panel from a screenshot, approved the plan, went through the code and had the Lan et al. 2021 bug explained before deciding to fix it. I ran the project locally and checked the changes in the browser. Along the way I found that my earlier Domain/Country change had missed the grey text under each paper, asked for a box around the details to match the emotions panel, and questioned a Lan et al. 2021 result that still looked wrong until I confirmed the correct paper on a fresh version of the page. I split the work into commits and committed it myself.
+- **Link:** [Issue #66](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/66)
+
 ## 2026-11-05 – Home page
 - **Who:** Jenny
 - **Tool:** Copilot, ChatGPT
