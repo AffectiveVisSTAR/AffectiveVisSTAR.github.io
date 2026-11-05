@@ -109,7 +109,7 @@ export default function PaperPanel({ cell, metadata, onClose }: PaperPanelProps)
           const doiHref = doi.startsWith("http") ? doi : `https://doi.org/${doi}`;
 
           return (
-            <article key={authorYear} className="flex flex-col gap-1 rounded-md border border-neutral-200 p-2">
+            <article key={authorYear} className="flex flex-col gap-1 rounded-md border border-neutral-200 p-2 text-sm">
               <p>
                 <strong>{authorYear}.</strong>{" "}
                 {paper?.Title ? `${paper.Title}.` : "Metadata not found."}
@@ -122,7 +122,7 @@ export default function PaperPanel({ cell, metadata, onClose }: PaperPanelProps)
                   {paper.Abstract && (
                     <details>
                       <summary className="cursor-pointer font-semibold">Abstract</summary>
-                      <p className="mt-1">{paper.Abstract}</p>
+                      <p className="mt-1 text-sm">{paper.Abstract}</p>
                     </details>
                   )}
                   {doi && (
