@@ -19,8 +19,8 @@ type PaperPanelProps = {
 // Dropdown filters shown above the paper list.
 const FILTERS = [
   { field: "Journal", label: "Journal", allLabel: "All journals" },
-  { field: "Country", label: "Country", allLabel: "All countries" },
   { field: "DomainApp", label: "Domain", allLabel: "All domains" },
+  { field: "Country", label: "Country", allLabel: "All countries" },
 ] as const;
 
 type FilterField = (typeof FILTERS)[number]["field"];
