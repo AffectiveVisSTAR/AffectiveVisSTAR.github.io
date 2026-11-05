@@ -25,14 +25,28 @@ export default function NavigationBar() {
       >
         <Link
           href="/"
-          className="text-sm font-semibold tracking-tight text-neutral-900"
+          className="flex items-center gap-2 text-sm font-semibold tracking-tight text-neutral-900"
         >
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            className="size-4"
+          >
+            <path
+              d="m3.75 10.5 8.25-7 8.25 7v9.75h-6v-6h-4.5v6h-6V10.5Z"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
           AffectiveVisSTAR
         </Link>
 
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-6 text-sm">
-            <Link href="/" className="text-neutral-700 transition hover:text-neutral-950 underline-offset-3 hover:underline">
+            <Link href="/corpus" className="text-neutral-700 transition hover:text-neutral-950 underline-offset-3 hover:underline">
               Corpus Classification Table
             </Link>
             <Link
