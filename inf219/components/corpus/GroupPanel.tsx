@@ -21,6 +21,8 @@ type GroupPanelProps = {
   onHoverColumn: (columnId: string | null) => void;
   hoveredRowId: string | null;
   onHoverRow: (rowId: string | null) => void;
+  selectedRowId: string | null;
+  onSelectPaper: (paper: Paper) => void;
   sort: SortState;
   onSort: (key: string) => void;
 };
@@ -28,6 +30,7 @@ type GroupPanelProps = {
 // One colored panel: a header with panel name, subgroups and rotated column names,
 // and below it one row of squares per paper.
 // Clicking a column name puts the papers marked in that column at the top.
+// Clicking a row opens that paper in the side panel.
 export default function GroupPanel({
   superGroup,
   papers,
@@ -35,6 +38,8 @@ export default function GroupPanel({
   onHoverRow,
   hoveredColumnId,
   onHoverColumn,
+  selectedRowId,
+  onSelectPaper,
   sort,
   onSort,
 }: GroupPanelProps) {
@@ -134,7 +139,10 @@ export default function GroupPanel({
         {papers.map((paper) => (
           <div
             key={paper.AuthorYear + paper["Paper Nickname"]}
-            className={isFaded(paper, sort) ? "flex opacity-40" : "flex"}
+            className={`flex cursor-pointer ${isFaded(paper, sort) ? "opacity-40" : ""} ${
+              selectedRowId === paper.AuthorYear + paper["Paper Nickname"] ? "bg-neutral-200" : ""
+            }`}
+            onClick={() => onSelectPaper(paper)}
             onMouseEnter={() => onHoverRow(paper.AuthorYear + paper["Paper Nickname"])}
             onMouseLeave={() => onHoverRow(null)}
             style={{

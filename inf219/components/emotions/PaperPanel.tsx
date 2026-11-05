@@ -117,7 +117,7 @@ export default function PaperPanel({ cell, metadata, onClose }: PaperPanelProps)
               {paper && (
                 <>
                   <p className="text-neutral-500">
-                    Journal: {paper.Journal || "Unknown"}. Country: {paper.Country || "Unknown"}. Domain: {paper.DomainApp || "Unknown"}.
+                    Journal: {paper.Journal || "Unknown"}. Domain: {paper.DomainApp || "Unknown"}. Country: {paper.Country || "Unknown"}.
                   </p>
                   {paper.Abstract && (
                     <details>

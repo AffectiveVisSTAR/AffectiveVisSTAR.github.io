@@ -45,6 +45,13 @@ export async function loadPaperMetadata(url: string = PAPER_METADATA_URL): Promi
   );
 }
 
+// Finds the metadata for one paper.
+// Different papers can share AuthorYear (e.g. "Lan et al. 2021"), so the nickname picks between them.
+export function findPaperMetadata(paper: Paper, metadata: PaperMetadata[]): PaperMetadata | undefined {
+  const matches = metadata.filter((row) => row.AuthorYear === paper.AuthorYear);
+  return matches.find((row) => row.Title.includes(paper["Paper Nickname"])) ?? matches[0];
+}
+
 // Warns in the console if columns.ts lists columns that are missing from the data,
 // e.g. after columns were added or renamed in the spreadsheet.
 function warnAboutMissingColumns(papers: Paper[]) {
