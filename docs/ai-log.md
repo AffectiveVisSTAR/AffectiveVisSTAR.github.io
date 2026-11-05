@@ -18,6 +18,13 @@ Copy this block and fill it in:
 ```
 
 ---
+## 2026-11-05 – Home page
+- **Who:** Jenny
+- **Tool:** Copilot, ChatGPT
+- **Purpose:** Add a home page to the project with links to the corpus- and emotions page
+- **What the AI did:** ChatGPT helped me to verify that the map-structure I already planned on implementing seemed correct in addition to the different `page.tsx`. Then I used Copilot to help set up a new home-page (`page.tsx`) with a template on how the design can look. This might be changed later based on what the information should be. Copilot also implemented and made the home-icon in `NavigationBar.tsx`. 
+- **What we did / verified:** I started to re-organize the map structure linked to the pages (`page.tsx`). Before the "main page" was the page linked to the Corups (`GroupPanel.tsx`), but I made a new folder named corpus under `/app` (same as what has been done to the emotions-page), and just copied and pasted the page from before. This way the map structure based on the pages looks like this: `/app/page.tsx` (home-page), `/app/corpus/page.tsx` and `/app/emotions/page.tsx`. I also decided where I wanted the home-icon to be placed in the navigation bar. Lastly, I ran the project to see the changes made, and to see that the project still built. 
+- **Link:** [Issue #55](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/55)
 
 ## 2026-11-04 – Horizontal emotion headers and clearer collapse control
 - **Who:** Elise
