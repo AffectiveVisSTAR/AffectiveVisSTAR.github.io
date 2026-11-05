@@ -16,8 +16,8 @@ export default function EmotionTable() {
   const [tableData, setTableData] = useState<{
     emotions: EmotionRow[];
     papers: Paper[];
-    metadata: Map<string, PaperMetadata>;
-  }>({ emotions: [], papers: [], metadata: new Map() });
+    metadata: PaperMetadata[];
+  }>({ emotions: [], papers: [], metadata: [] });
   const emotions = tableData.emotions;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -59,9 +59,7 @@ export default function EmotionTable() {
     Promise.all([loadEmotions(), loadPapers(), loadPaperMetadata()])
       .then(([emotionRows, paperRows, metadataRows]) => {
         if (active) {
-          // Look up metadata by AuthorYear when a cell is clicked.
-          const metadata = new Map(metadataRows.map((row) => [row.AuthorYear, row]));
-          setTableData({ emotions: emotionRows, papers: paperRows, metadata });
+          setTableData({ emotions: emotionRows, papers: paperRows, metadata: metadataRows });
         }
       })
       .catch((err: unknown) => {

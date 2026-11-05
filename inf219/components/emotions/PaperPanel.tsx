@@ -1,18 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import type { PaperMetadata } from "@/lib/types";
+import { findPaperMetadata } from "@/lib/data";
+import type { Paper, PaperMetadata } from "@/lib/types";
 
 // The cell the user clicked: an emotion row in one classification column.
 export type SelectedCell = {
   key: string;
   title: string;
-  authorYears: string[];
+  papers: Paper[];
 };
 
 type PaperPanelProps = {
   cell: SelectedCell;
-  metadata: Map<string, PaperMetadata>;
+  metadata: PaperMetadata[];
   onClose: () => void;
 };
 
@@ -44,7 +45,7 @@ export default function PaperPanel({ cell, metadata, onClose }: PaperPanelProps)
     DomainApp: ALL,
   });
 
-  const papers = cell.authorYears.map((authorYear) => ({ authorYear, paper: metadata.get(authorYear) }));
+  const papers = cell.papers.map((row) => ({ row, paper: findPaperMetadata(row, metadata) }));
 
   // Keep a paper if it matches every filter that is not set to "all".
   const visiblePapers = papers.filter(({ paper }) =>
@@ -104,14 +105,14 @@ export default function PaperPanel({ cell, metadata, onClose }: PaperPanelProps)
         {visiblePapers.length === 0 && (
           <p className="text-neutral-500">No papers match the selected filters.</p>
         )}
-        {visiblePapers.map(({ authorYear, paper }) => {
+        {visiblePapers.map(({ row, paper }) => {
           const doi = paper?.DOI ?? "";
           const doiHref = doi.startsWith("http") ? doi : `https://doi.org/${doi}`;
 
           return (
-            <article key={authorYear} className="flex flex-col gap-1 rounded-md border border-neutral-200 p-2 text-sm">
+            <article key={row.AuthorYear + row["Paper Nickname"]} className="flex flex-col gap-1 rounded-md border border-neutral-200 p-2 text-sm">
               <p>
-                <strong>{authorYear}.</strong>{" "}
+                <strong>{row.AuthorYear}.</strong>{" "}
                 {paper?.Title ? `${paper.Title}.` : "Metadata not found."}
               </p>
               {paper && (
