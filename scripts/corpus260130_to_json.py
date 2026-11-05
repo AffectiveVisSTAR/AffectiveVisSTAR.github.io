@@ -386,12 +386,12 @@ def main(argv: list[str] | None = None) -> int:
                         "Core Design Element: Colour",
                         "Core Design Element: Line, Shape, Pictograph",
                         "Core Design Element: Visual Abstraction",
-                        "Core Design Element: Typograhpy",
+                        "Core Design Element: Typography",
                         "High-Level Design Element: Presentation Format",
                         "High-Level Design Element: Composition",
                         "High-Level Design Element: Overall Design",
                         "High-Level Design Element: Interactivity",
-                        "Storytelling Technique: Plot & Temporatlity",
+                        "Storytelling Technique: Plot & Temporality",
                         "Storytelling Technique: Animation",
                         "Storytelling Technique: Character & POV",
                         "Rhetorical Technique: Message Framing",
@@ -547,9 +547,12 @@ def main(argv: list[str] | None = None) -> int:
 
     records = selected.to_dict(orient="records")
     records = clean_records(records)
+    # Skip rows without an author (e.g. stray rows at the bottom of the sheet).
+    records = [row for row in records if row.get("AuthorYear")]
 
     metadata_records = metadata_selected.to_dict(orient="records")
     metadata_records = clean_records(metadata_records)
+    metadata_records = [row for row in metadata_records if row.get("AuthorYear")]
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", encoding="utf-8") as f:
