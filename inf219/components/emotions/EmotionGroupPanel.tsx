@@ -1,5 +1,5 @@
 import { useMemo, useState, type MouseEvent as ReactMouseEvent } from "react";
-import { COLUMN_DESCRIPTIONS } from "@/lib/columns";
+import { COLUMN_DESCRIPTIONS, columnLabel } from "@/lib/columns";
 import type { Paper, SuperGroup } from "@/lib/types";
 import { countMarked } from "@/lib/data";
 import { groupKey, getEmotionPapers, type EmotionDisplayGroup } from "@/lib/emotion-layout";
@@ -14,6 +14,7 @@ import {
   ROW_HEIGHT,
   SUBGROUP_HEIGHT,
   TITLE_HEIGHT,
+  groupWidth,
   tint,
 } from "../corpus/layout";
 
@@ -108,7 +109,7 @@ export default function EmotionGroupPanel({
             <div
               key={group.id}
               className="flex items-center justify-center text-center text-xs leading-tight text-neutral-800"
-              style={{ width: group.columns.length * COLUMN_WIDTH, height: SUBGROUP_HEIGHT }}
+              style={{ width: groupWidth(group), height: SUBGROUP_HEIGHT }}
             >
               {group.label}
             </div>
@@ -120,7 +121,7 @@ export default function EmotionGroupPanel({
           style={{ gap: GROUP_GAP, height: LABEL_HEIGHT }}
         >
           {groups.map((group) => (
-            <div key={group.id} className="flex">
+            <div key={group.id} className="flex justify-center" style={{ width: groupWidth(group) }}>
               {group.columns.map((column) => {
                 const articleCount = countMarked(papers, column);
                 const description = group.id === "emotion-linked-to" ? COLUMN_DESCRIPTIONS[column] : undefined;
@@ -153,7 +154,7 @@ export default function EmotionGroupPanel({
                         fontWeight: hoveredColumnId === groupKey(superGroup.id, column) ? 700 : undefined,
                       }}
                     >
-                      {column}
+                      {columnLabel(column)}
                     </span>
                   </div>
                 );
@@ -176,7 +177,7 @@ export default function EmotionGroupPanel({
                 <td className={index === 0 ? "border-t border-slate-300 p-0" : "p-0"}>
                   <div className="flex px-1" style={{ gap: GROUP_GAP, height: ROW_HEIGHT }}>
                     {groups.map((group) => (
-                      <div key={group.id} className="flex">
+                      <div key={group.id} className="flex justify-center" style={{ width: groupWidth(group) }}>
                         {group.columns.map((column) => {
                           const articles = articlesByRow.get(groupKey(category, row.id))!.get(column)!;
                           const count = articles.length;

@@ -57,8 +57,14 @@ def select_sheet_columns(
 
     missing: list[str] = []
     actual_columns: list[str] = []
+    column_aliases = {
+    "Sense-Making": "Sense-Making/Reflection",
+    "Core Design Element: Typography": "Core Design Element: Typograhpy",
+    "Storytelling Technique: Plot & Temporality": "Storytelling Technique: Plot & Temporatlity",
+    }
     for desired in desired_columns:
-        actual = norm_to_actual.get(normalize_col_name(desired))
+        sheet_name = column_aliases.get(desired, desired)
+        actual = norm_to_actual.get(normalize_col_name(sheet_name))
         if actual is None:
             missing.append(desired)
         else:
@@ -371,20 +377,27 @@ def main(argv: list[str] | None = None) -> int:
                        "Dashboard",
                        "Multiple",
                        "Interactivity",
-                       "Animation",
                        "Real-World",
                        "Synthetic",
                        "Vis Source In-the-Wild",
                        "Vis Source Custom",
-                       "Topic",
-                       "Vis Type",
-                       "Design Element",
-                       "Visual Style/Embellishment",
-                       "Narrative Element",
-                       "Interaction",
-                       "Presentation Format",
-                       "In-the-Wild Examples",
-                       "Affective Priming/Elicitation",
+                       "Topic & Data/Vis Provenance",
+                        "Visualization Technique",
+                        "Core Design Element: Colour",
+                        "Core Design Element: Line, Shape, Pictograph",
+                        "Core Design Element: Visual Abstraction",
+                        "Core Design Element: Typography",
+                        "High-Level Design Element: Presentation Format",
+                        "High-Level Design Element: Composition",
+                        "High-Level Design Element: Overall Design",
+                        "High-Level Design Element: Interactivity",
+                        "Storytelling Technique: Plot & Temporality",
+                        "Storytelling Technique: Animation",
+                        "Storytelling Technique: Character & POV",
+                        "Rhetorical Technique: Message Framing",
+                        "Rhetorical Technique: Nudging",
+                        "Rhetorical Technique: Elicitation",
+                        "Rhetorical Technique: Personalization",
                        "Quantitative",
                        "Qualitative",
                        "Mixed",
@@ -527,14 +540,19 @@ def main(argv: list[str] | None = None) -> int:
             }
         )
 
-    selected = selected.where(pd.notna(selected), None)
-    metadata_selected = metadata_selected.where(pd.notna(metadata_selected), None)
+    selected = selected.astype(object).where(pd.notna(selected), None)
+    metadata_selected = metadata_selected.astype(object).where(
+        pd.notna(metadata_selected), None
+    )
 
     records = selected.to_dict(orient="records")
     records = clean_records(records)
+    # Skip rows without an author (e.g. stray rows at the bottom of the sheet).
+    records = [row for row in records if row.get("AuthorYear")]
 
     metadata_records = metadata_selected.to_dict(orient="records")
     metadata_records = clean_records(metadata_records)
+    metadata_records = [row for row in metadata_records if row.get("AuthorYear")]
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", encoding="utf-8") as f:

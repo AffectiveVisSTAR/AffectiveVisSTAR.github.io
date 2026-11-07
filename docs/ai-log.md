@@ -34,6 +34,14 @@ Copy this block and fill it in:
 - **What we did / verified:** I started to re-organize the map structure linked to the pages (`page.tsx`). Before the "main page" was the page linked to the Corups (`GroupPanel.tsx`), but I made a new folder named corpus under `/app` (same as what has been done to the emotions-page), and just copied and pasted the page from before. This way the map structure based on the pages looks like this: `/app/page.tsx` (home-page), `/app/corpus/page.tsx` and `/app/emotions/page.tsx`. I also decided where I wanted the home-icon to be placed in the navigation bar. Lastly, I ran the project to see the changes made, and to see that the project still built. 
 - **Link:** [Issue #55](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/55)
 
+## 2026-11-05 – Update the exporter to match the current main sheet
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Update the data export script to match the current main sheet structure for issue #54, following the output-path changes in #14.
+- **What the AI did:** Guided my manual changes to `scripts/corpus260130_to_json.py`: updated the selected design fields, used `Storytelling Technique: Animation` instead of the old Animation field, and added column aliases for Sense-Making/Reflection and spelling differences in the sheet. Explained how sheet columns become JSON fields and how website headings are configured separately. Helped fix missing-value conversion with `astype(object)` so empty cells export as JSON null instead of NaN. Provided terminal checks and corrected the comparison test's handling of empty values and rows. Identified repeated AuthorYear labels for different papers as a separate identification issue.
+- **What we did / verified:** I made the script changes, clarified the animation field with the group and ran the exporter in a virtual environment, writing all four outputs to `/tmp/inf219-export-test/`. It produced 85 classification records, 85 metadata records, 75 grouped emotion records and 0 generated group mappings. I ran strict JSON checks confirming that the classification and metadata files contain no NaN or Infinity, then compared all 85 rows with the sheet for the 17 design fields and Sense-Making; all checked values matched. Website restructuring is being handled separately. The app public data files were not updated by these test exports, and no website integration test was performed with the refreshed data.
+- **Link:** [Issue #54](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/54)
+
 ## 2026-11-04 – Horizontal emotion headers and clearer collapse control
 - **Who:** Elise
 - **Tool:** ChatGPT (Codex)
