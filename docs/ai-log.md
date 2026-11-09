@@ -1,0 +1,256 @@
+# AI Usage Log
+
+This log documents how we use AI tools in the INF219 project. Add one short entry
+per AI session or pull request, with the newest entry at the top.
+
+## Entry template
+
+Copy this block and fill it in:
+
+```markdown
+## YYYY-MM-DD – <short title>
+- **Who:** <group member>
+- **Tool:** <e.g. Claude Code (Opus 5.5), ChatGPT, Copilot>
+- **Purpose:** <what we wanted to achieve>
+- **What the AI did:** <code / text / explanation / debugging + files touched>
+- **What we did / verified:** <review, testing, own changes>
+- **Link:** <PR / commit>
+```
+
+---
+## 2026-11-05 – Side panel for one paper in the corpus table
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** Open a simple side panel with the details of one paper when clicking a row in the corpus table, and show Domain before Country in the emotions panel text as well.
+- **What the AI did:** Wrote `inf219/components/corpus/PaperDetailPanel.tsx` and `findPaperMetadata` in `inf219/lib/data.ts`, connected the panel in `CorpusTable.tsx`, `GroupPanel.tsx` and `PaperColumn.tsx`, and changed the order of the text in `inf219/components/emotions/PaperPanel.tsx`. Also found that "Lan et al. 2021" is two different papers with the same AuthorYear, and changed `inf219/lib/emotion-layout.ts`, `EmotionGroupPanel.tsx`, `EmotionTable.tsx` and `PaperPanel.tsx` so the emotions page keeps them apart in the side panel and in the counts. Also explained the changes and ran lint and build.
+- **What we did / verified:** I described the panel from a screenshot, approved the plan, went through the code and had the Lan et al. 2021 bug explained before deciding to fix it. I ran the project locally and checked the changes in the browser. Along the way I found that my earlier Domain/Country change had missed the grey text under each paper, asked for a box around the details to match the emotions panel, and questioned a Lan et al. 2021 result that still looked wrong until I confirmed the correct paper on a fresh version of the page. I split the work into commits and committed it myself.
+- **Link:** [Issue #66](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/66)
+
+## 2026-11-05 – Home page
+- **Who:** Jenny
+- **Tool:** Copilot, ChatGPT
+- **Purpose:** Add a home page to the project with links to the corpus- and emotions page
+- **What the AI did:** ChatGPT helped me to verify that the map-structure I already planned on implementing seemed correct in addition to the different `page.tsx`. Then I used Copilot to help set up a new home-page (`page.tsx`) with a template on how the design can look. This might be changed later based on what the information should be. Copilot also implemented and made the home-icon in `NavigationBar.tsx`. 
+- **What we did / verified:** I started to re-organize the map structure linked to the pages (`page.tsx`). Before the "main page" was the page linked to the Corups (`GroupPanel.tsx`), but I made a new folder named corpus under `/app` (same as what has been done to the emotions-page), and just copied and pasted the page from before. This way the map structure based on the pages looks like this: `/app/page.tsx` (home-page), `/app/corpus/page.tsx` and `/app/emotions/page.tsx`. I also decided where I wanted the home-icon to be placed in the navigation bar. Lastly, I ran the project to see the changes made, and to see that the project still built. 
+- **Link:** [Issue #55](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/55)
+
+## 2026-11-05 – Update the exporter to match the current main sheet
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Update the data export script to match the current main sheet structure for issue #54, following the output-path changes in #14.
+- **What the AI did:** Guided my manual changes to `scripts/corpus260130_to_json.py`: updated the selected design fields, used `Storytelling Technique: Animation` instead of the old Animation field, and added column aliases for Sense-Making/Reflection and spelling differences in the sheet. Explained how sheet columns become JSON fields and how website headings are configured separately. Helped fix missing-value conversion with `astype(object)` so empty cells export as JSON null instead of NaN. Provided terminal checks and corrected the comparison test's handling of empty values and rows. Identified repeated AuthorYear labels for different papers as a separate identification issue.
+- **What we did / verified:** I made the script changes, clarified the animation field with the group and ran the exporter in a virtual environment, writing all four outputs to `/tmp/inf219-export-test/`. It produced 85 classification records, 85 metadata records, 75 grouped emotion records and 0 generated group mappings. I ran strict JSON checks confirming that the classification and metadata files contain no NaN or Infinity, then compared all 85 rows with the sheet for the 17 design fields and Sense-Making; all checked values matched. Website restructuring is being handled separately. The app public data files were not updated by these test exports, and no website integration test was performed with the refreshed data.
+- **Link:** [Issue #54](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/54)
+
+## 2026-11-04 – Horizontal emotion headers and clearer collapse control
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Make Affect and Basic Emotion easier to read and improve the placement of the collapse/expand all control for issue #52.
+- **What the AI did:** Prepared patches for `inf219/components/emotions/EmotionColumn.tsx` to display the two headers horizontally and try different control placements. Following group feedback, replaced the icon beside Affect with a labelled Collapse all / Expand all control in a separate light-grey row below the headers, using space within the existing header area. Explained the changes, the existing collapse logic and the responsibilities of the emotion files, and guided resolution of a stash conflict after merging main.
+- **What we did / verified:** I applied the patches locally, compared the designs in the browser in expanded and collapsed states, and shared screenshots and group feedback to refine the placement. I went through the code explanations to understand the changes. The AI checked that the patches applied; no automated browser test was run for this layout change.
+- **Link:** [Issue #52](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/52)
+
+## 2026-11-04 – Add search field to the corpus table
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** Add a search field under the Author/Year/Paper column names in the corpus table, so you can find papers quickly.
+- **What the AI did:** Added the search field at the bottom of the Papers panel header in `PaperColumn.tsx`, inside the existing label band, so the rows still line up with the other panels. Used the existing `filterPapers()` in `CorpusTable.tsx` so rows that don't match are hidden, and the paper count and column counts follow the filter. Added `SEARCH_HEIGHT` to `layout.ts`. Ran lint and typecheck.
+- **What we did / verified:** I gave the AI my sketch and answered its questions about how the search should work (hide rows that don't match, search in author, year and papers). I reviewed the code and tested the search in the browser: matching rows are shown, the counts update, the rows still line up with the other panels, sorting still works, and all rows come back when the field is cleared.
+- **Link:** [Issue #3](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/3)
+
+## 2026-11-03 – Export sheet data directly to the app public directory
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Update the JSON files used by the website directly when running the Google Sheets exporter, without manually copying files.
+- **What the AI did:** Prepared a patch for `scripts/corpus260130_to_json.py` so all four default output paths use `inf219/public/`, resolved from the script location rather than the terminal working directory. Added the already-used `certifi` dependency to `scripts/requirements.txt` and documented the update process in `inf219/README.md`. Explained the data flow, virtual environment and changes. Read the sheet through CSV export and compared its current columns with the exporter and website. Helped draft the commit message and PR description.
+- **What we did / verified:** I applied the patch, installed the dependencies in a virtual environment and ran the exporter. It reached Google Sheets but stopped because required columns no longer matched the sheet; no JSON files were updated. The AI checked Python syntax, all four default paths from three working directories, explicit output override behaviour and patch applicability. We decided to push the changes and wait to merge until the group agrees how the updated categories should appear on the website. A successful full export and website check with refreshed data are still pending.
+- **Link:** [Issue #14](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/14)
+
+## 2026-11-03 – Collapse and expand all emotion groups
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Let users collapse or expand all emotion groups at once instead of toggling each group separately.
+- **What the AI did:** Prepared patches for `inf219/components/emotions/EmotionTable.tsx` and `EmotionColumn.tsx`. Reused the existing collapsed-group state and visible-row logic to close or open all groups across the table, clearing hover state when doing so. Added one control that switches between “Collapse all” and “Expand all” based on the groups' current state, while preserving individual group toggles. Adjusted its placement and styling following my feedback, keeping a native button with keyboard focus styling but presenting it as text with a small arrow. Explained the state, conditions, click handling and layout changes.
+- **What we did / verified:** I applied the patches, tried the control locally and reviewed screenshots while choosing the design. I requested a single toggle to the left of “Affect”, a smaller text appearance and placement closer to the separator, and changed `bottom-3` to `bottom-0` myself. The AI successfully ran scoped TypeScript checks and checked with the existing data that all 11 groups collapse, group headings and ungrouped rows remain, and all rows expand again. No production build or automated browser test was run. We plan to push the work for review and wait to merge until the group has discussed the design.
+- **Link:** [Issue #39](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/39)
+
+## 2026-11-01 – Added a clickable information icon
+- **Who:** Jenny
+- **Tool:** Copilot
+- **Purpose:** Implement a clickable information icon that opens a pop-up window with information (information isn't updated yet.)
+- **What the AI did:** Copilot implemented a clickable information icon in the navigation bar `NavigationBar.tsx`. When you click on the icon a pop-up window appears, and information about the website can be added. To close the pop-up window you can click on the `x` at the pop-up window, press `escape` or just click anywhere outside of the pop-up window. Ran a lint and build.
+- **What we did / verified:** I explained how I wanted it to look from a user experience point of view. I decided to position the icon on the right side, next to the Corpus- and Emotions-tab link. I removed Copilot's information about the project, so that we can add it later with the correct information. At the end I ran the project locally to see that everything was working as it should. 
+- **Link:** [Issue #19](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/19)
+
+## 2026-11-01 – Fix column highlighting over empty emotion cells
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Make column hover highlighting work for empty emotion cells and match the bold headings in the corpus table.
+- **What the AI did:** Prepared a patch for `inf219/components/emotions/EmotionGroupPanel.tsx`. Added column mouse-enter and mouse-leave handlers to empty cells. Applied font weight 700 to the active column heading and article count, and dimmed other column headings to 60% opacity. Explained that row labels retain 60% opacity while dimmed squares retain 40% of their original colour strength; these existing values were not changed.
+- **What we did / verified:** I applied the patch, tested the page locally and confirmed that the result looked correct. The AI compared the styling with the corpus table, checked that the patch applied and successfully type-checked the modified component and its dependencies. No production build or browser automation was run.
+- **Link:** [Issue #46](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/46)
+
+## 2026-10-31 – Add 'hover over' descriptions for 'Emotion linked to' categories
+- **Who:** Jenny
+- **Tool:** Copilot, ChatGPT
+- **Purpose:** Add a hover over for the descriptions linked to 'Emotion linked to' categories under Conceptual Underpinning
+- **What the AI did:** ChatGPT helped to explain different parts of the code, and being my sparring partner on how I would like to implement the 'hover over' effect. Copilot helped to create a new file, `ColumnDescriptionTooltip.tsx`, which can be used in both `GroupPanel.tsx` and `EmotionGroupPanel.tsx` to add a reusable tooltip-component. ChatGPT also gave me a template on how I could implement the column descriptions to `colums.ts` as a lookup table. 
+- **What we did / verified:** I reviewed the changes made by Copilot, and did adjustments based on how I would like it to appear. I also changed the name from 'Why study emotion' to 'Emotion linked to' in all files. I added the column descriptions to `columns.ts` with the name and descriptions from the sheet. Lastly, I ran the project locally to check that the hover over effect where visible and appeared how I wanted it to. 
+- **Link:** [Issue #16](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/16)
+
+## 2026-10-28 – Add number of articles to Emotions
+- **Who:** Jenny
+- **Tool:** Copilot
+- **Purpose:** Add the number of articles for each column to the emotions table
+- **What the AI did:** AI helped implement the changes in `EmotionGroupPanel.tsx` based on the changes already made in `GroupPanel.tsx` for the Corups. Lastly, Copilot ran a lint and built the project to controll that the changes that were made worked. 
+- **What we did / verified:** I made some small changes in `EmotionGroupPanel.tsx` to make sure the design looked clean and viewable. I changed from `top-1` in the `classname` for the articles to `bottom-1` so that the numbers appear underneath the text. At the end I ran the site locally to check that the numbers appeared where I wanted them to.
+- **Link:** [Issue #37, commit ab8a104](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/ab8a104fbc74adcbff8735b2530981664e7e68cf)
+
+## 2026-10-27 – Highlight corpus rows on hover
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Make it easier to follow an article across the corpus table, using the same row dimming as the emotions table.
+- **What the AI did:** Prepared changes in `inf219/components/corpus/CorpusTable.tsx`, `PaperColumn.tsx` and `GroupPanel.tsx`. Added shared row hover state so hovering over article details or squares keeps the active row fully visible and dims other rows to 40% across all panels. Memoised column article counts so hovering does not repeat the counting. Left column headings unchanged and explained the roles of the three components, the opacity condition and memoisation.
+- **What we did / verified:** I applied the patch locally, tested the hover effect and confirmed the result matched what I wanted. I reviewed the changes with step-by-step explanations. The AI checked that the patch applied and ran a successful TypeScript check on the affected corpus components and their dependencies. No production build or Safari performance check was recorded in this session.
+- **Link:** [Issue #21](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/21)
+
+## 2026-10-27 – Highlight emotion rows on hover
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Make it easier to follow an emotion row across all table panels, similar to the original website.
+- **What the AI did:** Prepared patches for `inf219/components/emotions/EmotionTable.tsx`, `EmotionColumn.tsx` and `EmotionGroupPanel.tsx`. Used shared hover state to keep the active row at full visibility and dim other rows to 40%. Kept the active emotion labels and column heading bold, without a row background. Preserved article tooltips and the heatmap colour calculation. Explained the shared state and each component's role.
+- **What we did / verified:** I tried the changes locally, clarified that other rows should dim instead of adding a grey background, and requested that the active column heading remain bold. The AI checked patch formatting and consistency. TypeScript checking did not finish; no completed build, lint or Safari performance check was recorded in this session.
+- **Link:** [Issue #30](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/30)
+
+## 2026-10-27 – Show papers in a side panel on the emotions page
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** 
+  Let users click a square in the emotions table to see the papers behind it in a side panel to the right of the table, instead of in a panel below the table like on the old site.
+- **What the AI did:** 
+  Made a plan split into one commit per step and asked me about the placement, when the panel should show, the filters and this log. Copied `classtable_metadata.json` into `inf219/public/` and added `loadPaperMetadata()` in `inf219/lib/data.ts`. Made the squares with papers clickable in `inf219/components/emotions/EmotionGroupPanel.tsx`, and added the side panel in `PaperPanel.tsx` with title, journal, country, domain, abstract and DOI for each paper. Added journal, country and domain filters to the panel. Also explained how to move my first commit to the right branch, and resolved a merge conflict with the new square colours from main.
+- **What we did / verified:** 
+  I gave the AI a sketch of the panel and chose to have it fixed on the right side, only showing after a click with a close button, and to add the filters in a separate commit. I read through the plan before approving it, and read through the code changes to quality-check them. I made each commit myself. I ran the site locally myself and checked that the panel and the filters work.
+- **Link:** [Issue #7](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/7)
+
+## 2026-10-24 – Sort papers by classification column
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** 
+  Let users click a classification column (e.g. "Public Health") to put the papers marked in that column at the top, like on the old site.
+- **What the AI did:** 
+  Made the column names in `inf219/components/corpus/GroupPanel.tsx` clickable, reusing the existing sorting in `CorpusTable.tsx`. The active column shows a ▼ icon and a grey background. Added `isFaded` in `inf219/lib/data.ts` so papers that are not marked in the sorted column are faded in all panels, using the same opacity as the old site.
+- **What we did / verified:** 
+  I compared the result with the old site and asked for the arrow to point down, for the fading to stay on while the column is sorted (not only on hover), and for the columns to only switch between "marked first" and no sorting. I chose to show the icon only on the active column. I read through the plan before approving it, and read through the code changes to quality-check them. I ran the site locally myself and checked that the sorting works.
+- **Link:** [Issue #17](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/17)
+
+## 2026-10-24 – Sort papers by author, year and paper
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** 
+  Let users sort the corpus table by clicking the Author, Year and Paper column names, like on the old site.
+- **What the AI did:** 
+  Described common ways to design sorting on websites and suggested several options. Made the column names in `inf219/components/corpus/PaperColumn.tsx` clickable with a ⇅ / ▲ / ▼ icon, connected the existing `sortPapers` and `nextSort` functions in `CorpusTable.tsx`, and made the Year column wider in `layout.ts` so the icon fits. Reviewed the change afterwards to check that no code was unnecessary.
+- **What we did / verified:** 
+  I chose the design, asked for black, slightly bolder icons and the simplest possible solution, and rejected a first, larger version. I read through the plan before approving it, and read through the code changes to quality-check them. I ran the site locally myself and checked that the sorting works.
+- **Link:** [Issue #17](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/17)
+
+## 2026-10-23 – Use consistent colours within emotion panels
+- **Who:** Elise
+- **Tool:** ChatGPT
+- **Purpose:** Fix misleading colour differences between subgroups in the emotions table.
+- **What the AI did:** Identified that Data and Vis used different base colours. Explained two possible solutions and suggested changing group.color to color in inf219/components/emotions/EmotionGroupPanel.tsx, so squares use their main panel’s colour.
+- **What we did / verified:** I reviewed the colour definitions and explanation, chose to use the main panel’s colour, and made the code change locally.
+- **Link:** [PR #36](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/36)
+
+## 2026-10-22 – Added number of articles in each column to the corpus
+- **Who:** Jenny
+- **Tool:** Copilot, ChatGPT
+- **Purpose:** Add the number of articles for each column in the corpus
+- **What the AI did:** I used ChatGPT to help me explain the code in `GroupPanel.tsx`, and Copilot helped to make an implementation of code in the file. At the end Copilot ran a lint and build to controll that the changes made worked. 
+- **What we did / verified:** I reviewed the changes made, Copilot added the numbers on the top in the column, so I changed it to the bottom. I approved the plan and checked that the project still built on our machine. 
+- **Link:** [PR #33 / e4a5872](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/e4a5872ae5ba89aec37a66d615e8a20268b26c7e)  
+
+## 2026-10-22 – Remove color on boxes without any articles
+- **Who:** Jenny
+- **Tool:** ChatGPT
+- **Purpose:** Remove the tinted color on the cells that doesn't have any articles
+- **What the AI did:** I used GhatGPT to help me understand `GroupPanel.tsx` at first, then this explanation helped me to understand `Cell.tsx` so that I could make the change.
+- **What we did / verified:** I changed a line in `Cell.tsx`from `tint(color, "1a")` to just `transparent`, this way the cells is transparent. At the end I checked that the project still built on my machine, and that the changes looked okay. 
+- **Link:** [PR #34 / 16462ae](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/16462aeef3a23ffbb716fd80301462ee4872415b)
+
+## 2026-10-21 – Show matching articles on hover
+- **Who:** Elise
+- **Tool:** ChatGPT
+- **Purpose:** Show which articles contribute to each square in the emotions table.
+- **What the AI did:** Suggested code changes in `inf219/lib/emotion-layout.ts` and `inf219/components/emotions/EmotionGroupPanel.tsx` to return an alphabetical list of unique articles and display it below the count in the hover tooltip. Explained the changes step by step.
+- **What we did / verified:** I added the changes locally, reviewed the explanations, and checked the tooltips in the browser. I verified that Anger/Engagement showed eight distinct articles matching the original page.
+- **Link:** [PR #29](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/29)
+
+## 2026-10-21 – Use a fixed emotion colour scale
+- **Who:** Elise
+- **Tool:** ChatGPT
+- **Purpose:** Apply the paper-count colour intervals specified in issue #18 consistently across the emotions table.
+- **What the AI did:** Suggested code changes in `inf219/components/emotions/EmotionGroupPanel.tsx` to replace the relative scale with fixed intervals, make zero-count squares white, and darken the colour for 11 or more papers. Kept the opaque colour calculation used for the Safari fix and explained the code.
+- **What we did / verified:** I implemented the changes locally, reviewed the code with step-by-step explanations, and compared the table visually with the original page and the requested scale.
+- **Link:** [PR #27](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/27)
+
+## 2026-10-14 – Adding navigation bar
+- **Who:** Jenny
+- **Tool:** Copilot
+- **Purpose:** Create a navigation bar at the top of the website, and that is clickable so it can change between the corpus table and the emotions table
+- **What the AI did:** Implemented a shared navigation bar in `NavigationBar.tsx`, and added this in `layout.tsx` so that it is visible on all websites with clickable links to the Corpus Classification Table and Emotions by Everything. AI also adjusted the height of the site such that the navigation bar is placed over the table. At the end AI ran a lint and build to controll that the changes worked.  
+- **What we did / verified:** I reviewed the changes, and checked if the links where clickable and that the design looked well-organized. I added an underline effect when you hover over the tabs as well. I also went in and changed the names for the tabs so it made more sense to what it actually showed. Lastly, I approved the plan and checked that the project still built on our machine. 
+- **Link:** [PR #32 / be11687](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/32)
+
+
+## 2026-10-14 – Reduce Safari scrolling lag
+- **Who:** Elise
+- **Tool:** ChatGPT
+- **Purpose:** Reduce severe scrolling lag on the emotions page in Safari.
+- **What the AI did:** Changed `inf219/components/emotions/EmotionGroupPanel.tsx` on a test branch to calculate colours blended with white instead of applying CSS opacity to each square. Explained the change and how to copy the commit to an issue branch.
+- **What we did / verified:** I tested the updated version locally in Safari and observed that scrolling no longer lagged. The old version still caused severe lag. I then copied the fix to the branch for issue #23. The fix was later merged on 21 October.
+- **Link:** [PR #26](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/26)
+
+## 2026-10-14 – Deploy inf219 app to GitHub Pages
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** 
+  Make our new app the page people see on affectivevisstar.github.io, instead of the old website.
+- **What the AI did:** 
+  Found out why the old website was still showing, suggested how to fix it, and changed the settings so that GitHub builds and publishes our new app instead.
+- **What we did / verified:** 
+  We approved the plan and checked that the project still built on our machine. 
+- **Link:** [202ddad](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/202ddad5f49d60a97878e0cfd65d51cf9f7dddae)
+
+## 2026-10-13 – Build the emotions table
+- **Who:** Elise
+- **Tool:** ChatGPT
+- **Purpose:** Build an emotions table using the corpus table layout and the original emotions page as references.
+- **What the AI did:** Helped write and revise the emotion types, data loader, page and table components in `inf219/lib/types.ts`, `inf219/lib/emotion-data.ts`, `inf219/lib/emotion-layout.ts`, `inf219/app/emotions/page.tsx` and `inf219/components/emotions/`. Suggested collapsible emotion groups and counting unique articles instead of summing counts that could include duplicates. Explained the code and Git workflow step by step.
+- **What we did / verified:** I contributed local changes, reviewed the explanations of the files and functions, and checked the layout and collapse behaviour in the browser. I compared Anger/Engagement with the original page and verified that the count was eight unique articles.
+- **Link:** [PR #20](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/pull/20)
+
+## 2026-10-08 – Add corpus table with grouped classification panels
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** 
+  Show all papers in a table with colored panels for each classification group,based on our sketch of the page.
+- **What the AI did:** 
+  Wrote the code for the table: loading the data, grouping the columns into panels, and drawing one row per paper with colored squares. It also removed our first test table, and explained each file to us.
+- **What we did / verified:** 
+  We gave the AI our plan and sketch, read through the explanation of each file, checked that the table looked right in the browser, and made the commit ourselves.
+- **Link:** [04326a8](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/04326a886ae85d00eca9d201fffb9844bf0c498b)
+
+## 2026-10-01 – Set up new project
+- **Who:** Aimee Hong
+- **Tool:** ChatGPT
+- **Purpose:** 
+  Get started with a new website project for our corpus visualization.
+- **What the AI did:** 
+  Explained how to create a new Next.js project and which
+  commands to type in the terminal.
+- **What we did / verified:** 
+  We ran the commands ourselves, chose the  project
+  settings, removed the example content from the start page, and checked that the site opened in the browser. No code written by the AI was added to the project.
+- **Link:** [d28ad39](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/d28ad399d0071c990d54678a19a2a1efdec47dff)

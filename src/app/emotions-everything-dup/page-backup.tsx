@@ -39,7 +39,7 @@ const TABLE_GROUPS: DataTableGroup[] = [
         ],
     },
     {
-        name: "Why Study Emotion",
+        name: "Emotion linked to",
         color: "#ffcc15",
         superGroupName: "Conceptual Underpinning",
         superGroupColor: "#ffcc15",
