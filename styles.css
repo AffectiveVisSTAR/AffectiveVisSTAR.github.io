@@ -1,0 +1,129 @@
+/* ==========================================================
+   Design Space Summary – styles
+   Edit the colors, fonts and sizes in the first block below.
+   ========================================================== */
+
+/* ---------- 1. COLORS (light mode) ---------- */
+:root {
+  --bg: #ffffff;        /* page background */
+  --surface: #ffffff;   /* table background */
+  --text: #1f2328;      /* main text */
+  --muted: #5b6370;     /* the text after each category's colon, header labels */
+  --line: #e3e0d8;      /* borders between rows */
+  --accent: #1f2328;    /* category names + bar beside the dimension column */
+  --head: #ffffff;      /* header row background */
+  --dim: #ffffff;       /* dimension column background */
+
+  /* ---------- 2. FONT & SIZE ---------- */
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-size: 12px;
+  --line-height: 1.55;
+
+  /* ---------- 3. LAYOUT ---------- */
+  --page-width: 1600px;       /* max width of the whole page */
+  --cell-padding: 2px 2px;  /* space inside each cell */
+  --dim-col-width: 100px;     /* "dimension" column */
+  --cat-col-width: 200px;     /* "category" column */
+  --impact-col-width: 600px;    /* "affective impact" column (px or %) */
+  --resp-col-width: 600px;      /* "responsible application" column (px or %) */
+  --radius: 0px;             /* rounded corners of the table */
+  --table-min-width: 500px;   /* below this the table scrolls sideways */
+
+  /* keeps content clear of phone notches (leave as is) */
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ---------- Dark mode colors (used automatically when the
+   visitor's device is set to dark) ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14161a; --surface: #1c1f25; --text: #e8e9ec; --muted: #a1a7b3;
+    --line: #2e333c; --accent: #8fa5ff; --head: #232838; --dim: #22262d;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14161a; --surface: #1c1f25; --text: #e8e9ec; --muted: #a1a7b3;
+  --line: #2e333c; --accent: #8fa5ff; --head: #232838; --dim: #22262d;
+}
+
+/* ---------- Base ---------- */
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: var(--font-size)/var(--line-height) var(--font);
+}
+
+main {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 32px 16px 48px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  margin: 0 0 20px;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Table ---------- */
+.wrap {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: var(--table-min-width);
+}
+
+/* header row */
+th {
+  position: sticky;
+  top: 0;
+  background: var(--head);
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: capitalize;   /* change to "none" for normal case */
+  letter-spacing: ;
+  color: var(--muted);
+  padding: 6px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* body cells */
+td {
+  padding: var(--cell-padding);
+  vertical-align: top;
+  border-top: 1px solid var(--line);
+}
+
+/* thicker line where a new dimension group starts */
+tr.start td { border-top: 1px solid var(--line); }
+
+/* dimension column */
+td.dim {
+  background: var(--dim);
+  font-weight: 600;
+  width: var(--dim-col-width);
+  border-right: 1px solid var(--line);
+  /* border-left: 3px solid var(--accent);
+}
+
+/* category column: "Name:" + description */
+td.cat { width: var(--cat-col-width); }
+td.cat strong { color: var(--accent); }   /* the category name + colon */
+.what { color: var(--muted); }            /* the "what it is for" text */
+
+/* "affective impact" (3rd column) and "responsible application" (4th column).
+   Widths are set on the header cells and apply to the whole column. */
+td:nth-child(3) { width: var(--impact-col-width); }
+td:nth-child(4) { width: var(--resp-col-width); }
