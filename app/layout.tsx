@@ -15,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "AffectiveVisSTAR",
-  description: "Affective visualization research corpus",
+  description:
+    "Responsible Affective Visualization: A Survey of Methods Towards Responsible Affective Visualization. Interactive corpus of 70 empirical AffectVis papers.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
