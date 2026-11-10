@@ -1,3 +1,0 @@
-npx create-next-app@latest . --ts --tailwind --eslint --app --import-alias "@/*"
-
-npm install @reduxjs/toolkit react-redux
