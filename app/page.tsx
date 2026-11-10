@@ -39,14 +39,6 @@ const litSearch: Figure = {
 
 const sideBySideFigures: Figure[] = [
   {
-    src: "/images/responsible-engagement-framework.webp",
-    width: 1221,
-    height: 925,
-    alt: "2x2 matrix outlining our Responsible Emotional Engagement design space. Along the horizontal axis runs emotional valence, from negative (left) to positive (right). Along the vertical axis is designer intent in engagement, from irresponsible (bottom) to responsible (top). The space maps design strategies according to what emotion(s) are evoked and how they are used.",
-    caption:
-      "2x2 matrix outlining our Responsible Emotional Engagement design space. Along the horizontal axis runs emotional valence, from negative (left) to positive (right). Along the vertical axis is designer intent in engagement, from irresponsible (bottom) to responsible (top). The space maps design strategies according to what emotion(s) are evoked and how they are used.",
-  },
-  {
     src: "/images/domainbyyear.webp",
     width: 1802,
     height: 1624,
@@ -66,6 +58,14 @@ const sideBySideFigures: Figure[] = [
       { label: "Domain Agnostic", color: "#928F9E" },
       { label: "Various", color: "#E18CE4" },
     ],
+  },
+  {
+    src: "/images/responsible-engagement-framework.webp",
+    width: 1221,
+    height: 925,
+    alt: "2x2 matrix outlining our Responsible Emotional Engagement design space. Along the horizontal axis runs emotional valence, from negative (left) to positive (right). Along the vertical axis is designer intent in engagement, from irresponsible (bottom) to responsible (top). The space maps design strategies according to what emotion(s) are evoked and how they are used.",
+    caption:
+      "2x2 matrix outlining our Responsible Emotional Engagement design space. Along the horizontal axis runs emotional valence, from negative (left) to positive (right). Along the vertical axis is designer intent in engagement, from irresponsible (bottom) to responsible (top). The space maps design strategies according to what emotion(s) are evoked and how they are used.",
   },
 ];
 
@@ -203,14 +203,24 @@ export default function Home() {
           </aside>
 
           <div className="flex min-w-0 flex-col gap-8 lg:col-start-1 lg:row-start-1">
-            <FigureBlock figure={teaser} priority />
+            <div className="flex flex-col gap-6 md:flex-row">
+              {sideBySideFigures.map((figure) => (
+                <FigureBlock
+                  key={figure.src}
+                  figure={figure}
+                  sizes="(min-width: 64rem) 24rem, (min-width: 48rem) 50vw, 100vw"
+                  style={{ flex: `${figure.width / figure.height} 1 50px` }}
+                />
+              ))}
+            </div>
+            {/* <FigureBlock figure={teaser} priority /> */}
 
             <section aria-labelledby="abstract-heading">
               <h2
                 id="abstract-heading"
                 className="text-lg font-semibold text-neutral-900"
               >
-                Abstract
+                This is an ongoing research project.
               </h2>
               <div className="mt-2 space-y-3 text-justify text-[1.0625rem] leading-7 hyphens-auto text-neutral-700">
                 <p>
@@ -265,16 +275,6 @@ export default function Home() {
                 {/* Narrow figures share a row. Growing each by its aspect ratio, with a basis equal to
                     the card's horizontal padding + border (2 × 24px + 2 × 1px at md+), gives both
                     images exactly the same height. */}
-                <div className="flex flex-col gap-6 md:flex-row">
-                  {sideBySideFigures.map((figure) => (
-                    <FigureBlock
-                      key={figure.src}
-                      figure={figure}
-                      sizes="(min-width: 64rem) 24rem, (min-width: 48rem) 50vw, 100vw"
-                      style={{ flex: `${figure.width / figure.height} 1 50px` }}
-                    />
-                  ))}
-                </div>
                 <FigureBlock figure={conceptualModels} />
                 <FigureBlock figure={litSearch} />
               </div>
