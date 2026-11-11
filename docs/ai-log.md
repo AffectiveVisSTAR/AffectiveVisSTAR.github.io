@@ -18,6 +18,14 @@ Copy this block and fill it in:
 ```
 
 ---
+## 2026-11-11 – Fix layout design on 'Emotions'
+- **Who:** Jenny
+- **Tool:** Copilot
+- **Purpose:** Get the same design on both tables, fixing the 'Emotions' column and adding rounded border similar to the rest of the table. 
+- **What the AI did:** Updated `EmotionColumn.tsx` so the column connected to 'Emotions' also got the same colors in the title, rows and heading, and rounded borders as 'Papers' in the corpus. I used Copilot to fix bugs that appeared underway, such as adding rounded border at 'Valence Category' and adjusting the height of the column, and make the lines appear at the same level. At the end, Copilot built and ran a lint on the project. 
+- **What we did / verified:** Copilot didn't add the rounded border at first, so I changed the color for 'Valence Category' in `EmotionColumn.tsx`, and I also added the rounded border for 'Valence Category', since Copilot only made the changes on 'Emotions'. Doing these changes, I also realized that the height of the 'Emotions' columnn had collapsed, so I had to fix that with Copilot. Lastly, I saw that the line under 'Collapse all' wasnt the same height as the rest of the table, so I fixed that with Copilot as well. 
+- **Link:** [Issue #59](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/59)
+
 ## 2026-11-05 – Side panel for one paper in the corpus table
 - **Who:** Aimee Hong
 - **Tool:** Claude Code (Opus 5.5)

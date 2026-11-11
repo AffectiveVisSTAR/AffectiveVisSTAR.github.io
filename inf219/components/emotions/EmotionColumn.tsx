@@ -56,7 +56,7 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
               <th key={column.key} scope="col" className="border-b border-neutral-200 p-0">
                 <div
                   className="flex items-end justify-start gap-1 px-2 pb-3 text-neutral-800"
-                  style={{ height: LABEL_HEIGHT - 32, width: column.width }}
+                  style={{ height: LABEL_HEIGHT - 34, width: column.width }}
                 >
                   <span>{column.label}</span>
                 </div>
