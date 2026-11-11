@@ -38,8 +38,8 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
         </colgroup>
         <thead className="sticky top-0 z-10 bg-white">
           <tr>
-            <th rowSpan={4} scope="col" className="border-r border-neutral-200 p-0 align-bottom">
-              <div className="flex items-end justify-center rounded-tr-md pb-11" style={{ width: CATEGORY_WIDTH }}>
+            <th rowSpan={4} scope="col" className="rounded-l-md border-r border-neutral-200 bg-neutral-50 p-0 align-bottom">
+              <div className="flex items-end justify-center rounded-l-md pb-11" style={{ width: CATEGORY_WIDTH }}>
                 <span style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
                   Valence Category
                 </span>
