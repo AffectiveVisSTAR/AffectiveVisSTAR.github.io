@@ -21,11 +21,6 @@ const EMOTION_COLUMNS = [
   { key: "Basic Emotion", label: "Basic Emotion", width: 140 },
 ] as const;
 export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, onCollapseAll, onExpandAll, canCollapseAll, canExpandAll, hoveredRowId, onHoverRow }: EmotionColumnProps) {
-  const emotionCount = groups.reduce(
-    (count, group) => count + group.rows.filter((row) => !row.isGroup).length,
-    0,
-  );
-
   return (
     <section className="sticky left-0 z-20 shrink-0 self-start rounded-md border border-neutral-300 bg-white">
       <table className="border-separate border-spacing-0 text-xs text-neutral-800">
@@ -53,9 +48,7 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
           </tr>
           <tr>
             <th colSpan={2} className="p-0 text-center text-xs text-neutral-600">
-              {/* <div className="flex items-center justify-center bg-neutral-100" style={{ height: SUBGROUP_HEIGHT }}>
-                {emotionCount} emotions
-              </div> */}
+              <div className="bg-neutral-100" style={{ height: SUBGROUP_HEIGHT }} />
             </th>
           </tr>
           <tr>
