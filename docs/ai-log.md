@@ -18,6 +18,14 @@ Copy this block and fill it in:
 ```
 
 ---
+## 2026-11-18 – Fix overlapping headers in Corpus and Emotions
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Keep the fixed Papers and Emotions columns visible while scrolling horizontally, even when hovering over a group header.
+- **What the AI did:** Explained how `hover:z-30` raised the group headers above the fixed columns (`z-20`). Prepared patches to remove that hover rule in `components/corpus/GroupPanel.tsx` and `components/emotions/EmotionGroupPanel.tsx`, keeping the headers at `z-10`. Helped troubleshoot the local dev server and guided the update from main.
+- **What we did / verified:** I used screenshots to show that the overlap affected both tables, applied the patches, and verified locally in the browser that both tables scrolled correctly. I then brought main into the issue branch and reapplied both fixes from stash without conflicts.
+- **Link:** [Issue #57](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/57)
+
 ## 2026-11-11 – Fix layout design on 'Emotions'
 - **Who:** Jenny
 - **Tool:** Copilot
