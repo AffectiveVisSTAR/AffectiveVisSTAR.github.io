@@ -59,7 +59,7 @@ export default function GroupPanel({
   return (
     <>
     <section className="shrink-0 rounded-md border border-neutral-300 bg-white">
-      <header className="sticky top-0 z-10 rounded-t-md bg-white hover:z-30">
+      <header className="sticky top-0 z-10 rounded-t-md bg-white">
         <div
           className="flex items-center justify-center rounded-t-md px-3 text-sm font-semibold text-neutral-900"
           style={{ height: TITLE_HEIGHT, backgroundColor: color }}
