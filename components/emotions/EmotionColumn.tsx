@@ -17,8 +17,8 @@ type EmotionColumnProps = {
 
 const CATEGORY_WIDTH = 44;
 const EMOTION_COLUMNS = [
-  { key: "name", label: "Affect", width: 200 },
-  { key: "Basic Emotion", label: "Basic Emotion", width: 140 },
+  { key: "name", label: "Specific Emotion", width: 200 },
+  { key: "Basic Emotion", label: "Emotion Category", width: 140 },
 ] as const;
 export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, onCollapseAll, onExpandAll, canCollapseAll, canExpandAll, hoveredRowId, onHoverRow }: EmotionColumnProps) {
   return (
