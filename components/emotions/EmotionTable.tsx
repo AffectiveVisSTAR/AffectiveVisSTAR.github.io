@@ -8,6 +8,8 @@ import EmotionColumn from "./EmotionColumn";
 import EmotionGroupPanel from "./EmotionGroupPanel";
 import PaperPanel, { type SelectedCell } from "./PaperPanel";
 import { SUPER_GROUPS } from "@/lib/columns";
+import CollapsedPanel from "../corpus/CollapsedPanel";
+import useCollapsedPanels from "../corpus/useCollapsedPanels";
 import { groupKey, getVisibleEmotionGroups } from "@/lib/emotion-layout";
 
 // Loads the emotion data and places its panels in one scroll container.
@@ -24,6 +26,7 @@ export default function EmotionTable() {
   const [selectedCell, setSelectedCell] = useState<SelectedCell | null>(null);
 
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => new Set());
+  const { collapsedPanels, togglePanel } = useCollapsedPanels();
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const [hoveredColumnId, setHoveredColumnId] = useState<string | null>(null);
   const groups = useMemo(
@@ -104,7 +107,14 @@ export default function EmotionTable() {
                 hoveredRowId={hoveredRowId}
                 onHoverRow={setHoveredRowId}
               />
-              {SUPER_GROUPS.map((superGroup) => (
+              {SUPER_GROUPS.map((superGroup) => collapsedPanels.has(superGroup.id) ? (
+                <CollapsedPanel
+                  key={superGroup.id}
+                  label={superGroup.label}
+                  color={superGroup.color}
+                  onExpand={() => togglePanel(superGroup.id)}
+                />
+              ) : (
                 <EmotionGroupPanel
                   key={superGroup.id}
                   superGroup={superGroup}
@@ -116,6 +126,7 @@ export default function EmotionTable() {
                   onHoverColumn={setHoveredColumnId}
                   selectedKey={selectedCell?.key ?? null}
                   onSelectCell={setSelectedCell}
+                  onCollapse={() => togglePanel(superGroup.id)}
                 />
               ))}
             </>
