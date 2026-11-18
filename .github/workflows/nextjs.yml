@@ -28,22 +28,18 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
-    # The site is built from the Next.js app in inf219/.
-    defaults:
-      run:
-        working-directory: inf219
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Detect package manager
         id: detect-package-manager
         run: |
-          if [ -f "${{ github.workspace }}/inf219/yarn.lock" ]; then
+          if [ -f "${{ github.workspace }}/yarn.lock" ]; then
             echo "manager=yarn" >> $GITHUB_OUTPUT
             echo "command=install" >> $GITHUB_OUTPUT
             echo "runner=yarn" >> $GITHUB_OUTPUT
             exit 0
-          elif [ -f "${{ github.workspace }}/inf219/package.json" ]; then
+          elif [ -f "${{ github.workspace }}/package.json" ]; then
             echo "manager=npm" >> $GITHUB_OUTPUT
             echo "command=ci" >> $GITHUB_OUTPUT
             echo "runner=npx --no-install" >> $GITHUB_OUTPUT
@@ -57,20 +53,20 @@ jobs:
         with:
           node-version: "20"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
-          cache-dependency-path: inf219/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Setup Pages
-        # Static export is configured in inf219/next.config.ts.
+        # Static export is configured in next.config.ts.
         uses: actions/configure-pages@v5
       - name: Restore cache
         uses: actions/cache@v4
         with:
           path: |
-            inf219/.next/cache
+            .next/cache
           # Generate a new cache whenever packages or source files change.
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('inf219/package-lock.json', 'inf219/yarn.lock') }}-${{ hashFiles('inf219/**.[jt]s', 'inf219/**.[jt]sx') }}
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('inf219/package-lock.json', 'inf219/yarn.lock') }}-
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
@@ -78,7 +74,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./inf219/out
+          path: ./out
 
   # Deployment job
   deploy:

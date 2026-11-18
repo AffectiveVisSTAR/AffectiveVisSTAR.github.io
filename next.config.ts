@@ -1,12 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactCompiler: true,
+  // Static export for GitHub Pages (only static files are served).
   output: "export",
   trailingSlash: true,
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+  images: { unoptimized: true },
 };
 
 export default nextConfig;
