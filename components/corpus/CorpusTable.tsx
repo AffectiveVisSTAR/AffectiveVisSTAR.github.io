@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import { SUPER_GROUPS } from "@/lib/columns";
 import { filterPapers, findPaperMetadata, loadPaperMetadata, loadPapers, nextSort, sortPapers } from "@/lib/data";
 import type { Paper, PaperMetadata, SortState } from "@/lib/types";
+import CollapsedPanel from "./CollapsedPanel";
 import GroupPanel from "./GroupPanel";
+import useCollapsedPanels from "./useCollapsedPanels";
 import PaperColumn from "./PaperColumn";
 import PaperDetailPanel from "./PaperDetailPanel";
 
@@ -20,6 +22,7 @@ export default function CorpusTable() {
   const [error, setError] = useState<string | null>(null);
   const [sort, setSort] = useState<SortState>(null);
   const [query, setQuery] = useState("");
+  const { collapsedPanels, togglePanel } = useCollapsedPanels();
 
   useEffect(() => {
     Promise.all([loadPapers(), loadPaperMetadata()])
@@ -58,7 +61,14 @@ export default function CorpusTable() {
             query={query}
             onQueryChange={setQuery}
           />
-          {SUPER_GROUPS.map((superGroup) => (
+          {SUPER_GROUPS.map((superGroup) => collapsedPanels.has(superGroup.id) ? (
+            <CollapsedPanel
+              key={superGroup.id}
+              label={superGroup.label}
+              color={superGroup.color}
+              onExpand={() => togglePanel(superGroup.id)}
+            />
+          ) : (
             <GroupPanel
               key={superGroup.id}
               superGroup={superGroup}
@@ -72,6 +82,7 @@ export default function CorpusTable() {
               sort={sort}
               // Classification columns only toggle between "marked papers first" and no sorting.
               onSort={(key) => setSort(sort?.key === key ? null : { key, direction: "asc" })}
+              onCollapse={() => togglePanel(superGroup.id)}
             />
           ))}
         </div>

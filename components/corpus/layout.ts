@@ -6,6 +6,7 @@ export const COLUMN_WIDTH = 20; // width of one classification column
 export const CELL_SIZE = 14; // size of the square inside the cell
 export const GROUP_GAP = 8; // space between subgroups in the same panel
 export const MIN_GROUP_WIDTH = 68; // so the subgroup name fits even when a subgroup has few columns
+export const COLLAPSED_PANEL_WIDTH = 36; // width of a folded panel strip
 
 // Width of a subgroup. Narrow subgroups are widened and their columns centered,
 // so use this in every band (subgroup name, column names and rows) to keep them aligned.
