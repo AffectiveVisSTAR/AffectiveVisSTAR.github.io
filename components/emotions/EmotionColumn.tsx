@@ -82,64 +82,73 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
         </thead>
         {groups.map(({ category, rows }) => (
           <tbody key={category}>
-            {rows.map((emotion, index) => (
-              <tr
-                key={emotion.id}
-                style={{ opacity: hoveredRowId !== null && hoveredRowId !== groupKey(category, emotion.id) ? 0.6 : 1 }}
-                onMouseEnter={() => onHoverRow(groupKey(category, emotion.id))}
-                onMouseLeave={() => onHoverRow(null)}
-              >
-                {index === 0 && (
-                  <th rowSpan={rows.length} scope="rowgroup" className={`border-r border-neutral-200 bg-neutral-50 p-0 align-middle ${category !== groups[0]?.category ? "border-t border-neutral-200" : ""}`}>
-                    <div className="flex items-center justify-center" style={{ width: CATEGORY_WIDTH }}>
-                      <span className="uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-                        {category === "Main" ? "General" : category}
-                      </span>
+            {rows.map((emotion, index) => {
+              const hasUnspecifiedBasicEmotion = emotion.basicEmotion === "–";
+              return (
+                <tr
+                  key={emotion.id}
+                  style={{ opacity: hoveredRowId !== null && hoveredRowId !== groupKey(category, emotion.id) ? 0.6 : 1 }}
+                  onMouseEnter={() => onHoverRow(groupKey(category, emotion.id))}
+                  onMouseLeave={() => onHoverRow(null)}
+                >
+                  {index === 0 && (
+                    <th rowSpan={rows.length} scope="rowgroup" className={`border-r border-neutral-200 bg-neutral-50 p-0 align-middle ${category !== groups[0]?.category ? "border-t border-neutral-200" : ""}`}>
+                      <div className="flex items-center justify-center" style={{ width: CATEGORY_WIDTH }}>
+                        <span className="uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+                          {category === "Main" ? "General" : category}
+                        </span>
+                      </div>
+                    </th>
+                  )}
+                  <th
+                    colSpan={hasUnspecifiedBasicEmotion ? 2 : undefined}
+                    scope="row"
+                    className={index === 0 && category !== groups[0]?.category ? "border-t border-neutral-200 p-0 text-left" : "p-0 text-left"}
+                  >
+                    <div
+                      title={emotion.name}
+                      className={emotion.isChild ? "truncate pl-6 pr-2 font-normal" : "truncate px-2 font-semibold"}
+                      style={{
+                        height: ROW_HEIGHT,
+                        lineHeight: `${ROW_HEIGHT}px`,
+                        width: EMOTION_COLUMNS[0].width + (hasUnspecifiedBasicEmotion ? EMOTION_COLUMNS[1].width : 0),
+                        fontWeight: hoveredRowId === groupKey(category, emotion.id) ? 700 : undefined,
+                      }}
+                    >
+                      {emotion.isGroup ? (
+                        <button
+                          type="button"
+                          className="flex h-full w-full items-center gap-1 text-left font-semibold hover:bg-neutral-100 focus-visible:outline-2 focus-visible:outline-blue-600"
+                          aria-expanded={!collapsedGroups.has(groupKey(category, emotion.groupId!))}
+                          onClick={() => onToggleGroup(groupKey(category, emotion.groupId!))}
+                        >
+                          <span aria-hidden="true">
+                            {collapsedGroups.has(groupKey(category, emotion.groupId!)) ? "▸" : "▾"}
+                          </span>
+                          <span className="truncate">{emotion.name}</span>
+                        </button>
+                      ) : emotion.name}
                     </div>
                   </th>
-                )}
-                <th scope="row" className={index === 0 && category !== groups[0]?.category ? "border-t border-neutral-200 p-0 text-left" : "p-0 text-left"}>
-                  <div
-                    title={emotion.name}
-                    className={emotion.isChild ? "truncate pl-6 pr-2 font-normal" : "truncate px-2 font-semibold"}
-                    style={{
-                      height: ROW_HEIGHT,
-                      lineHeight: `${ROW_HEIGHT}px`,
-                      width: EMOTION_COLUMNS[0].width,
-                      fontWeight: hoveredRowId === groupKey(category, emotion.id) ? 700 : undefined,
-                    }}
-                  >
-                    {emotion.isGroup ? (
-                      <button
-                        type="button"
-                        className="flex h-full w-full items-center gap-1 text-left font-semibold hover:bg-neutral-100 focus-visible:outline-2 focus-visible:outline-blue-600"
-                        aria-expanded={!collapsedGroups.has(groupKey(category, emotion.groupId!))}
-                        onClick={() => onToggleGroup(groupKey(category, emotion.groupId!))}
+                  {!hasUnspecifiedBasicEmotion && (
+                    <td className={index === 0 && category !== groups[0]?.category ? "border-t border-neutral-200 p-0" : "p-0"}>
+                      <div
+                        title={emotion.basicEmotion}
+                        className={emotion.isGroup ? "truncate px-2 font-semibold" : "truncate px-2"}
+                        style={{
+                          height: ROW_HEIGHT,
+                          lineHeight: `${ROW_HEIGHT}px`,
+                          width: EMOTION_COLUMNS[1].width,
+                          fontWeight: hoveredRowId === groupKey(category, emotion.id) ? 700 : undefined,
+                        }}
                       >
-                        <span aria-hidden="true">
-                          {collapsedGroups.has(groupKey(category, emotion.groupId!)) ? "▸" : "▾"}
-                        </span>
-                        <span className="truncate">{emotion.name}</span>
-                      </button>
-                    ) : emotion.name}
-                  </div>
-                </th>
-                <td className={index === 0 && category !== groups[0]?.category ? "border-t border-neutral-200 p-0" : "p-0"}>
-                  <div
-                    title={emotion.basicEmotion}
-                    className={emotion.isGroup ? "truncate px-2 font-semibold" : "truncate px-2"}
-                    style={{
-                      height: ROW_HEIGHT,
-                      lineHeight: `${ROW_HEIGHT}px`,
-                      width: EMOTION_COLUMNS[1].width,
-                      fontWeight: hoveredRowId === groupKey(category, emotion.id) ? 700 : undefined,
-                    }}
-                  >
-                    {emotion.basicEmotion}
-                  </div>
-                </td>
-              </tr>
-            ))}
+                        {emotion.basicEmotion}
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
           </tbody>
         ))}
       </table>
