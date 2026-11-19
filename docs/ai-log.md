@@ -18,6 +18,30 @@ Copy this block and fill it in:
 ```
 
 ---
+## 2026-11-19 – Negative emotions (unspecified) instead of dash
+- **Who:** Jenny
+- **Tool:** Copilot
+- **Purpose:** Remove the dash (–) so that 'Negative emotions (unspecified) fills the row
+- **What the AI did:** Implemented the changes in `EmotionColumns.tsx` to combine the cells for the specific row (with unspecified Emotion Category). Checks this by checking if the component "–" is used, if so the cells combine for that row and hides the empty category cell. Lastly Copilot ran a lint and built without any errors. This change also appears for 'Positive emotions (unspecified)'. 
+- **What we did / verified:** At first I looked up "Negative emotions (unspecified)" in the project to see where it was named. I tested a few changes without it working, and then I asked Copilot for help. After that I reviewed the patches to understand what was done, and I verified that the dash was removed from the browser. Lastly, I ran the project to check that everything still worked as it should. 
+- **Link:** [Issue #78](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/78)
+
+## 2026-11-18 – Fix overlapping headers in Corpus and Emotions
+- **Who:** Elise
+- **Tool:** ChatGPT (Codex)
+- **Purpose:** Keep the fixed Papers and Emotions columns visible while scrolling horizontally, even when hovering over a group header.
+- **What the AI did:** Explained how `hover:z-30` raised the group headers above the fixed columns (`z-20`). Prepared patches to remove that hover rule in `components/corpus/GroupPanel.tsx` and `components/emotions/EmotionGroupPanel.tsx`, keeping the headers at `z-10`. Helped troubleshoot the local dev server and guided the update from main.
+- **What we did / verified:** I used screenshots to show that the overlap affected both tables, applied the patches, and verified locally in the browser that both tables scrolled correctly. I then brought main into the issue branch and reapplied both fixes from stash without conflicts.
+- **Link:** [Issue #57](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/57)
+
+## 2026-11-11 – Fix layout design on 'Emotions'
+- **Who:** Jenny
+- **Tool:** Copilot
+- **Purpose:** Get the same design on both tables, fixing the 'Emotions' column and adding rounded border similar to the rest of the table. 
+- **What the AI did:** Updated `EmotionColumn.tsx` so the column connected to 'Emotions' also got the same colors in the title, rows and heading, and rounded borders as 'Papers' in the corpus. I used Copilot to fix bugs that appeared underway, such as adding rounded border at 'Valence Category' and adjusting the height of the column, and make the lines appear at the same level. At the end, Copilot built and ran a lint on the project. 
+- **What we did / verified:** Copilot didn't add the rounded border at first, so I changed the color for 'Valence Category' in `EmotionColumn.tsx`, and I also added the rounded border for 'Valence Category', since Copilot only made the changes on 'Emotions'. Doing these changes, I also realized that the height of the 'Emotions' columnn had collapsed, so I had to fix that with Copilot. Lastly, I saw that the line under 'Collapse all' wasnt the same height as the rest of the table, so I fixed that with Copilot as well. 
+- **Link:** [Issue #59](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/59)
+
 ## 2026-11-05 – Side panel for one paper in the corpus table
 - **Who:** Aimee Hong
 - **Tool:** Claude Code (Opus 5.5)

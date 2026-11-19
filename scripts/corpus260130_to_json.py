@@ -16,7 +16,8 @@ import certifi
 import urllib.request
 
 
-APP_PUBLIC_DIR = Path(__file__).resolve().parents[1] / "inf219" / "public"
+APP_PUBLIC_DIR = Path(__file__).resolve().parents[1] / "public"
+
 
 def normalize_col_name(name: object) -> str:
     if name is None:
@@ -58,9 +59,9 @@ def select_sheet_columns(
     missing: list[str] = []
     actual_columns: list[str] = []
     column_aliases = {
-    "Sense-Making": "Sense-Making/Reflection",
-    "Core Design Element: Typography": "Core Design Element: Typograhpy",
-    "Storytelling Technique: Plot & Temporality": "Storytelling Technique: Plot & Temporatlity",
+        "Sense-Making": "Sense-Making/Reflection",
+        "Core Design Element: Typography": "Core Design Element: Typograhpy",
+        "Storytelling Technique: Plot & Temporality": "Storytelling Technique: Plot & Temporatlity",
     }
     for desired in desired_columns:
         sheet_name = column_aliases.get(desired, desired)
@@ -269,7 +270,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Read a Google Sheet tab and export selected columns as JSON records "
-            "into the inf219 app public folder."
+            "into the app public folder."
         )
     )
     parser.add_argument(
@@ -277,7 +278,7 @@ def main(argv: list[str] | None = None) -> int:
         type=str,
         default=(
             "https://docs.google.com/spreadsheets/d/"
-            "12yhCsrxngXPVcoLEJNJc2qBMyes83o2v8Yzh0NdDon4/edit?gid=457985371"
+            "12yhCsrxngXPVcoLEJNJc2qBMyes83o2v8Yzh0NdDon4/edit?usp=sharing"
         ),
         help="Google Sheets URL.",
     )
@@ -291,7 +292,7 @@ def main(argv: list[str] | None = None) -> int:
         "--output",
         type=Path,
         default=APP_PUBLIC_DIR / "classtable.json",
-        help="Output JSON file path (default: inf219/public/classtable.json, relative to the repository).",
+        help="Output JSON file path (default: public/classtable.json, relative to the repository).",
     )
     parser.add_argument(
         "--output-column-mapping",
@@ -299,7 +300,7 @@ def main(argv: list[str] | None = None) -> int:
         default=APP_PUBLIC_DIR / "classtable_column_mapping.json",
         help=(
             "Output JSON file path for generated table group mappings "
-            "(default: inf219/public/classtable_column_mapping.json, relative to the repository)."
+            "(default: public/classtable_column_mapping.json, relative to the repository)."
         ),
     )
     parser.add_argument(
@@ -314,7 +315,7 @@ def main(argv: list[str] | None = None) -> int:
         default=APP_PUBLIC_DIR / "emotions_by_everything.json",
         help=(
             "Output JSON file path for grouped emotion counts "
-            "(default: inf219/public/emotions_by_everything.json, relative to the repository)."
+            "(default: public/emotions_by_everything.json, relative to the repository)."
         ),
     )
     parser.add_argument(
@@ -323,7 +324,7 @@ def main(argv: list[str] | None = None) -> int:
         default=APP_PUBLIC_DIR / "classtable_metadata.json",
         help=(
             "Output JSON file path for publication metadata records "
-            "(default: inf219/public/classtable_metadata.json, relative to the repository)."
+            "(default: public/classtable_metadata.json, relative to the repository)."
         ),
     )
     args = parser.parse_args(argv)
@@ -382,22 +383,22 @@ def main(argv: list[str] | None = None) -> int:
                        "Vis Source In-the-Wild",
                        "Vis Source Custom",
                        "Topic & Data/Vis Provenance",
-                        "Visualization Technique",
-                        "Core Design Element: Colour",
-                        "Core Design Element: Line, Shape, Pictograph",
-                        "Core Design Element: Visual Abstraction",
-                        "Core Design Element: Typography",
-                        "High-Level Design Element: Presentation Format",
-                        "High-Level Design Element: Composition",
-                        "High-Level Design Element: Overall Design",
-                        "High-Level Design Element: Interactivity",
-                        "Storytelling Technique: Plot & Temporality",
-                        "Storytelling Technique: Animation",
-                        "Storytelling Technique: Character & POV",
-                        "Rhetorical Technique: Message Framing",
-                        "Rhetorical Technique: Nudging",
-                        "Rhetorical Technique: Elicitation",
-                        "Rhetorical Technique: Personalization",
+                       "Visualization Technique",
+                       "Core Design Element: Colour",
+                       "Core Design Element: Line, Shape, Pictograph",
+                       "Core Design Element: Visual Abstraction",
+                       "Core Design Element: Typography",
+                       "High-Level Design Element: Presentation Format",
+                       "High-Level Design Element: Composition",
+                       "High-Level Design Element: Overall Design",
+                       "High-Level Design Element: Interactivity",
+                       "Storytelling Technique: Plot & Temporality",
+                       "Storytelling Technique: Animation",
+                       "Storytelling Technique: Character & POV",
+                       "Rhetorical Technique: Message Framing",
+                       "Rhetorical Technique: Nudging",
+                       "Rhetorical Technique: Elicitation",
+                       "Rhetorical Technique: Personalization",
                        "Quantitative",
                        "Qualitative",
                        "Mixed",
@@ -432,13 +433,13 @@ def main(argv: list[str] | None = None) -> int:
     ]
 
     columns_to_process = [
-     #  {
-     #       "origName": "ElementsKeywords",
-     #       "name": "Element Studied",
-     #       "color": "#fb8072",
-     #       "superGroupName": "Element Sensemaking",
-     #       "superGroupColor": "#80b1d3",
-     #   }
+        #  {
+        #       "origName": "ElementsKeywords",
+        #       "name": "Element Studied",
+        #       "color": "#fb8072",
+        #       "superGroupName": "Element Sensemaking",
+        #       "superGroupColor": "#80b1d3",
+        #   }
     ]
 
     try:
@@ -484,7 +485,8 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 2
 
-    metadata_selected, metadata_missing = select_sheet_columns(df, metadata_columns)
+    metadata_selected, metadata_missing = select_sheet_columns(
+        df, metadata_columns)
     if metadata_missing:
         print(
             f"ERROR: Missing required metadata columns: {', '.join(metadata_missing)}. "
@@ -552,7 +554,8 @@ def main(argv: list[str] | None = None) -> int:
 
     metadata_records = metadata_selected.to_dict(orient="records")
     metadata_records = clean_records(metadata_records)
-    metadata_records = [row for row in metadata_records if row.get("AuthorYear")]
+    metadata_records = [
+        row for row in metadata_records if row.get("AuthorYear")]
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", encoding="utf-8") as f:
@@ -566,8 +569,10 @@ def main(argv: list[str] | None = None) -> int:
     with args.output_metadata.open("w", encoding="utf-8") as f:
         json.dump(metadata_records, f, ensure_ascii=False, indent=2)
 
-    emotions_by_everything = build_emotions_by_everything(records, emotion_assignments)
-    args.output_emotions_by_everything.parent.mkdir(parents=True, exist_ok=True)
+    emotions_by_everything = build_emotions_by_everything(
+        records, emotion_assignments)
+    args.output_emotions_by_everything.parent.mkdir(
+        parents=True, exist_ok=True)
     with args.output_emotions_by_everything.open("w", encoding="utf-8") as f:
         json.dump(emotions_by_everything, f, ensure_ascii=False, indent=2)
 
@@ -576,7 +581,8 @@ def main(argv: list[str] | None = None) -> int:
         f"Wrote {len(generated_group_mappings)} generated group mappings to "
         f"{args.output_column_mapping}"
     )
-    print(f"Wrote {len(metadata_records)} metadata records to {args.output_metadata}")
+    print(
+        f"Wrote {len(metadata_records)} metadata records to {args.output_metadata}")
     print(
         f"Wrote {len(emotions_by_everything)} grouped emotion records to "
         f"{args.output_emotions_by_everything}"
