@@ -18,6 +18,14 @@ Copy this block and fill it in:
 ```
 
 ---
+## 2026-11-19 – Negative emotions (unspecified) instead of dash
+- **Who:** Jenny
+- **Tool:** Copilot
+- **Purpose:** Remove the dash (–) so that 'Negative emotions (unspecified) fills the row
+- **What the AI did:** Implemented the changes in `EmotionColumns.tsx` to combine the cells for the specific row (with unspecified Emotion Category). Checks this by checking if the component "–" is used, if so the cells combine for that row and hides the empty category cell. Lastly Copilot ran a lint and built without any errors. This change also appears for 'Positive emotions (unspecified)'. 
+- **What we did / verified:** At first I looked up "Negative emotions (unspecified)" in the project to see where it was named. I tested a few changes without it working, and then I asked Copilot for help. After that I reviewed the patches to understand what was done, and I verified that the dash was removed from the browser. Lastly, I ran the project to check that everything still worked as it should. 
+- **Link:** [Issue #78](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/78)
+
 ## 2026-11-18 – Fix overlapping headers in Corpus and Emotions
 - **Who:** Elise
 - **Tool:** ChatGPT (Codex)
