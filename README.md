@@ -33,7 +33,7 @@ the exporter from the repository root:
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r scripts/requirements.txt
-python3 scripts/corpus260130_to_json.py
+python3 scripts/classificationtable_to_json.py
 ```
 
 The exporter reads the `classificationtable` and `emotionmapping` tabs and writes
