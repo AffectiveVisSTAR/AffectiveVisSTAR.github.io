@@ -9,6 +9,7 @@ type CollapsedPanelProps = {
 
 // A folded panel: a narrow strip in the panel color with the name written vertically.
 // It stretches to the height of the other panels so the table keeps its shape.
+// Its colored top is also the drag handle, so a folded panel can be moved too.
 export default function CollapsedPanel({ label, color, onExpand }: CollapsedPanelProps) {
   return (
     <section
@@ -18,10 +19,12 @@ export default function CollapsedPanel({ label, color, onExpand }: CollapsedPane
     >
       <button
         type="button"
+        data-drag-handle
+        draggable
         onClick={onExpand}
-        title="Expand panel"
+        title="Click to expand, drag to move"
         aria-label={`Expand ${label}`}
-        className="sticky top-0 z-10 flex w-full cursor-pointer flex-col items-center rounded-t-md text-neutral-900 hover:brightness-95 focus-visible:outline-2 focus-visible:outline-blue-600"
+        className="sticky top-0 z-10 flex w-full cursor-pointer select-none flex-col items-center rounded-t-md text-neutral-900 hover:brightness-95 focus-visible:outline-2 focus-visible:outline-blue-600"
         style={{ height: HEADER_HEIGHT, backgroundColor: color }}
       >
         <span className="flex shrink-0 items-center justify-center" style={{ height: TITLE_HEIGHT }}>

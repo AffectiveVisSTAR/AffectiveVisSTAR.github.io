@@ -18,6 +18,14 @@ Copy this block and fill it in:
 ```
 
 ---
+## 2026-11-23 – Drag colored panels into a new order
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** Let users drag the colored panels into a new order on both the Corpus and Emotions pages.
+- **What the AI did:** Added `usePanelOrder.ts` and `DraggablePanel.tsx` in `components/corpus/` and used them in `CorpusTable.tsx` and `EmotionTable.tsx`. Added a ⋮⋮ grip icon in `PanelTitleBar.tsx` as the drag handle. Suggested options when dragging selected text instead, helped with Git (new branch, merge conflicts, stash), fixed a small bug after review, and ran lint and build.
+- **What we did / verified:** I tried a few drag handles and chose the grip icon so text can still be selected. I tested each version locally and committed myself.
+- **Link:** [Issue #77](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/77)
+
 ## 2026-11-19 – Negative emotions (unspecified) instead of dash
 - **Who:** Jenny
 - **Tool:** Copilot
