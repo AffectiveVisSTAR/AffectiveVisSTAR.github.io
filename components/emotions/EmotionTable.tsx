@@ -7,9 +7,10 @@ import { loadPaperMetadata, loadPapers } from "@/lib/data";
 import EmotionColumn from "./EmotionColumn";
 import EmotionGroupPanel from "./EmotionGroupPanel";
 import PaperPanel, { type SelectedCell } from "./PaperPanel";
-import { SUPER_GROUPS } from "@/lib/columns";
 import CollapsedPanel from "../corpus/CollapsedPanel";
+import DraggablePanel from "../corpus/DraggablePanel";
 import useCollapsedPanels from "../corpus/useCollapsedPanels";
+import usePanelOrder from "../corpus/usePanelOrder";
 import { groupKey, getVisibleEmotionGroups } from "@/lib/emotion-layout";
 
 // Loads the emotion data and places its panels in one scroll container.
@@ -27,6 +28,7 @@ export default function EmotionTable() {
 
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => new Set());
   const { collapsedPanels, togglePanel } = useCollapsedPanels();
+  const panelOrder = usePanelOrder();
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const [hoveredColumnId, setHoveredColumnId] = useState<string | null>(null);
   const groups = useMemo(
@@ -107,27 +109,29 @@ export default function EmotionTable() {
                 hoveredRowId={hoveredRowId}
                 onHoverRow={setHoveredRowId}
               />
-              {SUPER_GROUPS.map((superGroup) => collapsedPanels.has(superGroup.id) ? (
-                <CollapsedPanel
-                  key={superGroup.id}
-                  label={superGroup.label}
-                  color={superGroup.color}
-                  onExpand={() => togglePanel(superGroup.id)}
-                />
-              ) : (
-                <EmotionGroupPanel
-                  key={superGroup.id}
-                  superGroup={superGroup}
-                  groups={groups}
-                  papers={tableData.papers}
-                  hoveredRowId={hoveredRowId}
-                  onHoverRow={setHoveredRowId}
-                  hoveredColumnId={hoveredColumnId}
-                  onHoverColumn={setHoveredColumnId}
-                  selectedKey={selectedCell?.key ?? null}
-                  onSelectCell={setSelectedCell}
-                  onCollapse={() => togglePanel(superGroup.id)}
-                />
+              {panelOrder.orderedGroups.map((superGroup) => (
+                <DraggablePanel key={superGroup.id} id={superGroup.id} panelOrder={panelOrder}>
+                  {collapsedPanels.has(superGroup.id) ? (
+                    <CollapsedPanel
+                      label={superGroup.label}
+                      color={superGroup.color}
+                      onExpand={() => togglePanel(superGroup.id)}
+                    />
+                  ) : (
+                    <EmotionGroupPanel
+                      superGroup={superGroup}
+                      groups={groups}
+                      papers={tableData.papers}
+                      hoveredRowId={hoveredRowId}
+                      onHoverRow={setHoveredRowId}
+                      hoveredColumnId={hoveredColumnId}
+                      onHoverColumn={setHoveredColumnId}
+                      selectedKey={selectedCell?.key ?? null}
+                      onSelectCell={setSelectedCell}
+                      onCollapse={() => togglePanel(superGroup.id)}
+                    />
+                  )}
+                </DraggablePanel>
               ))}
             </>
           )}
