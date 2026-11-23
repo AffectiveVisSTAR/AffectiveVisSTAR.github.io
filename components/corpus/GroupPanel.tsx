@@ -10,10 +10,10 @@ import {
   LABEL_HEIGHT,
   ROW_HEIGHT,
   SUBGROUP_HEIGHT,
-  TITLE_HEIGHT,
   groupWidth,
   tint,
 } from "./layout";
+import PanelTitleBar from "./PanelTitleBar";
 
 type GroupPanelProps = {
   superGroup: SuperGroup;
@@ -26,6 +26,7 @@ type GroupPanelProps = {
   onSelectPaper: (paper: Paper) => void;
   sort: SortState;
   onSort: (key: string) => void;
+  onCollapse: () => void;
 };
 
 // One colored panel: a header with panel name, subgroups and rotated column names,
@@ -43,6 +44,7 @@ export default function GroupPanel({
   onSelectPaper,
   sort,
   onSort,
+  onCollapse,
 }: GroupPanelProps) {
   const { label, color, groups } = superGroup;
   // Keep column totals cached while the hovered row changes.
@@ -60,12 +62,7 @@ export default function GroupPanel({
     <>
     <section className="shrink-0 rounded-md border border-neutral-300 bg-white">
       <header className="sticky top-0 z-10 rounded-t-md bg-white">
-        <div
-          className="flex items-center justify-center rounded-t-md px-3 text-sm font-semibold text-neutral-900"
-          style={{ height: TITLE_HEIGHT, backgroundColor: color }}
-        >
-          {label}
-        </div>
+        <PanelTitleBar label={label} color={color} onCollapse={onCollapse} />
 
         <div className="flex px-1" style={{ gap: GROUP_GAP, backgroundColor: tint(color, "66") }}>
           {groups.map((group) => (

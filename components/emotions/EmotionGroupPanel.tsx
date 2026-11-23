@@ -13,10 +13,10 @@ import {
   LABEL_HEIGHT,
   ROW_HEIGHT,
   SUBGROUP_HEIGHT,
-  TITLE_HEIGHT,
   groupWidth,
   tint,
 } from "../corpus/layout";
+import PanelTitleBar from "../corpus/PanelTitleBar";
 
 type GroupPanelProps = {
   superGroup: SuperGroup;
@@ -28,6 +28,7 @@ type GroupPanelProps = {
   onHoverRow: (rowId: string | null) => void;
   selectedKey: string | null;
   onSelectCell: (cell: SelectedCell) => void;
+  onCollapse: () => void;
 };
 
 // Fixed colour strength based on the number of unique papers.
@@ -66,6 +67,7 @@ export default function EmotionGroupPanel({
   onHoverColumn,
   selectedKey,
   onSelectCell,
+  onCollapse,
 }: GroupPanelProps) {
   const { label, color, groups } = superGroup;
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
@@ -97,12 +99,7 @@ export default function EmotionGroupPanel({
     <>
     <section className="shrink-0 rounded-md border border-neutral-300 bg-white">
       <header className="sticky top-0 z-10 rounded-t-md bg-white">
-        <div
-          className="flex items-center justify-center rounded-t-md px-3 text-sm font-semibold text-neutral-900"
-          style={{ height: TITLE_HEIGHT, backgroundColor: color }}
-        >
-          {label}
-        </div>
+        <PanelTitleBar label={label} color={color} onCollapse={onCollapse} />
 
         <div className="flex px-1" style={{ gap: GROUP_GAP, backgroundColor: tint(color, "66") }}>
           {groups.map((group) => (
