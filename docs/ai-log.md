@@ -26,6 +26,14 @@ Copy this block and fill it in:
 - **What we did / verified:** At first I looked up "Negative emotions (unspecified)" in the project to see where it was named. I tested a few changes without it working, and then I asked Copilot for help. After that I reviewed the patches to understand what was done, and I verified that the dash was removed from the browser. Lastly, I ran the project to check that everything still worked as it should. 
 - **Link:** [Issue #78](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/78)
 
+## 2026-11-18 – Collapsible colored panels
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** Let users fold each colored panel (Conceptual Underpinning, Domain Application, Sources, …) into a narrow strip and open it again, so the tables need less horizontal scrolling.
+- **What the AI did:** Read the panel code and asked me which pages to change, how a collapsed panel should look and whether the state should be remembered. Added `PanelTitleBar.tsx` (the colored title bar with a « collapse button), `CollapsedPanel.tsx` (a narrow strip with the panel name written vertically and a » expand button) and `useCollapsedPanels.ts` in `components/corpus/`, and used them in `GroupPanel.tsx`, `CorpusTable.tsx`, `EmotionGroupPanel.tsx` and `EmotionTable.tsx`. Added `COLLAPSED_PANEL_WIDTH` to `layout.ts`. Ran lint and build, and suggested a commit message.
+- **What we did / verified:** I sketched the idea from a screenshot and chose to apply it to both pages, to show collapsed panels as a narrow strip and to reset on reload. I asked the AI not to commit, so I could test everything locally first. I ran the site locally, collapsed and expanded the panels on both pages and checked that it worked, then committed and pushed myself. Dragging panels into a new order was planned as a second step and is moved to a separate branch.
+- **Link:** [Issue #2](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/2)
+
 ## 2026-11-18 – Fix overlapping headers in Corpus and Emotions
 - **Who:** Elise
 - **Tool:** ChatGPT (Codex)
