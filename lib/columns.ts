@@ -12,8 +12,8 @@ export const METADATA_COLUMNS: { key: MetadataKey; label: string }[] = [
 // Colors are taken from the old site (src/app/page.tsx).
 export const SUPER_GROUPS: SuperGroup[] = [
   {
-    id: "conceptual",
-    label: "Conceptual Underpinning",
+    id: "outcome",
+    label: "Outcome",
     short: "CU",
     color: "#ffcc15",
     groups: [
@@ -31,7 +31,7 @@ export const SUPER_GROUPS: SuperGroup[] = [
           "Interpretation",
           "Trust",
           "Empathy",
-          "Persuasion (Attitude or Behaviour Change, Nudging)",
+          "Persuasion",
           "Decision-Making",
         ],
       },
@@ -125,9 +125,9 @@ export const SUPER_GROUPS: SuperGroup[] = [
     groups: [
       {
         id: "topic-provenance",
-        label: "Topic & Data/Vis Provenance",
+        label: "Provenance",
         color: "#70d384",
-        columns: ["Topic & Data/Vis Provenance"],
+        columns: ["Provenance"],
       },
       {
         id: "vis-technique",
@@ -141,7 +141,7 @@ export const SUPER_GROUPS: SuperGroup[] = [
         color: "#70d384",
         columns: [
           "Core Design Element: Colour",
-          "Core Design Element: Line, Shape, Pictograph",
+          "Core Design Element: Form",
           "Core Design Element: Visual Abstraction",
           "Core Design Element: Typography",
         ],
