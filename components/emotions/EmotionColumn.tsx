@@ -17,8 +17,7 @@ type EmotionColumnProps = {
 
 const CATEGORY_WIDTH = 44;
 const EMOTION_COLUMNS = [
-  { key: "name", label: "Specific Emotion", width: 200 },
-  { key: "Basic Emotion", label: "Emotion Category", width: 140 },
+  { key: "name", label: "Specific Emotion" },
 ] as const;
 export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, onCollapseAll, onExpandAll, canCollapseAll, canExpandAll, hoveredRowId, onHoverRow }: EmotionColumnProps) {
   return (
@@ -28,7 +27,7 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
         <colgroup>
           <col style={{ width: CATEGORY_WIDTH }} />
           {EMOTION_COLUMNS.map((column) => (
-            <col key={column.key} style={{ width: column.width }} />
+            <col key={column.key} />
           ))}
         </colgroup>
         <thead className="sticky top-0 z-10 bg-white">
@@ -40,14 +39,14 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
                 </span>
               </div>
             </th>
-            <th colSpan={2} className="rounded-tr-md p-0 text-center text-sm font-semibold text-neutral-900">
+            <th className="rounded-tr-md p-0 text-center text-sm font-semibold text-neutral-900">
               <div className="flex items-center justify-center rounded-tr-md bg-neutral-200" style={{ height: TITLE_HEIGHT }}>
                 Emotions
               </div>
             </th>
           </tr>
           <tr>
-            <th colSpan={2} className="p-0 text-center text-xs text-neutral-600">
+            <th className="p-0 text-center text-xs text-neutral-600">
               <div className="bg-neutral-100" style={{ height: SUBGROUP_HEIGHT }} />
             </th>
           </tr>
@@ -56,7 +55,7 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
               <th key={column.key} scope="col" className="border-b border-neutral-200 p-0">
                 <div
                   className="flex items-end justify-start gap-1 px-2 pb-3 text-neutral-800"
-                  style={{ height: LABEL_HEIGHT - 34, width: column.width }}
+                  style={{ height: LABEL_HEIGHT - 34 }}
                 >
                   <span>{column.label}</span>
                 </div>
@@ -64,7 +63,7 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
             ))}
           </tr>
           <tr>
-            <td colSpan={2} className="border-b border-neutral-200 bg-neutral-100 p-0 text-left">
+            <td className="border-b border-neutral-200 bg-neutral-100 p-0 text-left">
               <div className="flex items-center px-2" style={{ height: 32 }}>
                 <button
                   type="button"
@@ -83,7 +82,6 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
         {groups.map(({ category, rows }) => (
           <tbody key={category}>
             {rows.map((emotion, index) => {
-              const hasUnspecifiedBasicEmotion = emotion.basicEmotion === "–";
               return (
                 <tr
                   key={emotion.id}
@@ -95,13 +93,16 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
                     <th rowSpan={rows.length} scope="rowgroup" className={`border-r border-neutral-200 bg-neutral-50 p-0 align-middle ${category !== groups[0]?.category ? "border-t border-neutral-200" : ""}`}>
                       <div className="flex items-center justify-center" style={{ width: CATEGORY_WIDTH }}>
                         <span className="uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-                          {category === "Main" ? "General" : category}
+                          {category === "Main"
+                            ? "General"
+                            : category === "General/Neutral"
+                              ? <>General/<br />Neutral</>
+                              : category}
                         </span>
                       </div>
                     </th>
                   )}
                   <th
-                    colSpan={hasUnspecifiedBasicEmotion ? 2 : undefined}
                     scope="row"
                     className={index === 0 && category !== groups[0]?.category ? "border-t border-neutral-200 p-0 text-left" : "p-0 text-left"}
                   >
@@ -111,7 +112,6 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
                       style={{
                         height: ROW_HEIGHT,
                         lineHeight: `${ROW_HEIGHT}px`,
-                        width: EMOTION_COLUMNS[0].width + (hasUnspecifiedBasicEmotion ? EMOTION_COLUMNS[1].width : 0),
                         fontWeight: hoveredRowId === groupKey(category, emotion.id) ? 700 : undefined,
                       }}
                     >
@@ -130,22 +130,6 @@ export default function EmotionColumn({ groups, collapsedGroups, onToggleGroup, 
                       ) : emotion.name}
                     </div>
                   </th>
-                  {!hasUnspecifiedBasicEmotion && (
-                    <td className={index === 0 && category !== groups[0]?.category ? "border-t border-neutral-200 p-0" : "p-0"}>
-                      <div
-                        title={emotion.basicEmotion}
-                        className={emotion.isGroup ? "truncate px-2 font-semibold" : "truncate px-2"}
-                        style={{
-                          height: ROW_HEIGHT,
-                          lineHeight: `${ROW_HEIGHT}px`,
-                          width: EMOTION_COLUMNS[1].width,
-                          fontWeight: hoveredRowId === groupKey(category, emotion.id) ? 700 : undefined,
-                        }}
-                      >
-                        {emotion.basicEmotion}
-                      </div>
-                    </td>
-                  )}
                 </tr>
               );
             })}

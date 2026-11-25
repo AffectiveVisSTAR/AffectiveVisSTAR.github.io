@@ -112,7 +112,6 @@ export const SUPER_GROUPS: SuperGroup[] = [
           "Infographic",
           "Dashboard",
           "Multiple",
-          "Interactivity",
         ],
       },
     ],

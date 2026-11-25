@@ -1,6 +1,6 @@
 import type { EmotionRow, Paper } from "./types";
 
-const CATEGORY_ORDER = ["Negative", "Positive", "Neutral", "Main"];
+const CATEGORY_ORDER = ["General/Neutral", "Positive", "Negative"];
 
 // Put rows with the same valence together without changing the source data.
 function groupByValence(emotions: EmotionRow[]) {
