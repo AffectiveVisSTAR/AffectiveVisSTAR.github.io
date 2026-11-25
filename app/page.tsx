@@ -32,9 +32,9 @@ const litSearch: Figure = {
   src: "/images/litsearch.png",
   width: 2400,
   height: 374,
-  alt: "Stages of corpus collection including: keyword strategy, title and abstract screening, full reading and snowballing that resulted in 70 papers for classification and analysis.",
+  alt: "Stages of corpus collection including: keyword strategy, title and abstract screening, full reading and snowballing that resulted in 80 papers for classification and analysis.",
   caption:
-    "Stages of corpus collection including: keyword strategy, title and abstract screening, full reading and snowballing that resulted in 70 papers for classification and analysis.",
+    "Stages of corpus collection including: keyword strategy, title and abstract screening, full reading and snowballing that resulted in 80 papers for classification and analysis.",
 };
 
 const sideBySideFigures: Figure[] = [
@@ -42,7 +42,7 @@ const sideBySideFigures: Figure[] = [
     src: "/images/domainbyyear2026.png",
     width: 1802,
     height: 1624,
-    alt: "Stacked bar chart of papers published per year from 2009 to 2025, colored by domain. Output is sparse before 2020 and rises sharply, reaching 15 papers in 2024 and 17 in 2025.",
+    alt: "Stacked bar chart of papers published per year from 2009 to 2025, colored by domain. Number of papers is low prior to 2020, and then increases significantly, reaching 15 papers in 2024 and 17 in 2025. Six papers from visualization research were recorded in 2026.",
     caption:
       "Number of papers published by primary application domain and year. Half-units represent one study that focused on two domains. Studies that included three or more domains are categorized as Various.",
     // Swatch colors sampled from the chart image.
@@ -134,7 +134,7 @@ const views = [
     href: "/corpus",
     title: "Corpus Classification Table",
     description:
-      "Browse all 70 papers and how each was characterized by emotion theory, study design, visual strategy, and findings.",
+      "Browse all 80 papers and how each was characterized by emotion theory, study design, visual strategy, and findings.",
     cta: "Explore the corpus",
   },
   {
@@ -242,7 +242,7 @@ export default function Home() {
                 </p>
                 <p>
                   We surveyed literature across core and adjacent venues for empirical
-                  AffectVis research. This resulted in a corpus of 70 papers that we
+                  AffectVis research. This resulted in a corpus of 80 papers that we
                   characterize through a lens of responsibility according to theoretical
                   underpinnings of emotion, study design, visual strategies that have been
                   evaluated, and study findings. Through this characterization, we find a
