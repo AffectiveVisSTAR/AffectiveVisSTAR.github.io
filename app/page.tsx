@@ -29,7 +29,7 @@ const conceptualModels: Figure = {
 };
 
 const litSearch: Figure = {
-  src: "/images/lit-search-approach-v2.webp",
+  src: "/images/litsearch.png",
   width: 2400,
   height: 374,
   alt: "Stages of corpus collection including: keyword strategy, title and abstract screening, full reading and snowballing that resulted in 70 papers for classification and analysis.",
@@ -39,7 +39,7 @@ const litSearch: Figure = {
 
 const sideBySideFigures: Figure[] = [
   {
-    src: "/images/domainbyyear.webp",
+    src: "/images/domainbyyear2026.png",
     width: 1802,
     height: 1624,
     alt: "Stacked bar chart of papers published per year from 2009 to 2025, colored by domain. Output is sparse before 2020 and rises sharply, reaching 15 papers in 2024 and 17 in 2025.",
