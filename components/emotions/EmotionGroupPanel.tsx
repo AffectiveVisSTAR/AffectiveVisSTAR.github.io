@@ -70,6 +70,10 @@ export default function EmotionGroupPanel({
   onCollapse,
 }: GroupPanelProps) {
   const { label, color, groups } = superGroup;
+  const sourcePanel = superGroup.id === "sources";
+  const groupGap = sourcePanel ? 2 : GROUP_GAP;
+  const panelGroupWidth = (group: { columns: string[] }) =>
+    sourcePanel ? group.columns.length * COLUMN_WIDTH : groupWidth(group);
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
 
   function handleTooltipPointer(event: ReactMouseEvent<HTMLDivElement>, description: string | undefined) {
@@ -101,12 +105,12 @@ export default function EmotionGroupPanel({
       <header className="sticky top-0 z-10 rounded-t-md bg-white">
         <PanelTitleBar label={label} color={color} onCollapse={onCollapse} />
 
-        <div className="flex px-1" style={{ gap: GROUP_GAP, backgroundColor: tint(color, "66") }}>
+        <div className="flex px-1" style={{ gap: groupGap, backgroundColor: tint(color, "66") }}>
           {groups.map((group) => (
             <div
               key={group.id}
               className="flex items-center justify-center text-center text-xs leading-tight text-neutral-800"
-              style={{ width: groupWidth(group), height: SUBGROUP_HEIGHT }}
+              style={{ width: panelGroupWidth(group), height: SUBGROUP_HEIGHT }}
             >
               {group.label}
             </div>
@@ -115,10 +119,10 @@ export default function EmotionGroupPanel({
 
         <div
           className="flex border-b border-neutral-200 px-1"
-          style={{ gap: GROUP_GAP, height: LABEL_HEIGHT }}
+          style={{ gap: groupGap, height: LABEL_HEIGHT }}
         >
           {groups.map((group) => (
-            <div key={group.id} className="flex justify-center" style={{ width: groupWidth(group) }}>
+            <div key={group.id} className="flex justify-center" style={{ width: panelGroupWidth(group) }}>
               {group.columns.map((column) => {
                 const articleCount = countMarked(papers, column);
                 const description = group.id === "emotion-linked-to" ? COLUMN_DESCRIPTIONS[column] : undefined;
@@ -172,9 +176,9 @@ export default function EmotionGroupPanel({
                 onMouseLeave={() => onHoverRow(null)}
               >
                 <td className={index === 0 ? "border-t border-slate-300 p-0" : "p-0"}>
-                  <div className="flex px-1" style={{ gap: GROUP_GAP, height: ROW_HEIGHT }}>
+                  <div className="flex px-1" style={{ gap: groupGap, height: ROW_HEIGHT }}>
                     {groups.map((group) => (
-                      <div key={group.id} className="flex justify-center" style={{ width: groupWidth(group) }}>
+                      <div key={group.id} className="flex justify-center" style={{ width: panelGroupWidth(group) }}>
                         {group.columns.map((column) => {
                           const articles = articlesByRow.get(groupKey(category, row.id))!.get(column)!;
                           const count = articles.length;

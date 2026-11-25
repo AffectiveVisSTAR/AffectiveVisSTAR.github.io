@@ -1,6 +1,19 @@
 import type { EmotionRow, Paper } from "./types";
 
 const CATEGORY_ORDER = ["General/Neutral", "Positive", "Negative"];
+// "Trust" is displayed as "Affective Trust"; flattened Anticipation rows follow it.
+const GENERAL_NEUTRAL_ROW_ORDER = ["Trust", "_"];
+const GENERAL_NEUTRAL_HIDDEN_ROWS = ["Arousal", "Dominance", "Valence"];
+const GENERAL_NEUTRAL_FLATTENED_BASICS = ["Anticipation"];
+const GENERAL_NEUTRAL_FLATTENED_ROW_ORDER = [
+  "Curiosity",
+  "Surprise",
+  "Attentive",
+  "Alert",
+  "Anticipation",
+];
+const POSITIVE_ROW_ORDER = ["_", "Joy/Pleasure", "Love", "Anticipation", "Self-Assurance"];
+const NEGATIVE_ROW_ORDER = ["_", "Sadness", "Fear/Anxiety", "Anger", "Disgust", "Anticipation", "Manipulation"];
 
 // Put rows with the same valence together without changing the source data.
 function groupByValence(emotions: EmotionRow[]) {
@@ -29,20 +42,35 @@ export type DisplayRow = {
 };
 
 // The original table hides category totals and groups the remaining emotions.
-function buildDisplayRows(rows: EmotionRow[]): DisplayRow[] {
+function buildDisplayRows(
+  rows: EmotionRow[],
+  basicOrder?: string[],
+  options: {
+    excludedNames?: string[];
+    flattenedBasics?: string[];
+    flattenedRowOrder?: string[];
+  } = {},
+): DisplayRow[] {
   const basics = new Map<string, EmotionRow[]>();
   for (const row of rows) {
-    if (row.isAggregate === "X") continue;
-    const basic = row["Basic Emotion"];
+    if (row.isAggregate === "X" || options.excludedNames?.includes(row.name)) continue;
+    const sourceBasic = row["Basic Emotion"];
+    const basic = options.flattenedBasics?.includes(sourceBasic) ? "_" : sourceBasic;
     const members = basics.get(basic) ?? [];
     members.push(row);
     basics.set(basic, members);
   }
 
   const result: DisplayRow[] = [];
-  const names = Array.from(basics.keys()).sort((a, b) =>
+  const alphabeticalNames = Array.from(basics.keys()).sort((a, b) =>
     a === "_" ? -1 : b === "_" ? 1 : a.localeCompare(b),
   );
+  const names = basicOrder
+    ? [
+        ...basicOrder.filter((basic) => basics.has(basic)),
+        ...alphabeticalNames.filter((basic) => !basicOrder.includes(basic)),
+      ]
+    : alphabeticalNames;
 
   for (const basic of names) {
     const members = basics.get(basic)!;
@@ -58,7 +86,17 @@ function buildDisplayRows(rows: EmotionRow[]): DisplayRow[] {
         members,
       });
     }
-    for (const member of [...members].sort((a, b) => a.name.localeCompare(b.name))) {
+    const orderedMembers = basic === "_" && options.flattenedRowOrder
+      ? [...members].sort((a, b) => {
+          const aOrder = options.flattenedRowOrder!.indexOf(a.name);
+          const bOrder = options.flattenedRowOrder!.indexOf(b.name);
+          if (aOrder < 0 && bOrder < 0) return a.name.localeCompare(b.name);
+          if (aOrder < 0) return 1;
+          if (bOrder < 0) return -1;
+          return aOrder - bOrder;
+        })
+      : [...members].sort((a, b) => a.name.localeCompare(b.name));
+    for (const member of orderedMembers) {
       result.push({
         id: "emotion:" + member.name,
         name: member.name,
@@ -79,7 +117,23 @@ export const groupKey = (category: string, basic: string) => JSON.stringify([cat
 export function getVisibleEmotionGroups(emotions: EmotionRow[], collapsed: Set<string>) {
   return groupByValence(emotions).map((group) => ({
     category: group.category,
-    rows: buildDisplayRows(group.rows).filter((row) =>
+    rows: buildDisplayRows(
+      group.rows,
+      group.category === "General/Neutral"
+        ? GENERAL_NEUTRAL_ROW_ORDER
+        : group.category === "Positive"
+          ? POSITIVE_ROW_ORDER
+          : group.category === "Negative"
+            ? NEGATIVE_ROW_ORDER
+            : undefined,
+      group.category === "General/Neutral"
+        ? {
+            excludedNames: GENERAL_NEUTRAL_HIDDEN_ROWS,
+            flattenedBasics: GENERAL_NEUTRAL_FLATTENED_BASICS,
+            flattenedRowOrder: GENERAL_NEUTRAL_FLATTENED_ROW_ORDER,
+          }
+        : undefined,
+    ).filter((row) =>
       !row.isChild || !collapsed.has(groupKey(group.category, row.groupId!)),
     ),
   })).filter((group) => group.rows.length > 0);
