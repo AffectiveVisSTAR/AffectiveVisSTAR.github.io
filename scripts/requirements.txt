@@ -1,3 +1,4 @@
 pandas>=2.0
 openpyxl>=3.1
 certifi
+plotly>=5.0
