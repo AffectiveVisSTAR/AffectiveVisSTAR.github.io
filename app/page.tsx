@@ -32,9 +32,9 @@ const litSearch: Figure = {
   src: "/images/litsearch.png",
   width: 2400,
   height: 374,
-  alt: "Stages of corpus collection including: keyword strategy, title and abstract screening, full reading and snowballing that resulted in 80 papers for classification and analysis.",
+  alt: "Stages of corpus collection including: keyword strategy, title and abstract screening, full reading and snowballing that resulted in 84 papers for classification and analysis.",
   caption:
-    "Stages of corpus collection including: keyword strategy, title and abstract screening, full reading and snowballing that resulted in 80 papers for classification and analysis.",
+    "Stages of corpus collection including: keyword strategy, title and abstract screening, full reading and snowballing that resulted in 84 papers for classification and analysis.",
 };
 
 const sideBySideFigures: Figure[] = [
@@ -134,7 +134,7 @@ const views = [
     href: "/corpus",
     title: "Corpus Classification Table",
     description:
-      "Browse all 80 papers and how each was characterized by emotion theory, study design, visual strategy, and findings.",
+      "Browse all 84 papers and how each was characterized by emotion theory, study design, visual strategy, and findings.",
     cta: "Explore the corpus",
   },
   {
@@ -242,7 +242,7 @@ export default function Home() {
                 </p>
                 <p>
                   We surveyed literature across core and adjacent venues for empirical
-                  AffectVis research. This resulted in a corpus of 80 papers that we
+                  AffectVis research. This resulted in a corpus of 84 papers that we
                   characterize through a lens of responsibility according to theoretical
                   underpinnings of emotion, study design, visual strategies that have been
                   evaluated, and study findings. Through this characterization, we find a
