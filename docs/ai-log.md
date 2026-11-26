@@ -18,6 +18,14 @@ Copy this block and fill it in:
 ```
 
 ---
+## 2026-11-26 – Make it clear which tab you are on
+- **Who:** Jenny
+- **Tool:** ChatGPT
+- **Purpose:** Make it clear for the user which tab they are on by giving the tab a bold font
+- **What the AI did:** I asked ChatGPT to explain `NavigationBar.tsx`to me, and it told me I could use `usePathname` that is a Next.js function. Then it gave me an alternative on how I could implement it. Since it wasn't quite what I had in mind, I also discussed different ideas with ChatGPT. 
+- **What we did / verified:** I had to change a piece in the code as just one of the tabs were in a bold font when clicked on the link, so I fixed it to work for both. At the end I ran the website to see that the changes made was how I wanted them to turn out. 
+- **Link:** [Issue #76](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/issues/76)
+
 ## 2026-11-23 – Drag colored panels into a new order
 - **Who:** Aimee Hong
 - **Tool:** Claude Code (Opus 5.5)

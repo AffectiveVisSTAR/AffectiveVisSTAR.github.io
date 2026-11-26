@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function NavigationBar() {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!isInfoOpen) return;
@@ -46,12 +48,23 @@ export default function NavigationBar() {
 
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-6 text-sm">
-            <Link href="/corpus" className="text-neutral-700 transition hover:text-neutral-950 underline-offset-3 hover:underline">
+            <Link
+              href="/corpus"
+              className={`text-sm transition underline-offset-3 ${
+                pathname.startsWith("/corpus")
+                  ? "font-bold text-neutral-950"
+                  : "text-neutral-700 hover:text-neutral-950 hover:underline"
+              }`}
+            >
               Corpus Classification Table
             </Link>
             <Link
               href="/emotions"
-              className="text-neutral-700 transition hover:text-neutral-950 underline-offset-3 hover:underline"
+              className={`text-sm transition underline-offset-3 ${
+                pathname.startsWith("/emotions")
+                  ? "font-bold text-neutral-950"
+                  : "text-neutral-700 hover:text-neutral-950 hover:underline"
+              }`}
             >
               Emotions by Everything
             </Link>
