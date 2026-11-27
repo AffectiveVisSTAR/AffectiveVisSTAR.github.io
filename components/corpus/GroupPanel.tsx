@@ -103,7 +103,8 @@ export default function GroupPanel({
                   >
                     {sort?.key === column && (
                       <span className="absolute top-1 text-sm font-bold text-black">
-                        ▼
+                        {/* ▼ = marked papers at the top, ▲ = marked papers at the bottom */}
+                        {sort.direction === "asc" ? "▼" : "▲"}
                       </span>
                     )}
                     <span

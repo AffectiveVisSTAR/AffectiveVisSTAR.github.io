@@ -18,6 +18,14 @@ Copy this block and fill it in:
 ```
 
 ---
+## 2026-11-27 – Sort marked papers to the bottom on second click
+- **Who:** Aimee Hong
+- **Tool:** Claude Code (Opus 5.5)
+- **Purpose:** Let a second click on a classification column put the marked papers at the bottom, and a third click remove the sorting.
+- **What the AI did:** Made the classification columns use the existing `nextSort` cycle in `CorpusTable.tsx`, and made `GroupPanel.tsx` show ▼ for marked papers at the top and ▲ for marked papers at the bottom.
+- **What I did / verified:** I had built this feature earlier but left it out, and now decided to add it back. I described how the second click should work, reviewed and approved the AI's plan before any code was changed, and read through the changes. I ran the site locally and tested it myself in the browser, checking that the three clicks work: marked papers at the top, then at the bottom, then no sorting. Lint and typecheck passed.
+- **Link:** [3885075](https://github.com/AffectiveVisSTAR/AffectiveVisSTAR.github.io/commit/3885075452fd0c7bdb88c81efbf2314b79f8b62c)
+
 ## 2026-11-26 – Make it clear which tab you are on
 - **Who:** Jenny
 - **Tool:** ChatGPT
