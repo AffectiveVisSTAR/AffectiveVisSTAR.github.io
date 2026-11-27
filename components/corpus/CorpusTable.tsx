@@ -82,8 +82,8 @@ export default function CorpusTable() {
                   selectedRowId={selectedRowId}
                   onSelectPaper={setSelectedPaper}
                   sort={sort}
-                  // Classification columns only toggle between "marked papers first" and no sorting.
-                  onSort={(key) => setSort(sort?.key === key ? null : { key, direction: "asc" })}
+                  // Clicking a classification column cycles: marked papers first → marked papers last → no sorting.
+                  onSort={(key) => setSort(nextSort(sort, key))}
                   onCollapse={() => togglePanel(superGroup.id)}
                 />
               )}
